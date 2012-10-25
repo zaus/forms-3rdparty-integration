@@ -1,0 +1,35 @@
+.invisible { position:absolute; left:-9999px; }
+
+div.shortcode-description { border:1px solid #DFDFDF; border-radius:5px; background:#fff; }
+
+div.collapsed div.inside { display:none; }
+div.meta-box div.collapsed { position:relative; }
+div.meta-box h4 { padding-left:1em; }
+	div.meta-box.collapsed h4, div.meta-box div.collapsed h4 { position:absolute; top:-1em; right:20%; }
+
+	pre { white-space:pre-wrap; padding:2px; margin:0.5em; border:1px dotted #ddd; border-radius:4px; background-color:#FCFCFC; }
+
+.shortcode-description legend { font-weight:bold; }
+.shortcode-description fieldset { border:1px dotted #ccc; clear:both; padding:1em; margin-bottom:1em; }
+
+div.field { padding-bottom:0.75em; }
+div.field .text { width:50%; }
+div.field em { display:block; margin-left:4em; margin-top:0.5em; }
+
+table.mappings { width:100%; margin:1em 0.5em; border-bottom:1px solid #ccc; border-collapse:collapse; }
+table.mappings td, table.mappings th { border:1px solid #ccc; }
+table.mappings caption { font-style:italic; color:#888; margin-bottom:0.2em; }
+table.mappings input { width:100%; }
+table.mappings .thin { width:30px; }
+
+a.b-clone { white-space:nowrap; }
+td.drag-handle { cursor:move; }
+
+.icon a { height:16px; width:16px; margin:0px; padding:0px; display:inline-block; text-indent:-9999px; background:url(sprites.png) no-repeat 0 0; }
+	.icon a.minus { background-position:-16px -80px; } .icon a.minus:hover { background-position:0px -80px; }
+	.icon a.plus { background-position:-16px -64px; } .icon a.plus:hover { background-position:0px -64px; }
+	.icon a.trash { background-position:-16px -112px; } .icon a.trash:hover { background-position:0px -112px; }
+
+
+/* overrides */
+#wpcontent select.multiple { height: 6em; }
