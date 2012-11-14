@@ -66,7 +66,7 @@ See section [Hooks][].  See plugin folder `/3rd-parties` for example code for so
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
 
-This plugin previously included another hidden field plugin for convenience from [Contact Form 7 Modules: Hidden Fields][], but it confused some users and so it's no longer bundled with this plugin.  You can add still it separately for use with CF7.
+This plugin previously included another hidden field plugin for convenience from [Contact Form 7 Modules: Hidden Fields][], but it confused some users and so it's no longer bundled with this plugin.  You can still add it separately for use with CF7.
 
 [Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
 
@@ -134,7 +134,9 @@ Fixes should accomodate CF7 < v1.2 and changes to >= v1.2 -- please test and che
 
 == Hooks ==
 
-1. `add_action('Cf73rdPartyIntegration_service_a#',...`
+_Please note that this documentation is in flux, and may not be accurate for latest rewrite 1.4.0_
+
+1. `add_action('Forms3rdPartyIntegration_service_a#',...`
     * hook for each service, indicated by the `#` - _this is given in the 'Hooks' section of each service_
     * provide a function which takes `$response, &$results` as arguments
     * allows you to perform further processing on the service response, and directly alter the processing results, provided as `array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');`
@@ -143,12 +145,12 @@ Fixes should accomodate CF7 < v1.2 and changes to >= v1.2 -- please test and che
         * *attach* = text to attach to the end of the email body
         * *message* = the message notification shown (from CF7 ajax response) below the form
     * note that the basic "success condition" may be augmented here by post processing
-2. `add_filter('Cf73rdPartyIntegration_service_filter_post_#, ...`
+2. `add_filter('Forms3rdPartyIntegration_service_filter_post_#, ...`
     * hook for each service, indicated by the `#` - _this is given in the 'Hooks' section of each service_
     * allows you to programmatically alter the request parameters sent to the service
-3.  `add_action('Cf73rdPartyIntegration_onfailure', 'mycf7_fail', 10, 3);`
-    * hook to modify the CF7 object if service failure of any kind occurs -- use like:
-        function mycf7_fail(&$cf7, $service, $response) {
+3.  `add_action('Forms3rdPartyIntegration_remote_failure', 'mycf7_fail', 10, 5);`
+    * hook to modify the Form (CF7 or GF) object if service failure of any kind occurs -- use like:
+        function mycf7_fail(&$cf7, $debug, $service, $post, $response) {
             $cf7->skip_mail = true; // stop email from being sent
             // hijack message to notify user
             ///TODO: how to modify the "mail_sent" variable so the message isn't green?  on_sent_ok hack?
