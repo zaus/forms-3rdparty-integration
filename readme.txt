@@ -4,7 +4,7 @@ Donate link: http://drzaus.com/donate
 Tags: contact form, form, contact form 7, CF7, gravity forms, GF, CRM, mapping, 3rd-party service, services, remote request
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.4.1
+Stable tag: trunk
 License: GPLv2 or later
 
 Send contact form submissions from plugins CF7 or GF to multiple external services e.g. CRM.  Configurable, custom field mapping, pre/post processing.
@@ -166,7 +166,7 @@ From [the website][] and [Handpicked Tomatoes][]:
 
 **Transparent and Holistic Approach**
 
-> Transparency is good. It’s amazing how many web design sites hide who they are. There are lots of reasons, none of which are good for the customer. We don’t do that. I’m Stephen Kane, principal web craftsman at HandpickedTomatoes, and I’m an Orange County based freelancer who occasionally works with other local freelancers and agencies to deliver quality web solutions at very affordable prices.
+> Transparency is good. It's amazing how many web design sites hide who they are. There are lots of reasons, none of which are good for the customer. We don't do that. I'm Stephen Kane, principal web craftsman at HandpickedTomatoes, and I'm an Orange County based freelancer who occasionally works with other local freelancers and agencies to deliver quality web solutions at very affordable prices.
 > We work to earn the right to be a trusted partner. One that you can turn to for professional help in strategizing, developing, executing, and maintaining your Internet presence.
 > We take a holistic view. Even if a project is small, our work should integrate into the big picture. We craft web architecture and designs that become winning websites that are easy to use and to share. We custom build social network footprints on sites like linkedin, facebook, twitter, youtube, flickr, yelp!, and google places and integrate them into your website to leverage social marketing. We help you set up and execute email campaigns, with search engine marketing, with photography, with site copy and content and anything else that you need in order to have a successful Internet presence.
 > Through this holistic approach, we work with clients to grow their sales, improve their brand recognition, and manage their online reputation.
