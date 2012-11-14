@@ -4,7 +4,7 @@ Donate link: http://drzaus.com/donate
 Tags: contact form, form, contact form 7, CF7, gravity forms, GF, CRM, mapping, 3rd-party service, services, remote request
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: trunk
+Stable tag: 1.4.1
 License: GPLv2 or later
 
 Send contact form submissions from plugins CF7 or GF to multiple external services e.g. CRM.  Configurable, custom field mapping, pre/post processing.
