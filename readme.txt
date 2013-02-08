@@ -66,7 +66,7 @@ See section [Hooks][].  See plugin folder `/3rd-parties` for example code for so
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
 
-This plugin previously included another hidden field plugin for convenience from [Contact Form 7 Modules: Hidden Fields][], but it confused some users and so it's no longer bundled with this plugin.  You can still add it separately for use with CF7.
+This plugin includes another hidden field plugin for convenience from [Contact Form 7 Modules: Hidden Fields][].  I had kept the original plugin headers intact which confused some users, and so though it's no longer advertising itself on the plugin listing it's still bundled with this plugin.
 
 [Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
 
@@ -80,6 +80,14 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 == Changelog ==
+
+= 1.4.2 =
+
+* Bugfixes
+* cleaned up admin JS using delegate binding
+* added "empty" checking for 3rdparty entries to avoid dreaded "I've deleted my mappings and can't do anything" error
+* timeout option
+* fixed CF7 form selection bug
 
 = 1.4.1 =
 
