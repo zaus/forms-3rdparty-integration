@@ -87,7 +87,7 @@ class Forms3rdPartyIntegration {
 		$this->N = __CLASS__;
 		
 		add_action( 'admin_menu', array( &$this, 'admin_init' ), 20 ); // late, so it'll attach menus farther down
-		add_action( 'init', array( &$this, 'init' ) );
+		add_action( 'init', array( &$this, 'init' ) ); // want to run late, but can't because it misses CF7 onsend?
 	} // function
 
 	function admin_init() {

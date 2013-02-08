@@ -88,6 +88,7 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 * added "empty" checking for 3rdparty entries to avoid dreaded "I've deleted my mappings and can't do anything" error
 * timeout option
 * fixed CF7 form selection bug
+* conditionally load CF7 or GF only if active/present; note that this plugin must `init` normally to check CF7
 
 = 1.4.1 =
 
