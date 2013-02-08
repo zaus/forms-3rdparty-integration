@@ -109,7 +109,8 @@ class Forms3rdpartyIntegration_Cf {
 			$form_id = $form->id;
 		}
 
-		$result = in_array(self::FORM_ID_PREFIX . $formId, $service_forms);
+		$result = in_array(self::FORM_ID_PREFIX . $form_id, $service_forms);
+		### _log(__CLASS__ . '::' . __FUNCTION__, $result ? 'Y':'N', $form_id, $service_forms);
 
 		// also add subsequent hooks
 		if($result) {

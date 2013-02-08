@@ -6,9 +6,15 @@
 	
 	if( isset($_POST[$P]) && check_admin_referer($P, $P.'_nonce') ) {
 		$options = $_POST[$P];
+
+		// expected fields not really used...
 		$expectedFields = array(
-			'url'
+			'name'
+			, 'url'
 			,'mapping'
+			, 'hook'
+			, 'forms'
+			, 'timeout'
 			,self::PARAM_LBL
 			,self::PARAM_SRC
 			,self::PARAM_3RD
@@ -56,7 +62,7 @@
 				<label for="dbg-debugmode"><?php _e('Debug Mode', $P); ?></label>
 				<input id="dbg-debugmode" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" value="debug"<?php if(isset($debugOptions['mode']) ) echo ' checked="checked"'; ?>  />
 				<em class="description"><?php _e('Send debugging information to indicated address, regardless of success or failure', $P)?>.</em>
-				<em class="description">Send service tests to <code><?php echo get_bloginfo('url');?>/wp-content/plugins/cf7-int-3rdparty/3rd-parties/service_test.php</code></em>
+				<em class="description">Send service tests to <code><?php echo plugins_url('3rd-parties/service_test.php', __FILE__); ?></code></em>
 			</div>
 			<div class="field">
 				<label for="dbg-sep">Separator</label>
@@ -68,14 +74,16 @@
 		<?php
 		// make sure we have at least one
 		if( empty($options) ){
-			$options = array(
+			echo '---- at least one ----';
+			$options = array(array(
 				'name'=>''
 				, 'url'=>''
 				, 'success'=>''
 				, 'forms' => array()
 				, 'hook' => false
+				, 'timeout' => 10
 				, 'mapping' => array()
-				);
+				));
 		}
 
 		$eid = -1; // always increment to correct for weirdness
@@ -118,6 +126,11 @@
 						<em class="description"><?php _e('Note - you can use more complex processing in the hook, rendering this irrelevant', $P);?>.</em>
 					</div>
 					<div class="field">
+						<label for="timeout-<?php echo $eid?>">Request timeout</label>
+						<input id="timout-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][timeout]" value="<?php echo esc_attr($entity['timeout'])?>" />
+						<em class="description"><?php _e('How long (in seconds) to attempt the 3rd-party remote request before giving up.', $P);?>.</em>
+					</div>
+					<div class="field">
 						<label for="hook-<?php echo $eid?>">Allow Hooks?</label>
 						<input id="hook-<?php echo $eid?>" type="checkbox" class="checkbox hook" name="<?php echo $P?>[<?php echo $eid?>][hook]" value="true"<?php if(isset($entity['hook']) && $entity['hook']) echo ' checked="checked"'; ?> />
 						<em class="description"><?php _e('Allow hooks - see bottom of section for example', $P);?>:</em>
@@ -127,7 +140,8 @@
 			<fieldset><legend><span>Mapping</span></legend>
 				<table class="mappings">
 				<caption><?php _e('Listing of Form(s) Plugin fields to 3rd-party Mappings.  <br />
-				* Note that the label is just for you to remind yourself what the mapping is for, and does not do anything.', $P);?></caption>
+				* Note that the label is just for you to remind yourself what the mapping is for, and does not do anything.  <br />
+				Also, if you accidentally delete all of the mapping fields, try deleting the Service entry and refreshing the page, then adding another Service.', $P);?></caption>
 				<thead>
 					<tr>
 						<th id="th-<?php echo $eid?>-static-2" class="thin">Drag</th>

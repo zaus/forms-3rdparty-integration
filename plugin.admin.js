@@ -3,7 +3,7 @@
 	var lib = {
 		updateClonedRow: function(count, $clone, regex) {
 			//reset clone values and update indices
-			$clone.find('input').each(function(i, o){
+			$clone.find('input,select').each(function(i, o){
 				var $o = $(o)
 					, id = $o.attr('id').split('-')
 					, name = $o.attr('name')
@@ -102,7 +102,7 @@
 			.delegate('tr a.b-clone', 'click', lib.cloneRowClick)
 			.delegate('tr a.b-del', 'click', lib.deleteTargetClick)
 			.delegate('#b-clone-metabox', 'click', lib.cloneMetabox)
-			.delegate('button a.b-del', 'click', lib.deleteTargetClick)
+			.delegate('.button a.b-del', 'click', lib.deleteTargetClick)
 			;
 		
 		/* ------------------ GENERAL PAGE BEHAVIOR -------------------- */
