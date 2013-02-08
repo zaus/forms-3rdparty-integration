@@ -66,7 +66,21 @@
 		</div></fieldset>
 		
 		<?php
-		foreach($options as $eid => $entity):
+		// make sure we have at least one
+		if( empty($options) ){
+			$options = array(
+				'name'=>''
+				, 'url'=>''
+				, 'success'=>''
+				, 'forms' => array()
+				, 'hook' => false
+				, 'mapping' => array()
+				);
+		}
+
+		$eid = -1; // always increment to correct for weirdness
+		foreach($options as $ekey => $entity):
+			$eid++;
 		?>
 		<div id="metabox-<?php echo $eid; ?>" class="meta-box">
 		<div class="shortcode-description postbox">
@@ -128,6 +142,17 @@
 					<?php
 					//only print the 'add another' button for the last one
 					$numPairs = count($entity['mapping']);
+
+					// make sure we have at least one
+					if( $numPairs == 0 ) {
+						$entity['mapping'] = array(
+							'val'=>''
+							, self::PARAM_LBL => ''
+							, self::PARAM_SRC => ''
+							, self::PARAM_3RD => ''
+							);
+					}
+
 					$pairNum = 0;	//always increments correctly?
 					foreach($entity['mapping'] as $k => $pair):
 					?>
@@ -141,7 +166,7 @@
 						</td>
 						<td headers="th-<?php echo $eid?>-cf7">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>d" class="invisible">Label:</label>
-							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>d" type="text" class="text d" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_LBL ?>]" value="<?php echo esc_attr($pair[self::PARAM_LBL])?>" />
+							<strong><input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>d" type="text" class="text d" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_LBL ?>]" value="<?php echo esc_attr($pair[self::PARAM_LBL])?>" /></strong>
 						</td>
 						<td headers="th-<?php echo $eid?>-cf7">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>a" class="invisible">Form Submission Field:</label>
