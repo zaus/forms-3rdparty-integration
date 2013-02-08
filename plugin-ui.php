@@ -74,7 +74,6 @@
 		<?php
 		// make sure we have at least one
 		if( empty($options) ){
-			echo '---- at least one ----';
 			$options = array(array(
 				'name'=>''
 				, 'url'=>''
@@ -159,12 +158,12 @@
 
 					// make sure we have at least one
 					if( $numPairs == 0 ) {
-						$entity['mapping'] = array(
+						$entity['mapping'] = array(array(
 							'val'=>''
 							, self::PARAM_LBL => ''
 							, self::PARAM_SRC => ''
 							, self::PARAM_3RD => ''
-							);
+							));
 					}
 
 					$pairNum = 0;	//always increments correctly?
