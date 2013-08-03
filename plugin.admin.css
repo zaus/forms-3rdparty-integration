@@ -2,10 +2,10 @@
 
 div.shortcode-description { border:1px solid #DFDFDF; border-radius:5px; background:#fff; }
 
-div.collapsed div.inside { display:none; }
-div.meta-box div.collapsed { position:relative; }
+.collapsed .inside { display:none; }
+div.meta-box .collapsed { position:relative; }
 div.meta-box h4 { padding-left:1em; }
-	div.meta-box.collapsed h4, div.meta-box div.collapsed h4 { position:absolute; top:-1em; right:20%; }
+	div.meta-box.collapsed h4, div.meta-box .collapsed h4 { position:absolute; top:-1em; right:20%; }
 
 	pre { white-space:pre-wrap; padding:2px; margin:0.5em; border:1px dotted #ddd; border-radius:4px; background-color:#FCFCFC; }
 
@@ -20,9 +20,11 @@ table.mappings { width:100%; margin:1em 0.5em; border-bottom:1px solid #ccc; bor
 table.mappings td, table.mappings th { border:1px solid #ccc; }
 table.mappings caption { font-style:italic; color:#888; margin-bottom:0.2em; }
 table.mappings input { width:100%; }
-table.mappings .thin { width:30px; }
+table.mappings .thin { width:4em; }
+table.mappings .drag-handle { padding:0.5em;}
 
-a.b-clone { white-space:nowrap; }
+a.actn { text-decoration: none; }
+
 td.drag-handle { cursor:move; }
 
 .icon a { height:16px; width:16px; margin:0px; padding:0px; display:inline-block; text-indent:-9999px; background:url(sprites.png) no-repeat 0 0; }

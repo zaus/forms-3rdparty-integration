@@ -96,7 +96,7 @@
 			<div class="description-body inside">
 			
 			<fieldset><legend><span>Service</span></legend>
-				
+				<div class="inside">
 					<div class="field">
 						<label for="name-<?php echo $eid?>">Service Name</label>
 						<input id="name-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][name]" value="<?php echo esc_attr($entity['name'])?>" />
@@ -131,19 +131,19 @@
 					</div>
 					<div class="field">
 						<label for="hook-<?php echo $eid?>">Allow Hooks?</label>
-						<input id="hook-<?php echo $eid?>" type="checkbox" class="checkbox hook" name="<?php echo $P?>[<?php echo $eid?>][hook]" value="true"<?php if(isset($entity['hook']) && $entity['hook']) echo ' checked="checked"'; ?> />
+						<input id="hook-<?php echo $eid?>" type="checkbox" class="checkbox hook actn" data-actn="toggle-sibling" data-after=".hook-example" data-rel=".postbox" name="<?php echo $P?>[<?php echo $eid?>][hook]" value="true"<?php if(isset($entity['hook']) && $entity['hook']) echo ' checked="checked"'; ?> />
 						<em class="description"><?php _e('Allow hooks - see bottom of section for example', $P);?>:</em>
 					</div>
+				</div>
 			</fieldset><!-- Service -->
 
 			<fieldset><legend><span>Mapping</span></legend>
-				<table class="mappings">
+				<table class="mappings inside">
 				<caption><?php _e('Listing of Form(s) Plugin fields to 3rd-party Mappings.  <br />
 				* Note that the label is just for you to remind yourself what the mapping is for, and does not do anything.  <br />
 				Also, if you accidentally delete all of the mapping fields, try deleting the Service entry and refreshing the page, then adding another Service.', $P);?></caption>
 				<thead>
 					<tr>
-						<th id="th-<?php echo $eid?>-static-2" class="thin">Drag</th>
 						<th id="th-<?php echo $eid?>-static" class="thin">Is Value?</th>
 						<th id="th-<?php echo $eid, '-', self::PARAM_LBL ?>">Label*</th>
 						<th id="th-<?php echo $eid, '-', self::PARAM_SRC ?>">Form Submission Field</th>
@@ -170,10 +170,7 @@
 					foreach($entity['mapping'] as $k => $pair):
 					?>
 					<tr class="tr-values fields sortable<?php if($pairNum%2 == 1) echo ' alt'; ?>">
-						<td headers="th-<?php echo $eid?>-static-2" class="thin drag-handle">
-							&nbsp;
-						</td>
-						<td headers="th-<?php echo $eid?>-static" class="thin drag-handle">
+						<td headers="th-<?php echo $eid?>-static" class="drag-handle">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>c" class="invisible">Is Value?</label>
 							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>c" type="checkbox" class="checkbox c" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][val]" value="1"<?php if(v($pair['val'])) echo ' checked="checked"'; ?> />
 						</td>
@@ -189,13 +186,13 @@
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="invisible">3rd-party Field:</label>
 							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" type="text" class="text b" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_3RD ?>]" value="<?php echo esc_attr($pair[self::PARAM_3RD])?>" />
 						</td>
-						<td headers="th-<?php echo $eid?>-action" class="thin drag-handle">
-							<span class="icon b-delete"><a href="#" title="<?php _e('Delete'); ?>" class="b-del minus" rel="tr.fields"><?php _e('Delete', $P);?></a></span>
+						<td headers="th-<?php echo $eid?>-action" class="thin drag-handle icon">
+							<a href="#" title="<?php _e('Delete'); ?>" class="minus actn" data-actn="remove" data-after="row" rel="tr.fields"><?php _e('Delete', $P);?></a>
 							<?php
 							$pairNum++;
 							#if( $pairNum == $numPairs):
 								?>
-								<span class="icon b-add"><a href="#" title="<?php _e('Add Another'); ?>" class="b-clone plus" rel="tr.fields"><?php _e('Add Another', $P);?></a></span>
+								<a href="#" title="<?php _e('Add Another'); ?>" class="plus actn" data-actn="clone" data-after="row" rel="tr.fields"><?php _e('Add Another', $P);?></a>
 								<?php
 							#endif;	//numPairs countdown
 							?>
@@ -210,7 +207,7 @@
 			
 			<section class="info example hook-example"<?php if( ! isset($entity['hook']) || ! $entity['hook'] ){ echo ' style="display:none;"'; } ?>>
 			<fieldset><legend><span>Hooks</span></legend>
-			
+				<div class="inside">
 					<div class="description">
 						<p>The following are examples of action callbacks and content filters you can use to customize this service.</p>
 						<p>Add them to your <code>functions.php</code> or another plugin.</p>
@@ -225,11 +222,11 @@
 						<input style="width:500px;" name="hook-exf[<?php echo $eid; ?>]" id="hook-exf-<?php echo $eid; ?>" class="code example" value="<?php echo esc_attr("add_filter('{$P}_service_filter_post_{$eid}', array(&\$this, 'YOUR_FILTER'), 10, 4);"); ?>" readonly="readonly" />
 						<em class="description">used to alter static inputs (the CF7 field)</em>
 					</div>
-			
+				</div>
 			</fieldset><!-- Hooks -->
 			</section>
 
-			<span class="button b-delete"><a href="#" class="b-del" rel="div.meta-box">Delete Service</a></span>
+			<span class="button"><a href="#" class="actn" data-actn="remove" data-after="metabox" data-rel="div.meta-box">Delete Service</a></span>
 			
 			
 			</div><?php /*-- end div.description-body inside  --*/ ?>
@@ -241,7 +238,7 @@
 		?>
 
 			<div class="buttons">
-				<span class="button"><a href="#" id="b-clone-metabox" class="b-clone" rel="div.meta-box:last">Add Another Service</a></span>
+				<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-rel="div.meta-box:last">Add Another Service</a></span>
 				<input type="submit" id="submit" name="submit" value="Save" />
 			</div>
 				
@@ -320,10 +317,5 @@ public function service1_filter_callback($values, &$service, &$cf7){
 			</div>
 		</div>
 		 -->
-
-
-		<script type="text/javascript">
-			window.pluginWrapSelector = '#<?php echo $P ?>';
-		</script>
 		
 		</div><!-- //div.meta-box-sortables --></div><!--  //div#plugin.wrap -->

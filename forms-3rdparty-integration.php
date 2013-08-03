@@ -11,6 +11,7 @@ Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
 	1.4.1 - minor cleanup, bugfixes; added 'label' and 'drag' columns to admin ui.
 	1.4.2 - bugfixes (CF7, empty admin sections), admin JS cleanup, timeout
+	1.4.3 - cleaning up admin JS, plugin header warning
 */
 
 //declare to instantiate
@@ -34,7 +35,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.4.2';
+	const pluginVersion = '1.4.3';
 
 	
 	/**
@@ -48,9 +49,9 @@ class Forms3rdPartyIntegration {
 	 * @param string $key the key to namespace
 	 * @return the namespaced key
 	 */
-	public function N($key) {
+	public function N($key = false) {
 		// nothing provided, return namespace
-		if(! $key || empty($key) ) { return $this->$N; }
+		if( ! $key || empty($key) ) { return $this->N; }
 		return sprintf('%s_%s', $this->N, $key);
 	}
 
@@ -155,8 +156,7 @@ class Forms3rdPartyIntegration {
 		#	wp_enqueue_style('sponsor-flip');
 		#}
 		
-		wp_register_script($this->N('admin'), plugins_url('plugin.admin.js', __FILE__), array('jquery'), self::pluginVersion, true);
-		
+
 		// allow extensions; remember to check !is_admin
 		do_action($this->N('init'), false);
 
@@ -176,7 +176,10 @@ class Forms3rdPartyIntegration {
 	 */
 	function add_admin_headers(){
 		
-		wp_enqueue_script($this->N('admin'));
+		wp_enqueue_script($this->N('admin'), plugins_url('plugin.admin.js', __FILE__), array('jquery'), self::pluginVersion, true);
+		wp_localize_script($this->N('admin'), $this->N('admin'), array(
+			'N' => $this->N()
+		));
 		
 		$stylesToAdd = array(
 			basename(__FILE__,'.php') => 'plugin.admin.css'	//add a stylesheet with the key matching the filename
@@ -189,7 +192,7 @@ class Forms3rdPartyIntegration {
 				$handle									//id
 				, plugins_url($stylesheet, __FILE__)	//file
 				, array()								//dependencies
-				, '1.0'									//version
+				, self::pluginVersion					//version
 				, 'all'									//media
 			);
 		}
@@ -357,7 +360,7 @@ class Forms3rdPartyIntegration {
 			// only build the submission once; we've moved the call here so it respects use_form
 			if(false === $submission) {
 				// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
-				$submission = apply_filters($this->N('get_submission'), array(), &$form);
+				$submission = apply_filters($this->N('get_submission'), array(), $form);
 			}
 
 			$post = array();

@@ -1,5 +1,104 @@
 (function($){
-	
+	var lib = {
+		id: function() {
+			/// generate a "unique" id
+			
+			// "GUID" (Math.random()*16|0).toString(16) // http://stackoverflow.com/a/2117523/1037948
+			return (Date.now || function() { return +new Date; })(); // http://stackoverflow.com/a/221357/1037948
+		}//--	fn	id
+		,
+		action: function(e) {
+			/// Do what the button says, usually involving a target and an after-effect
+			console.log('event', e);
+
+			var $o = $(this)
+				, $target = $o.closest( $o.data('rel') )	//get the target off the link "rel", and find it from the parent-chain
+				, after = $o.data('after')
+				, action = $o.data('actn')
+				;
+
+			console.log('Action -- ', after, action, $target);
+
+			// toggling not handled by link, so allow...not the cleanest, maybe add another data- ?
+			if(action.indexOf('toggle') < 0) e.preventDefault();
+
+			switch(action) {
+				case 'clone': lib.clone($target, after); break;
+				case 'remove': lib.remove($target, after); break;
+				case 'toggle':
+				case 'toggle-sibling': lib.toggle($target, after, action); break;
+			}
+
+		}//--	fn	action
+		,
+		clone: function($target, after) {
+			var	$clone = $target.clone();	//clone the target so we can add it later
+			
+			// perform requested post-operation
+			lib.afterClone[after]($target, $clone, lib.id());
+
+			//some more row properties
+			$clone.toggleClass('alt');
+			
+			//add the clone after the target
+			$target.after( $clone );
+		}//--	fn	clone
+		,
+		remove: function($target, after) {
+			$target.empty().remove();
+			//lib.afterRemove[after]($target);
+		}//--	fn	remove
+		,
+		toggle: function($container, after, action) {
+			/// toggle the given container, or maybe a sibling, depending on the action
+			var $target = action == 'toggle' ? $container : $container.find(after);
+
+			$target.toggleClass('collapsed');
+		}
+		,
+		afterClone: {
+			row: function($target, $clone, newid) {
+				lib.updateClonedRow(count, $clone, /(mapping\]\[)([\d])/);
+
+			}//--	fn	afterClone.row
+			,
+			metabox: function($target, $clone, newid) {
+
+			}//--	fn	afterClone.metabox
+		}//--	afterClone
+	};
+
+	$(function() {
+		// setup elements
+		var $plugin = $('#' + Forms3rdPartyIntegration_admin.N)
+			, $metaboxes = $plugin.find('.meta-box')
+		;
+
+		// clone / delete row or metabox, toggle container or sibling, etc
+		$plugin.on('click', '.actn', lib.action);
+
+		//collapse all metabox sections initially
+		$plugin.find('div.postbox')
+			.addClass('collapsed')
+			.find('h3').prepend('<span class="actn" data-actn="toggle" data-rel=".postbox">[+]</span> ')
+			;
+
+		// toggle hooks element
+		$plugin.find('input.hook').each(function(i,o) {
+			var $input = $(o);
+
+			if('checked' != $input.attr('checked')) $input.trigger('click'); // should fire appropriate toggle action to close if option is disabled
+		});
+
+	});
+})(jQuery);
+
+/// original
+(function($){
+	return false;
+
+
+
 	var lib = {
 		updateClonedRow: function(count, $clone, regex) {
 			//reset clone values and update indices
@@ -110,7 +209,7 @@
 		//collapse all sections
 		$pluginWrap.find('div.postbox')
 			.addClass('collapsed')
-			.find('h3').prepend('<span class="b-toggle">[+]</span> ')
+			.find('h3').prepend('<span class="actn" data-actn="toggle">[+]</span> ')
 			;
 
 		//click behavior for handle

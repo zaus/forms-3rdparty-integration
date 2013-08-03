@@ -81,6 +81,11 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.4.3 =
+* Fixed "plugin missing valid header" caused by some PHP versions rejecting passing variable by reference (?) as reported on Forum support topics ["Error on install"](http://wordpress.org/support/topic/error-on-install-6) and ["The plugin does not have a valid header"](http://wordpress.org/support/topic/the-plugin-does-not-have-a-valid-header-34), among others
+* Rewrote admin javascript to address style bug as reported on forum post ["fields on mapping maintenance screen misaligned"](http://wordpress.org/support/topic/fields-on-mapping-maintenance-screen-misaligned) and via direct contact.  Really needed to be cleaned up anyway, I've learned more jQuery since then ;)
+** Dealt with weird issue where clicking a label also triggers its checkbox click
+
 = 1.4.2 =
 
 * Bugfixes
