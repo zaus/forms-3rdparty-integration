@@ -86,6 +86,7 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 * Rewrote admin javascript to address style bug as reported on forum post ["fields on mapping maintenance screen misaligned"](http://wordpress.org/support/topic/fields-on-mapping-maintenance-screen-misaligned) and via direct contact.  Really needed to be cleaned up anyway, I've learned more jQuery since then ;)
     * Dealt with weird issue where clicking a label also triggers its checkbox click
 * Other general ui fixes
+* More "verbose" endpoint-test script (headers, metadata as well as get/post)
 
 = 1.4.2 =
 
