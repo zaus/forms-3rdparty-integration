@@ -34,7 +34,7 @@
 	$forms = apply_filters($this->N('select_forms'), array());
 
 ?>
-		<div id="<?php echo $P?>" class="wrap metabox-holder"><div id="poststuff" class="meta-box-sortables">
+		<div id="<?php echo $P?>" class="wrap metabox-holder"><div id="poststuff">
 		
 		<h2><?php _e(self::pluginPageTitle);?> &mdash; <?php _e('Settings');?></h2>
 		<div class="description">
@@ -71,6 +71,7 @@
 			</div>
 		</div></fieldset>
 		
+		<div class="meta-box-sortables">
 		<?php
 		// make sure we have at least one
 		if( empty($options) ){
@@ -80,7 +81,7 @@
 				, 'success'=>''
 				, 'forms' => array()
 				, 'hook' => false
-				, 'timeout' => 10
+				, 'timeout' => self::DEFAULT_TIMEOUT
 				, 'mapping' => array()
 				));
 		}
@@ -127,11 +128,11 @@
 					<div class="field">
 						<label for="timeout-<?php echo $eid?>">Request timeout</label>
 						<input id="timout-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][timeout]" value="<?php echo esc_attr($entity['timeout'])?>" />
-						<em class="description"><?php _e('How long (in seconds) to attempt the 3rd-party remote request before giving up.', $P);?>.</em>
+						<em class="description"><?php echo sprintf(__('How long (in seconds) to attempt the 3rd-party remote request before giving up.  Default %d', $P), self::DEFAULT_TIMEOUT);?>.</em>
 					</div>
 					<div class="field">
 						<label for="hook-<?php echo $eid?>">Allow Hooks?</label>
-						<input id="hook-<?php echo $eid?>" type="checkbox" class="checkbox hook actn" data-actn="toggle-sibling" data-after=".hook-example" data-rel=".postbox" name="<?php echo $P?>[<?php echo $eid?>][hook]" value="true"<?php if(isset($entity['hook']) && $entity['hook']) echo ' checked="checked"'; ?> />
+						<input id="hook-<?php echo $eid?>" type="checkbox" class="checkbox hook change-actn" data-actn="toggle-sibling" data-after=".hook-example" data-rel=".postbox" name="<?php echo $P?>[<?php echo $eid?>][hook]" value="true"<?php if(isset($entity['hook']) && $entity['hook']) echo ' checked="checked"'; ?> />
 						<em class="description"><?php _e('Allow hooks - see bottom of section for example', $P);?>:</em>
 					</div>
 				</div>
@@ -186,13 +187,13 @@
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="invisible">3rd-party Field:</label>
 							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" type="text" class="text b" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_3RD ?>]" value="<?php echo esc_attr($pair[self::PARAM_3RD])?>" />
 						</td>
-						<td headers="th-<?php echo $eid?>-action" class="thin drag-handle icon">
-							<a href="#" title="<?php _e('Delete'); ?>" class="minus actn" data-actn="remove" data-after="row" rel="tr.fields"><?php _e('Delete', $P);?></a>
+						<td headers="th-<?php echo $eid?>-action" class="thin drag-handle icon row-actns">
+							<a href="#" title="<?php _e('Delete'); ?>" class="minus actn" data-actn="remove" data-after="row" data-rel="tr.fields"><?php _e('Delete', $P);?></a>
 							<?php
 							$pairNum++;
 							#if( $pairNum == $numPairs):
 								?>
-								<a href="#" title="<?php _e('Add Another'); ?>" class="plus actn" data-actn="clone" data-after="row" rel="tr.fields"><?php _e('Add Another', $P);?></a>
+								<a href="#" title="<?php _e('Add Another'); ?>" class="plus actn" data-actn="clone" data-after="row" data-rel="tr.fields"><?php _e('Add Another', $P);?></a>
 								<?php
 							#endif;	//numPairs countdown
 							?>
@@ -205,7 +206,7 @@
 				</table>
 			</fieldset><!-- Mappings -->
 			
-			<section class="info example hook-example"<?php if( ! isset($entity['hook']) || ! $entity['hook'] ){ echo ' style="display:none;"'; } ?>>
+			<section class="info example hook-example">
 			<fieldset><legend><span>Hooks</span></legend>
 				<div class="inside">
 					<div class="description">
@@ -227,31 +228,33 @@
 			</section>
 
 			<span class="button"><a href="#" class="actn" data-actn="remove" data-after="metabox" data-rel="div.meta-box">Delete Service</a></span>
-			
+			<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-rel="div.meta-box">Add Another Service</a></span>
+
 			
 			</div><?php /*-- end div.description-body inside  --*/ ?>
 			
-		</div>
-		</div>
+		</div><!-- .postbox -->
+		</div><!-- .meta-box -->
 		<?php
 		endforeach;	//loop through option groups
 		?>
+		</div><!-- .meta-box-sortables -->
 
 			<div class="buttons">
-				<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-rel="div.meta-box:last">Add Another Service</a></span>
-				<input type="submit" id="submit" name="submit" value="Save" />
+				<input type="submit" id="submit" name="submit" class="button button-primary" value="Save" />
 			</div>
 				
 		</form>
 
-		<div class="postbox">
-			<h3 class="hndle"><span>Examples of callback hooks.</span></h3>
-			<div class="description-body inside">
+		<div class="last-box">
+			<div class="postbox">
+				<h3 class="hndle"><span>Examples of callback hooks.</span></h3>
+				<div class="description-body inside">
 
-		<section class="info callback">
-			<p>You can also see examples in the plugin folder <code>3rd-Parties</code>.</p>
-			<h4>Action</h4>
-			<pre>
+			<section class="info callback">
+				<p>You can also see examples in the plugin folder <code>3rd-Parties</code>.</p>
+				<h4>Action</h4>
+				<pre>
 /**
  * Callback hook for 3rd-party service XYZ
  * @param $response the remote-request response (in this case, it's a serialized string)
@@ -270,10 +273,10 @@ public function service1_action_callback($response, &$results){
 		$results['errors'] = array($ex->getMessage());
 	}
 }//--	function service1_action_callback
-			</pre>
-			
-			<h4>Filter</h4>
-			<pre>
+				</pre>
+				
+				<h4>Filter</h4>
+				<pre>
 /**
  * Apply filters to integration fields
  * so that you could say "current_visitor={IP}" and dynamically retrieve the visitor IP
@@ -301,11 +304,12 @@ public function service1_filter_callback($values, &$service, &$cf7){
 	
 	return $values;
 }//--	function multitouch1_filter
-			</pre>
-		</section>
-		
-			</div><!-- .inside -->
-		</div><!-- .postbox -->
+				</pre>
+			</section>
+			
+				</div><!-- .inside -->
+			</div><!-- .postbox -->
+		</div><!-- .meta-box -->
 		
 		<!-- 
 		<div class="meta-box postbox" id="emptybox">
@@ -318,4 +322,4 @@ public function service1_filter_callback($values, &$service, &$cf7){
 		</div>
 		 -->
 		
-		</div><!-- //div.meta-box-sortables --></div><!--  //div#plugin.wrap -->
+		</div><!-- //#post-stuff --></div><!--  //div#plugin.wrap -->

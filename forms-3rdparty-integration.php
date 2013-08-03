@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: http://drzaus.com/plugins/forms-3rdparty
 Description: Send plugin Forms Submissions (Gravity, CF7, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, skane
-Version: 1.4.2
+Version: 1.4.3
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -69,6 +69,11 @@ class Forms3rdPartyIntegration {
 	const PARAM_3RD = '3rd';
 
 	/**
+	 * How long (seconds) before considering timeout
+	 */
+	const DEFAULT_TIMEOUT = 10;
+
+	/**
 	 * Singleton
 	 * @var object
 	 */
@@ -120,7 +125,7 @@ class Forms3rdPartyIntegration {
 					, 'success'=>''
 					, 'forms' => array()
 					, 'hook' => false
-					, 'timeout' => 10 // timeout in seconds
+					, 'timeout' => self::DEFAULT_TIMEOUT // timeout in seconds
 					, 'mapping' => array(
 						array(self::PARAM_LBL=>'The submitter name',self::PARAM_SRC=>'your-name', self::PARAM_3RD=>'name')
 						, array(self::PARAM_LBL=>'The email address', self::PARAM_SRC=>'your-email', self::PARAM_3RD=>'email')
@@ -176,7 +181,7 @@ class Forms3rdPartyIntegration {
 	 */
 	function add_admin_headers(){
 		
-		wp_enqueue_script($this->N('admin'), plugins_url('plugin.admin.js', __FILE__), array('jquery'), self::pluginVersion, true);
+		wp_enqueue_script($this->N('admin'), plugins_url('plugin.admin.js', __FILE__), array('jquery', 'jquery-ui-sortable'), self::pluginVersion, true);
 		wp_localize_script($this->N('admin'), $this->N('admin'), array(
 			'N' => $this->N()
 		));
@@ -400,7 +405,7 @@ class Forms3rdPartyIntegration {
 
 			//remote call
 			//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
-			$response = wp_remote_post( $service['url'], array('timeout' => $service['timeout'],'body'=>$post) );
+			$response = wp_remote_post( $service['url'], array('timeout' => empty($service['timeout']) ? self::DEFAULT_TIMEOUT : $service['timeout'],'body'=>$post) );
 	
 			### pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
 			

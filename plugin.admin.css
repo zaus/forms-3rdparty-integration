@@ -1,5 +1,7 @@
 .invisible { position:absolute; left:-9999px; }
 
+form { margin-bottom: 2em; }
+
 div.shortcode-description { border:1px solid #DFDFDF; border-radius:5px; background:#fff; }
 
 .collapsed .inside { display:none; }
@@ -22,6 +24,8 @@ table.mappings caption { font-style:italic; color:#888; margin-bottom:0.2em; }
 table.mappings input { width:100%; }
 table.mappings .thin { width:4em; }
 table.mappings .drag-handle { padding:0.5em;}
+/* sortable */
+.ui-state-highlight { height: 2.5em; line-height: 1.2em; }
 
 a.actn { text-decoration: none; }
 
