@@ -99,6 +99,9 @@ class Forms3rdpartyIntegration_Cf {
 	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
 
+		// nothing to check against if nothing selected
+		if( empty($service_forms) ) return $result;
+
 		// is it old or new style?  (object or array)
 		if( is_array($form) ) {
 			if( !isset($form['id']) || empty($form['id']) ) return $result;

@@ -357,6 +357,8 @@ class Forms3rdPartyIntegration {
 		//loop services
 		foreach($settings as $sid => $service):
 			//check if we're supposed to use this service
+			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
+
 			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
 
 			### _log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);

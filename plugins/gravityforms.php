@@ -72,6 +72,9 @@ class Forms3rdpartyIntegration_Gf {
 		// protect against accidental binding between multiple plugins
 		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $result;
 
+		// nothing to check against if nothing selected
+		if( empty($service_forms) ) return $result;
+
 		$result = in_array(self::FORM_ID_PREFIX . $form['id'], $service_forms);
 
 		// also add subsequent hooks
