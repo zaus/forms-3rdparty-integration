@@ -17,7 +17,7 @@ The plugin essentially makes a remote request (POST) to a service URL, passing a
 
 Based on idea by Alex Hager "[How to Integrate Salesforce in Contact Form 7][]".
 
-Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the assistance of [AtlanticBT][].  Current plugin sponsored by [Stephen P. Kane Consulting][].
+Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the assistance of [AtlanticBT][].  Current plugin sponsored by [Stephen P. Kane Consulting][].  Please submit bugs / support requests to [GitHub issue tracker][] in addition to the Wordpress Support Forums because the Forums do not send emails.
 
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
@@ -25,6 +25,7 @@ Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the ass
 [Contact Form 7: 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
 [AtlanticBT]: http://www.atlanticbt.com/ "Atlantic BT: Custom Website and Web-application Services"
 [Stephen P. Kane Consulting]: http://www.stephenpkane.com/ "Website Design and Internet Marketing Services"
+[GitHub issue tracker]: https://github.com/zaus/forms-3rdparty-integration/issues "GitHub issue tracker"
 
 
 == Installation ==
@@ -38,6 +39,10 @@ Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the ass
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
 
 == Frequently Asked Questions ==
+
+= I need help =
+
+Submit an issue to the [GitHub issue tracker][] in addition to / instead of the WP Support Forums.
 
 = How do I add / configure a service? =
 
@@ -61,6 +66,7 @@ See section [Hooks][].  See plugin folder `/3rd-parties` for example code for so
 
 [Hooks]: /extend/plugins/forms-3rd-party-integration/other_notes#Hooks
 [Screenshots]: /extend/plugins/forms-3rd-party-integration/screenshots
+[GitHub issue tracker]: https://github.com/zaus/forms-3rdparty-integration/issues "GitHub issue tracker"
 
 = What about Hidden Fields? =
 
