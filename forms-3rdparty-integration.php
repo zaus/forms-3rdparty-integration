@@ -2,7 +2,7 @@
 /*
 
 Plugin Name: Forms: 3rd-Party Integration
-Plugin URI: http://drzaus.com/plugins/forms-3rdparty
+Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, skane
 Version: 1.4.4
@@ -403,6 +403,7 @@ class Forms3rdPartyIntegration {
 			
 			//extract special tags;
 			$post = apply_filters($this->N('service_filter_post_'.$sid), $post, $service, $form);
+			$post = apply_filters($this->N('service_filter_post'), $post, $sid, $service, $form);
 			
 			### _log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
 
