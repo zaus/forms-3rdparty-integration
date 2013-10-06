@@ -98,6 +98,7 @@ class Forms3rdpartyIntegration_Cf {
 	 */
 	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
+		if( gettype($form) != 'object' || get_class($form) != 'WPCF7_ContactForm' ) return $result;
 
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $result;

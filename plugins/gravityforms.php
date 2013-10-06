@@ -70,11 +70,12 @@ class Forms3rdpartyIntegration_Gf {
 	 */
 	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
-		// TODO: more specific check that it's a GF form
+		// TODO: figure out a more bulletproof way to confirm it's a GF form
 		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $result;
 
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $result;
+
 
 		$result = in_array(self::FORM_ID_PREFIX . $form['id'], $service_forms);
 
@@ -170,6 +171,8 @@ class Forms3rdpartyIntegration_Gf {
 		}
 		
 		//notify admin
+
+
 		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
 			, "\n"
 			, $service['name']

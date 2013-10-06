@@ -210,7 +210,7 @@
 				</table>
 			</fieldset><!-- Mappings -->
 			
-			<section class="info example hook-example<?php if(!isset($entity['hook']) || !$entity['hook']) echo ' collapsed'?>">
+			<section class="info example hook-example<?php if(!isset($entity['hook']) || empty($entity['hook'])) echo ' collapsed'?>">
 			<fieldset><legend><span>Hooks</span></legend>
 				<div class="inside">
 					<div class="description">
