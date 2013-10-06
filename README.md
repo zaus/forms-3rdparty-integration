@@ -113,7 +113,8 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 * global post filter `Forms3rdPartyIntegration_service_filter_post` in addition to service-specific with suffix `_0`; accepts params `$post`, `$service`, `$form`, `$sid`
 * admin options hook `Forms3rdPartyIntegration_service_settings`, `..._metabox`
 * fix: gravityforms empty 'notification' field
-* fix: admin ui -- 'hooks' toggle on metabox clone
+* fix: admin ui -- 'hooks' toggle on metabox clone, row clone fieldname
+* fix: service hooks not fired multiple times when both GF and CF7 plugins are present
 
 ### 1.4.3 ###
 * Fixed "plugin missing valid header" caused by some PHP versions rejecting passing variable by reference (?) as reported on Forum support topics ["Error on install"](http://wordpress.org/support/topic/error-on-install-6) and ["The plugin does not have a valid header"](http://wordpress.org/support/topic/the-plugin-does-not-have-a-valid-header-34), among others

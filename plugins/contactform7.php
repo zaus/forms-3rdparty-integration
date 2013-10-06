@@ -106,6 +106,8 @@ class Forms3rdpartyIntegration_Cf {
 		// is it old or new style?  (object or array)
 		if( is_array($form) ) {
 			if( !isset($form['id']) || empty($form['id']) ) return $result;
+			// something to differentiate it from GF...
+			else if ( !isset($form['messages']) ) return $result;
 			$form_id = $form['id'];
 		}
 		else if( 'WPCF7_ContactForm' != get_class($form) ) return $result;

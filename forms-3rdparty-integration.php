@@ -12,7 +12,7 @@ Changelog:
 	1.4.1 - minor cleanup, bugfixes; added 'label' and 'drag' columns to admin ui.
 	1.4.2 - bugfixes (CF7, empty admin sections), admin JS cleanup, timeout
 	1.4.3 - cleaning up admin JS, plugin header warning
-	1.4.4 - protecting against non-attached forms; github issue link
+	1.4.4 - protecting against non-attached forms; github issue link; extra hooks
 */
 
 //declare to instantiate

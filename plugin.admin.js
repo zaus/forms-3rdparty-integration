@@ -55,7 +55,7 @@
 		,
 		afterClone: {
 			row: function($target, $clone, newid) {
-				lib.updateClonedRow(newid, $clone, /(mapping\]\[)([\d])/);
+				lib.updateClonedRow(newid, $clone, /(mapping\]\[)([\d]+)/);
 			}//--	fn	afterClone.row
 			,
 			metabox: function($target, $clone, newid) {
@@ -81,7 +81,7 @@
 					;
 				
 				$o.attr('id', id[0]+'-'+newid);
-				$o.attr('name', name.replace(regex, '$1'+newid));
+				$o.attr('name', name.replace(regex, '$1' + newid));
 				
 				//reset values
 				if( $o.attr('type') != 'checkbox' ){

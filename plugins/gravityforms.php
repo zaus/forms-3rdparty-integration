@@ -79,6 +79,8 @@ class Forms3rdpartyIntegration_Gf {
 
 		$result = in_array(self::FORM_ID_PREFIX . $form['id'], $service_forms);
 
+		### _log('gf-int? ' . ($result ? 'Yes' : 'No'), $service_id, $form['id']);
+		
 		// also add subsequent hooks
 		if($result) {
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_success'), array(&$this, 'remote_success'), 10, 3);
