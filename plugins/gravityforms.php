@@ -70,6 +70,7 @@ class Forms3rdpartyIntegration_Gf {
 	 */
 	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
+		// TODO: more specific check that it's a GF form
 		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $result;
 
 		// nothing to check against if nothing selected
@@ -118,7 +119,8 @@ class Forms3rdpartyIntegration_Gf {
 		if(!empty($callback_results['attach'])){
 			// http://www.gravityhelp.com/documentation/page/Notification
 			### _log('attaching to mail body', print_r($cf7->mail, true));
-			$form['notification']['body'] .= "\n\n" . ($form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];
+			if(isset($form['notification']))
+				$form['notification']['body'] .= "\n\n" . ($form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];
 		}
 		
 		//if requested, attach message to success notification
@@ -175,7 +177,7 @@ class Forms3rdpartyIntegration_Gf {
 			, print_r($post, true)
 			, print_r($response, true)
 			, $form['title']
-			, $form['notification']['to']
+			, isset($form['notification']) ? $form['notification']['to'] : '--na--'
 			, get_bloginfo('url') . $_SERVER['REQUEST_URI']
 			);
 		$subject = sprintf('Gravity Forms-3rdParty Integration Failure: %s'

@@ -449,6 +449,7 @@ class Forms3rdPartyIntegration {
 				
 				//allow hooks
 				do_action($this->N('service_a'.$sid), $response['body'], $param_ref);
+				do_action($this->N('service'), $response['body'], $param_ref, $sid);
 				
 				//check for callback errors; if none, then attach stuff to message if requested
 				if(!empty($callback_results['errors'])){

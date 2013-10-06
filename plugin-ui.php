@@ -114,7 +114,7 @@
 						<label for="forms-<?php echo $eid?>">Attach to Forms</label>
 						<?php
 							// print various forms
-							$this->form_select_input($forms, $eid, $entity['forms']);
+							$this->form_select_input($forms, $eid, isset($entity['forms']) ? $entity['forms'] : '');
 						?>
 						<em class="description"><?php _e('Choose which forms submit to this service', $P);?>.</em>
 					</div>
@@ -137,6 +137,10 @@
 					</div>
 				</div>
 			</fieldset><!-- Service -->
+
+			<?php
+			do_action($this->N('service_settings'), $eid, $P, $entity);
+			?>
 
 			<fieldset><legend><span>Mapping</span></legend>
 				<table class="mappings inside">
@@ -206,7 +210,7 @@
 				</table>
 			</fieldset><!-- Mappings -->
 			
-			<section class="info example hook-example">
+			<section class="info example hook-example<?php if(!isset($entity['hook']) || !$entity['hook']) echo ' collapsed'?>">
 			<fieldset><legend><span>Hooks</span></legend>
 				<div class="inside">
 					<div class="description">
@@ -237,7 +241,10 @@
 		</div><!-- .meta-box -->
 		<?php
 		endforeach;	//loop through option groups
+
+		do_action($this->N('service_metabox'), $P, $options);
 		?>
+
 		</div><!-- .meta-box-sortables -->
 
 			<div class="buttons">
