@@ -124,7 +124,7 @@ class Forms3rdpartyIntegration_Gf {
 	 * @param  array $service          associative array of the service options
 	 * @return void                   n/a
 	 */
-	public function remote_success($callback_results, $form, $service) {
+	public function remote_success($form, $callback_results, $service) {
 		### _log(__FUNCTION__, __CLASS__, $form, $callback_results['form']);
 
 		//if requested, attach results to message
@@ -151,6 +151,8 @@ class Forms3rdpartyIntegration_Gf {
 			}
 			
 		endif;// has callback message
+
+		return $form;
 	}
 
 	/**

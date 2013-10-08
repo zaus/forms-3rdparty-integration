@@ -84,9 +84,9 @@ See section [Hooks].  See plugin folder `/3rd-parties` for example code for some
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
 
-**This plugin includes another hidden field plugin for convenience from [Contact Form 7 Modules:** Hidden Fields].  I had kept the original plugin headers intact which confused some users, and so though it's no longer advertising itself on the plugin listing it's still bundled with this plugin.
+**This plugin includes another hidden field plugin for convenience from [Contact Form 7 Modules: Hidden Fields]**.  I had kept the original plugin headers intact which confused some users, and so though it's no longer advertising itself on the plugin listing it's still bundled with this plugin.
 
-[Contact Form 7 Modules:** Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
+[Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
 
 ## Screenshots ##
 
@@ -114,7 +114,8 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 * admin options hook `Forms3rdPartyIntegration_service_settings`, `..._metabox`
 * fix: gravityforms empty 'notification' field
 * fix: admin ui -- 'hooks' toggle on metabox clone, row clone fieldname
-* fix: service hooks not fired multiple times when both GF and CF7 plugins are present
+* fix: service hooks not fired multiple times when both GF and CF7 plugins are active
+* fix: Gravityforms correctly updates $form array
 
 ### 1.4.3 ###
 * Fixed "plugin missing valid header" caused by some PHP versions rejecting passing variable by reference (?) as reported on Forum support topics ["Error on install"](http://wordpress.org/support/topic/error-on-install-6) and ["The plugin does not have a valid header"](http://wordpress.org/support/topic/the-plugin-does-not-have-a-valid-header-34), among others

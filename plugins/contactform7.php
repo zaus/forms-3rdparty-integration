@@ -179,7 +179,7 @@ class Forms3rdpartyIntegration_Cf {
 	 * @param  array $service          associative array of the service options
 	 * @return void                   n/a
 	 */
-	public function remote_success($callback_results, $form, $service) {
+	public function remote_success($form, $callback_results, $service) {
 		//if requested, attach results to message
 		// TODO: doesn't this assume new-style of cf7?  can we just get rid of old-style in use_form and get_submission?
 		if(!empty($callback_results['attach'])){
@@ -191,6 +191,8 @@ class Forms3rdpartyIntegration_Cf {
 		if( !empty($callback_results['message']) ) :
 			$form->messages['mail_sent_ok'] = $callback_results['message'];
 		endif;// has callback message
+
+		return $form; // yes this is redundant when it's an object, but need it for compatibility with GF
 	}
 
 	/**

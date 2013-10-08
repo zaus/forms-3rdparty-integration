@@ -464,7 +464,7 @@ class Forms3rdPartyIntegration {
 				}
 				else {
 					### _log('checking for attachments', print_r($callback_results, true));
-					do_action($this->N('remote_success'), $callback_results, $form, $service);
+					$form = apply_filters($this->N('remote_success'), $form, $callback_results, $service);
 				}
 			}// can hook
 			
