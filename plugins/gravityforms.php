@@ -103,7 +103,7 @@ class Forms3rdpartyIntegration_Gf {
 	 */
 	public function get_submission($submission, $form){
 		if(!$this->_use_form) return;
-		
+
 		// merge with $submission?
 		$result = array_merge((array)$submission, $_POST);
 		return $result;
@@ -126,14 +126,13 @@ class Forms3rdpartyIntegration_Gf {
 	 */
 	public function remote_success($callback_results, $form, $service) {
 		### _log(__FUNCTION__, __CLASS__, $form, $callback_results['form']);
-		$form = &$callback_results['form']; // passy by reference alias...yeesh
-		
+
 		//if requested, attach results to message
 		if(!empty($callback_results['attach'])){
 			// http://www.gravityhelp.com/documentation/page/Notification
 			### _log('attaching to mail body', print_r($cf7->mail, true));
 			if(isset($form['notification']))
-				$form['notification']['message'] .= "\n\n" . ($form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];
+				$form['notification']['message'] .= "\n\n" . (isset($form['notification']['disableAutoformat']) && $form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n") . $callback_results['attach'];
 		}
 		
 		//if requested, attach message to success notification

@@ -181,6 +181,7 @@ class Forms3rdpartyIntegration_Cf {
 	 */
 	public function remote_success($callback_results, $form, $service) {
 		//if requested, attach results to message
+		// TODO: doesn't this assume new-style of cf7?  can we just get rid of old-style in use_form and get_submission?
 		if(!empty($callback_results['attach'])){
 			### _log('attaching to mail body', print_r($cf7->mail, true));
 			$form->mail['body'] .= "\n\n" . ($form->mail['use_html'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];

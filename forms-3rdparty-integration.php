@@ -442,16 +442,18 @@ class Forms3rdPartyIntegration {
 			if($can_hook && isset($service['hook']) && $service['hook']){
 				### _log('performing hooks for:', $this->N.'_service_'.$sid);
 				
-				//holder for callback return results
-				$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '', 'form' => '');
 				//hack for pass-by-reference
+				//holder for callback return results
+				$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');
+				// TODO: use object?
 				$param_ref = array();	foreach($callback_results as $k => &$v){ $param_ref[$k] = &$v; }
-				$param_ref['form'] = &$form; // need to attach form itself by reference in order to alter GF?
 				
 				//allow hooks
 				do_action($this->N('service_a'.$sid), $response['body'], $param_ref);
 				do_action($this->N('service'), $response['body'], $param_ref, $sid);
 				
+				### _log('after success', $form);
+
 				//check for callback errors; if none, then attach stuff to message if requested
 				if(!empty($callback_results['errors'])){
 					$failMessage = array(
