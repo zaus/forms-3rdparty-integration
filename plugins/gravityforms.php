@@ -60,6 +60,9 @@ class Forms3rdpartyIntegration_Gf {
 		return $forms;
 	}//--	end function select_forms
 
+
+	private $_use_form;
+
 	/**
 	 * How do decide whether the form is being used
 	 * @param bool $result           the cascading result: true to use this form
@@ -70,24 +73,26 @@ class Forms3rdpartyIntegration_Gf {
 	 */
 	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
+		$this->_use_form = $result;
+
 		// TODO: figure out a more bulletproof way to confirm it's a GF form
-		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $result;
+		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $this->_use_form;
 
 		// nothing to check against if nothing selected
-		if( empty($service_forms) ) return $result;
+		if( empty($service_forms) ) return $this->_use_form;
 
 
-		$result = in_array(self::FORM_ID_PREFIX . $form['id'], $service_forms);
+		$this->_use_form = in_array(self::FORM_ID_PREFIX . $form['id'], $service_forms);
 
-		### _log('gf-int? ' . ($result ? 'Yes' : 'No'), $service_id, $form['id']);
-		
+		### _log('gf-int using form? ' . ($result ? 'Yes' : 'No'), $service_id, $form['id']);
+
 		// also add subsequent hooks
-		if($result) {
+		if($this->_use_form) {
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_success'), array(&$this, 'remote_success'), 10, 3);
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_failure'), array(&$this, 'remote_failure'), 10, 5);
 		}
 
-		return $result;
+		return $this->_use_form;
 	}
 
 	/**
@@ -97,6 +102,8 @@ class Forms3rdpartyIntegration_Gf {
 	 * @return array             list of posted submission values to manipulate and map
 	 */
 	public function get_submission($submission, $form){
+		if(!$this->_use_form) return;
+		
 		// merge with $submission?
 		$result = array_merge((array)$submission, $_POST);
 		return $result;
@@ -118,12 +125,15 @@ class Forms3rdpartyIntegration_Gf {
 	 * @return void                   n/a
 	 */
 	public function remote_success($callback_results, $form, $service) {
+		### _log(__FUNCTION__, __CLASS__, $form, $callback_results['form']);
+		$form = &$callback_results['form']; // passy by reference alias...yeesh
+		
 		//if requested, attach results to message
 		if(!empty($callback_results['attach'])){
 			// http://www.gravityhelp.com/documentation/page/Notification
 			### _log('attaching to mail body', print_r($cf7->mail, true));
 			if(isset($form['notification']))
-				$form['notification']['body'] .= "\n\n" . ($form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];
+				$form['notification']['message'] .= "\n\n" . ($form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];
 		}
 		
 		//if requested, attach message to success notification

@@ -443,9 +443,10 @@ class Forms3rdPartyIntegration {
 				### _log('performing hooks for:', $this->N.'_service_'.$sid);
 				
 				//holder for callback return results
-				$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');
+				$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '', 'form' => '');
 				//hack for pass-by-reference
 				$param_ref = array();	foreach($callback_results as $k => &$v){ $param_ref[$k] = &$v; }
+				$param_ref['form'] = &$form; // need to attach form itself by reference in order to alter GF?
 				
 				//allow hooks
 				do_action($this->N('service_a'.$sid), $response['body'], $param_ref);

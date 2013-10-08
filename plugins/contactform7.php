@@ -88,6 +88,9 @@ class Forms3rdpartyIntegration_Cf {
 		return $forms;
 	}//--	function	select_forms
 
+
+	private $_use_form;
+
 	/**
 	 * How do decide whether the form is being used
 	 * @param bool $result           the cascading result: true to use this form
@@ -98,33 +101,33 @@ class Forms3rdpartyIntegration_Cf {
 	 */
 	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
-		if( gettype($form) != 'object' || get_class($form) != 'WPCF7_ContactForm' ) return $result;
+		$this->_use_form = $result;
 
 		// nothing to check against if nothing selected
-		if( empty($service_forms) ) return $result;
+		if( empty($service_forms) ) return $this->_use_form;
 
 		// is it old or new style?  (object or array)
 		if( is_array($form) ) {
-			if( !isset($form['id']) || empty($form['id']) ) return $result;
+			if( !isset($form['id']) || empty($form['id']) ) return $this->_use_form;
 			// something to differentiate it from GF...
-			else if ( !isset($form['messages']) ) return $result;
+			else if ( !isset($form['messages']) ) return $this->_use_form;
 			$form_id = $form['id'];
 		}
-		else if( 'WPCF7_ContactForm' != get_class($form) ) return $result;
+		else if( 'WPCF7_ContactForm' != get_class($form) ) return $this->_use_form;
 		else {
 			$form_id = $form->id;
 		}
 
-		$result = in_array(self::FORM_ID_PREFIX . $form_id, $service_forms);
-		### _log(__CLASS__ . '::' . __FUNCTION__, $result ? 'Y':'N', $form_id, $service_forms);
+		$this->_use_form = in_array(self::FORM_ID_PREFIX . $form_id, $service_forms);
+		### _log(__CLASS__ . '::' . __FUNCTION__ . ' using form?', $result ? 'Y':'N', $form_id, $service_forms);
 
 		// also add subsequent hooks
-		if($result) {
+		if($this->_use_form) {
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_success'), array(&$this, 'remote_success'), 10, 3);
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_failure'), array(&$this, 'remote_failure'), 10, 5);
 		}
 
-		return $result;
+		return $this->_use_form;
 	}
 
 	/**
@@ -134,6 +137,8 @@ class Forms3rdpartyIntegration_Cf {
 	 * @return array             list of posted submission values to manipulate and map
 	 */
 	public function get_submission($submission, $form){
+		if(!$this->_use_form) return;
+
 		// merge with $submission?
 		// which style? new or old
 		if( is_array($form) ) {
