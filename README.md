@@ -93,16 +93,13 @@ Using hidden fields can provide an easier way to include arbitrary values on a p
 __Please note these screenshots are from the previous plugin incarnation, but are still essentially valid.__
 
 1. Admin page - create multiple services, set up debugging/notice emails, example code
-![Admin page - create multiple services, set up debugging/notice emails, example code
-](http://s.wordpress.org/extend/plugins/forms-3rd-party-integration/screenshot-1.png)
+![Admin page - create multiple services, set up debugging/notice emails, example code](http://s.wordpress.org/extend/plugins/forms-3rd-party-integration/screenshot-1.png)
 
 2. Sample service - mailchimp integration, with static and mapped values
-![Sample service - mailchimp integration, with static and mapped values
-](http://s.wordpress.org/extend/plugins/forms-3rd-party-integration/screenshot-2.png)
+![Sample service - mailchimp integration, with static and mapped values](http://s.wordpress.org/extend/plugins/forms-3rd-party-integration/screenshot-2.png)
 
 3. Sample service - salesforce integration, with static and mapped values
-![Sample service - salesforce integration, with static and mapped values
-](http://s.wordpress.org/extend/plugins/forms-3rd-party-integration/screenshot-3.png)
+![Sample service - salesforce integration, with static and mapped values](http://s.wordpress.org/extend/plugins/forms-3rd-party-integration/screenshot-3.png)
 
 
 ## Changelog ##
