@@ -156,13 +156,20 @@ class Forms3rdpartyIntegration_Gf {
 	}
 
 	private function update_confirmation($confirmation, $nice_message, $service) {
+
+		$failure = sprintf(
+			__($service['failure'], Forms3rdPartyIntegration::$instance->N())
+			, $confirmation['message'] // technically we don't want this for redirect...just don't set it then
+			, __($nice_message, Forms3rdPartyIntegration::$instance->N())
+			);
+
 		switch($confirmation['type']) {
 			case 'message':
 				// use both html and newlines just in case auto-formatting is disabled
-				$confirmation['message'] .= sprintf($service['failure'], $nice_message);
+				$confirmation['message'] = $failure;
 				break;
 			case 'redirect':
-				$confirmation['queryString'] .= '&response_failure=' . urlencode(sprintf(__($service['failure'], Forms3rdPartyIntegration::$instance->N()), __($nice_message, , Forms3rdPartyIntegration::$instance->N())));
+				$confirmation['queryString'] .= '&response_failure=' . urlencode($failure);
 				break;
 			case 'page':
 				/// ???

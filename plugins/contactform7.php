@@ -210,9 +210,18 @@ class Forms3rdpartyIntegration_Cf {
 		//notify frontend
 		$form->additional_settings .= "\n".'on_sent_ok: \'if(window.console && console.warn){ console.warn("Failed submitting to '.$service['name'].': '.$response['safe_message'].'"); }\'';
 		// do we always report, or just pretend it worked, because the original contact plugin may be fine...
-		if(isset($service['failure'])) $form->messages['mail_sent_ok'] = $form->messages['mail_sent_ng'] = sprintf(__($service['failure'], Forms3rdPartyIntegration::$instance->N()), __($response['safe_message'], , Forms3rdPartyIntegration::$instance->N()));
-		// $form->messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $form->messages['mail_sent_ng'];
-		
+		if(isset($service['failure'])) {
+			// kind of a hack -- override the success and fail messages, just in case one or other is displayed
+			$form->messages['mail_sent_ok'] =
+			$form->messages['mail_sent_ng'] = 
+			sprintf(
+				__($service['failure'], Forms3rdPartyIntegration::$instance->N())
+				, $form->messages['mail_sent_ng']
+				, __($response['safe_message'], Forms3rdPartyIntegration::$instance->N())
+				);
+			// $form->messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $form->messages['mail_sent_ng'];
+		}
+
 		//notify admin
 		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
 			, "\n"
