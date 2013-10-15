@@ -518,7 +518,6 @@ class Forms3rdPartyIntegration {
 		
 		$form = apply_filters($this->N('remote_failure'), $form, $debug, $service, $post, $response);
 
-		_log(__FUNCTION__, $form);
 		return $form;
 	}//---	end function on_response_failure
 

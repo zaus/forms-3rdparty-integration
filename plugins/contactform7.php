@@ -241,9 +241,7 @@ class Forms3rdpartyIntegration_Cf {
 		//log if couldn't send debug email
 		if(!wp_mail( $debug['email'], $subject, $body, $headers )){
 			### $form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
-			if(function_exists('_log')):
-				_log(__LINE__.':'.__FILE__, '	response failed from '.$service['url'].', could not send warning email', $response);
-			endif;
+			error_log(__LINE__.':'.__FILE__ .'	response failed from '.$service['url'].', could not send warning email: ' . print_r($response, true));
 		}
 
 		return $form;
