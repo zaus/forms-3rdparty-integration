@@ -210,7 +210,7 @@ class Forms3rdpartyIntegration_Cf {
 		//notify frontend
 		$form->additional_settings .= "\n".'on_sent_ok: \'if(window.console && console.warn){ console.warn("Failed submitting to '.$service['name'].': '.$response['safe_message'].'"); }\'';
 		// do we always report, or just pretend it worked, because the original contact plugin may be fine...
-		if(isset($service['failure'])) {
+		if(!empty($service['failure'])) {
 			// kind of a hack -- override the success and fail messages, just in case one or other is displayed
 			$form->messages['mail_sent_ok'] =
 			$form->messages['mail_sent_ng'] = 

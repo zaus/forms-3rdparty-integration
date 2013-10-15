@@ -157,7 +157,12 @@ class Forms3rdpartyIntegration_Gf {
 
 	private function update_confirmation($confirmation, $nice_message, $service) {
 
-		$failure = sprintf(
+		if(empty($service['failure'])) {
+			$failure = $confirmation['type'] == 'message'
+				? $confirmation['message']
+				: $nice_message;
+		}
+		else $failure = sprintf(
 			__($service['failure'], Forms3rdPartyIntegration::$instance->N())
 			, $confirmation['message'] // technically we don't want this for redirect...just don't set it then
 			, __($nice_message, Forms3rdPartyIntegration::$instance->N())
