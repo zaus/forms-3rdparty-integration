@@ -87,6 +87,16 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.4.4 =
+* protecting against unattached forms
+* Github link
+* global post filter `Forms3rdPartyIntegration_service_filter_post` in addition to service-specific with suffix `_0`; accepts params `$post`, `$service`, `$form`, `$sid`
+* admin options hook `Forms3rdPartyIntegration_service_settings`, `..._metabox`
+* fix: gravityforms empty 'notification' field
+* fix: admin ui -- 'hooks' toggle on metabox clone, row clone fieldname
+* fix: service hooks not fired multiple times when both GF and CF7 plugins are active
+* fix: Gravityforms correctly updates $form array
+
 = 1.4.3 =
 * Fixed "plugin missing valid header" caused by some PHP versions rejecting passing variable by reference (?) as reported on Forum support topics ["Error on install"](http://wordpress.org/support/topic/error-on-install-6) and ["The plugin does not have a valid header"](http://wordpress.org/support/topic/the-plugin-does-not-have-a-valid-header-34), among others
 * Rewrote admin javascript to address style bug as reported on forum post ["fields on mapping maintenance screen misaligned"](http://wordpress.org/support/topic/fields-on-mapping-maintenance-screen-misaligned) and via direct contact.  Really needed to be cleaned up anyway, I've learned more jQuery since then ;)
@@ -158,7 +168,7 @@ Fixes should accomodate CF7 < v1.2 and changes to >= v1.2 -- please test and che
 
 _Please note that this documentation is in flux, and may not be accurate for latest rewrite 1.4.0_
 
-1. `add_action('Forms3rdPartyIntegration_service_a#',...`
+1. `add_action('Forms3rdPartyIntegration_service_a#', $response, $param_ref);`
     * hook for each service, indicated by the `#` - _this is given in the 'Hooks' section of each service_
     * provide a function which takes `$response, &$results` as arguments
     * allows you to perform further processing on the service response, and directly alter the processing results, provided as `array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');`
@@ -167,18 +177,33 @@ _Please note that this documentation is in flux, and may not be accurate for lat
         * *attach* = text to attach to the end of the email body
         * *message* = the message notification shown (from CF7 ajax response) below the form
     * note that the basic "success condition" may be augmented here by post processing
+1. `add_action('Forms3rdPartyIntegration_service', $response, $param_ref, $sid);`
+    * same as previous hook, but not tied to a specific service
 2. `add_filter('Forms3rdPartyIntegration_service_filter_post_#, ...`
     * hook for each service, indicated by the `#` - _this is given in the 'Hooks' section of each service_
     * allows you to programmatically alter the request parameters sent to the service
+    * should return updated `$post` array
+2. `add_filter('Forms3rdPartyIntegration_service_filter_post', 'YOUR_HOOK', 10, 4);`
+    * in addition to service-specific with suffix `_a#`; accepts params `$post`, `$service`, `$form`, `$sid`
 3.  `add_action('Forms3rdPartyIntegration_remote_failure', 'mycf7_fail', 10, 5);`
     * hook to modify the Form (CF7 or GF) object if service failure of any kind occurs -- use like:
+    
         function mycf7_fail(&$cf7, $debug, $service, $post, $response) {
             $cf7->skip_mail = true; // stop email from being sent
             // hijack message to notify user
             ///TODO: how to modify the "mail_sent" variable so the message isn't green?  on_sent_ok hack?
-            $cf7->messages['mail_sent_ok'] = 'Could not complete mail request: ' . $response['safe_message']; 
+            $cf7->messages['mail_sent_ok'] = 'Could not complete mail request:** ' . $response['safe_message']; 
         }
+    
     * needs some way to alter the `mail_sent` return variable in CF7 to better indicate an error - no way currently to access it directly.
+4. `add_action('Forms3rdPartyIntegration_service_settings', 'YOUR_HOOK', 10, 3)`
+    * accepts params `$eid`, `$P`, `$entity` corresponding to the index of each service entity and this plugin's namespace, and the `$entity` settings array
+    * allows you to add a section to each service admin settings
+    * name form fields with plugin namespace to automatically save:  `$P[$eid][YOUR_CUSTOM_FIELD]` $rarr; `Forms3rdPartyIntegration[0][YOUR_CUSTOM_FIELD]`
+4. `add_action('Forms3rdPartyIntegration_service_metabox', 'YOUR_HOOK', 10, 2)`
+    * accepts params `$P`, `$entity` corresponding to the index of each service entity and this plugin's namespace, and the `$options` settings array (representing the full plugin settings)
+    * allows you to append a metabox (or anything else) to the plugin admin settings page
+    * name form fields with plugin namespace to automatically save:  `$P[YOUR_CUSTOM_FIELD]` $rarr; `Forms3rdPartyIntegration[YOUR_CUSTOM_FIELD]`
 
 Basic examples provided for service hooks directly on plugin Admin page (collapsed box "Examples of callback hooks").  Code samples for common CRMS included in the `/3rd-parties` plugin folder.
 
