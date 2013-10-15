@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, skane
-Version: 1.4.4
+Version: 1.4.5
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -13,6 +13,7 @@ Changelog:
 	1.4.2 - bugfixes (CF7, empty admin sections), admin JS cleanup, timeout
 	1.4.3 - cleaning up admin JS, plugin header warning
 	1.4.4 - protecting against non-attached forms; github issue link; extra hooks
+	1.4.5 - fixing response failure message notification
 */
 
 //declare to instantiate
@@ -417,12 +418,12 @@ class Forms3rdPartyIntegration {
 			//if something went wrong with the remote-request "physically", warn
 			if (!is_array($response)) {	//new occurrence of WP_Error?????
 				$response_array = array('safe_message'=>'error object', 'object'=>$response);
-				$this->on_response_failure($form, $debug, $service, $post, $response_array);
+				$form = $this->on_response_failure($form, $debug, $service, $post, $response_array);
 				$can_hook = false;
 			}
 			elseif(!$response || !isset($response['response']) || !isset($response['response']['code']) || 200 != $response['response']['code']) {
 				$response['safe_message'] = 'physical request failure';
-				$this->on_response_failure($form, $debug, $service, $post, $response);
+				$form = $this->on_response_failure($form, $debug, $service, $post, $response);
 				$can_hook = false;
 			}
 			//otherwise, check for a success "condition" if given
@@ -434,7 +435,7 @@ class Forms3rdPartyIntegration {
 						, 'clause'=>$service['success']
 						, 'response'=>$response['body']
 					);
-					$this->on_response_failure($form, $debug, $service, $post, $failMessage);
+					$form = $this->on_response_failure($form, $debug, $service, $post, $failMessage);
 					$can_hook = false;
 				}
 			}
@@ -460,7 +461,7 @@ class Forms3rdPartyIntegration {
 						'reason'=>'Service Callback Failure'
 						, 'safe_message' => 'Service Callback Failure'
 						, 'errors'=>$callback_results['errors']);
-					$this->on_response_failure($form, $debug, $service, $post, $failMessage);
+					$form = $this->on_response_failure($form, $debug, $service, $post, $failMessage);
 				}
 				else {
 					### _log('checking for attachments', print_r($callback_results, true));
@@ -516,6 +517,7 @@ class Forms3rdPartyIntegration {
 		// failure hooks; pass-by-value
 		
 		$form = apply_filters($this->N('remote_failure'), $form, $debug, $service, $post, $response);
+		return $form;
 	}//---	end function on_response_failure
 
 }//end class
