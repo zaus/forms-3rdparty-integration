@@ -155,6 +155,23 @@ class Forms3rdpartyIntegration_Gf {
 		return $form;
 	}
 
+	private function update_confirmation($confirmation, $nice_message, $service) {
+		switch($confirmation['type']) {
+			case 'message':
+				// use both html and newlines just in case auto-formatting is disabled
+				$confirmation['message'] .= sprintf($service['failure'], $nice_message);
+				break;
+			case 'redirect':
+				$confirmation['queryString'] .= '&response_failure=' . urlencode(sprintf(__($service['failure'], Forms3rdPartyIntegration::$instance->N()), __($nice_message, , Forms3rdPartyIntegration::$instance->N())));
+				break;
+			case 'page':
+				/// ???
+				// all we have is the page id
+				break;
+		}
+		return $confirmation;
+	}
+
 	/**
 	 * Add a javascript warning for failures; also send an email to debugging recipient with details
 	 * parameters passed by reference mostly for efficiency, not actually changed (with the exception of $form)
@@ -168,19 +185,13 @@ class Forms3rdpartyIntegration_Gf {
 	 */
 	public function remote_failure($form, $debug, $service, $post, $response){
 		//notify frontend
-		$nice_message = 'Failed submitting to '.$service['name'].': '.$response['safe_message'];
+
 		// http://www.gravityhelp.com/documentation/page/Confirmation
 
-		switch($form['confirmation']['type']) {
-			case 'message':
-				$form['confirmation']['message'] .= '<br />' . $nice_message;
-				break;
-			case 'redirect':
-				$form['confirmation']['queryString'] .= '&response_failure=' . urlencode($nice_message);
-				break;
-			case 'page':
-				/// ???
-				break;
+		// what confirmation do we update? try them all to be safe?
+		$form['confirmation'] = $this->update_confirmation($form['confirmation'], $response['safe_message'], $service);
+		foreach($form['confirmations'] as $conf => &$confirmation) {
+			$confirmation = $this->update_confirmation($confirmation, $response['safe_message'], $service);
 		}
 		
 		//notify admin

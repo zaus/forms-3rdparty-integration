@@ -37,7 +37,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.4.4';
+	const pluginVersion = '1.4.5';
 
 	
 	/**
@@ -517,6 +517,8 @@ class Forms3rdPartyIntegration {
 		// failure hooks; pass-by-value
 		
 		$form = apply_filters($this->N('remote_failure'), $form, $debug, $service, $post, $response);
+
+		_log(__FUNCTION__, $form);
 		return $form;
 	}//---	end function on_response_failure
 
