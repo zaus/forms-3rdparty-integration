@@ -88,6 +88,11 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.4.6 =
+* hook `...service_filter_args` to allow altering post headers, etc
+* fix: removed more args-by-reference (for PHP 5.4 issues, see support forum requests)
+* tested with WP 3.8, CF7 3.6
+
 = 1.4.5 =
 * fix: failure response attaches to 'onscreen message' for Gravity Forms
 * fix: (actually part of the next feature) failure response shows onscreen for Contact Form 7
@@ -161,6 +166,9 @@ base version, just directly submits values
 
 == Upgrade Notice ==
 
+= 1.4.6 =
+PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.  Please submit a [GitHub issue](https://github.com/zaus/forms-3rdparty-integration/issues) in addition to making a support forum request if something is broken.
+
 = 1.4.5 =
 You may need to configure the 'failure message', or at least refresh and save the admin settings, to avoid PHP 'empty index' warnings.
 
@@ -194,6 +202,11 @@ _Please note that this documentation is in flux, and may not be accurate for lat
     * should return updated `$post` array
 2. `add_filter('Forms3rdPartyIntegration_service_filter_post', 'YOUR_HOOK', 10, 4);`
     * in addition to service-specific with suffix `_a#`; accepts params `$post`, `$service`, `$form`, `$sid`
+2. `add_filter('Forms3rdPartyIntegration_service_filter_args', 'YOUR_HOOK', 10, 3);`
+    * alter the [args array](http://codex.wordpress.org/Function_Reference/wp_remote_post#Parameters) sent to `wp_remote_post`
+    * allows you to add headers or override the existing settings (timeout, body)
+    * if you return an array containing the key `response_bypass`, it will skip the normal POST and instead use that value as the 3rdparty response; note that it must match the format of a regular `wp_remote_post` response.
+    * Note: if using `response_bypass` you should consider including the original arguments in the callback result for debugging purposes.
 3.  `add_action('Forms3rdPartyIntegration_remote_failure', 'mycf7_fail', 10, 5);`
     * hook to modify the Form (CF7 or GF) object if service failure of any kind occurs -- use like:
     

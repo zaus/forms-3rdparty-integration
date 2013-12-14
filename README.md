@@ -107,6 +107,8 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ### 1.4.6 ###
 * hook `...service_filter_args` to allow altering post headers, etc
+* fix: removed more args-by-reference (for PHP 5.4 issues, see support forum requests)
+* tested with WP 3.8, CF7 3.6
 
 ### 1.4.5 ###
 * fix: failure response attaches to 'onscreen message' for Gravity Forms
@@ -180,6 +182,9 @@ base version, just directly submits values
 [Contact Form 7:** 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
 
 ## Upgrade Notice ##
+
+### 1.4.6 ###
+PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.  Please submit a [GitHub issue](https://github.com/zaus/forms-3rdparty-integration/issues) in addition to making a support forum request if something is broken.
 
 ### 1.4.5 ###
 You may need to configure the 'failure message', or at least refresh and save the admin settings, to avoid PHP 'empty index' warnings.
