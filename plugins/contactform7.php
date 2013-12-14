@@ -206,7 +206,7 @@ class Forms3rdpartyIntegration_Cf {
 	 * @param $response reference to remote-request response
 	 * @return the updated form reference
 	 */
-	public function remote_failure(&$form, &$debug, &$service, &$post, &$response){
+	public function remote_failure($form, $debug, $service, $post, $response){
 		//notify frontend
 		$form->additional_settings .= "\n".'on_sent_ok: \'if(window.console && console.warn){ console.warn("Failed submitting to '.$service['name'].': '.$response['safe_message'].'"); }\'';
 		// do we always report, or just pretend it worked, because the original contact plugin may be fine...

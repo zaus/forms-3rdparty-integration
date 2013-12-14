@@ -275,9 +275,9 @@
 /**
  * Callback hook for 3rd-party service XYZ
  * @param $response the remote-request response (in this case, it's a serialized string)
- * @param &$results the callback return results (passed by reference since function can't return a value; also must be "constructed by reference"; see plugin)
+ * @param $results the callback return results (passed by reference since function can't return a value; also must be "constructed by reference"; see plugin)
  */
-public function service1_action_callback($response, &$results){
+public function service1_action_callback($response, $results){
 	try {
 		// do something with $response
 		
@@ -303,7 +303,7 @@ public function service1_action_callback($response, &$results){
  * @param $service reference to service detail array
  * @param $cf7 reference to Contact Form 7 object
  */
-public function service1_filter_callback($values, &$service, &$cf7){
+public function service1_filter_callback($values, $service, $cf7){
 	foreach($values as $field => &$value):
 		//filter depending on field
 		switch($field){

@@ -313,7 +313,7 @@ class Forms3rdPartyIntegration {
 	 * @param array $eid entry id - for multiple lists on page
 	 * @param array $selected ids of selected fields
 	 */
-	public function form_select_input(&$forms, $eid, $selected){
+	public function form_select_input($forms, $eid, $selected){
 		?>
 		<select class="multiple" multiple="multiple" id="forms-<?php echo $eid?>" name="<?php echo $this->N?>[<?php echo $eid?>][forms][]">
 			<?php
@@ -408,22 +408,39 @@ class Forms3rdPartyIntegration {
 			
 			### _log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
 
+			// change args sent to remote post -- add headers, etc: http://codex.wordpress.org/Function_Reference/wp_remote_post
+			// optionally, return an array with 'response_bypass' set to skip the wp_remote_post in favor of whatever you did in the hook
+			$post_args = apply_filters($this->N('service_filter_args')
+				, array(
+					'timeout' => empty($service['timeout']) ? self::DEFAULT_TIMEOUT : $service['timeout']
+					,'body'=>$post
+					)
+				, $service
+				, $form
+			);
+
 			//remote call
-			//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
-			$response = wp_remote_post( $service['url'], array('timeout' => empty($service['timeout']) ? self::DEFAULT_TIMEOUT : $service['timeout'],'body'=>$post) );
-	
+			// optional bypass -- replace with a SOAP call, etc
+			if(isset($post_args['response_bypass'])) {
+				$response = $post_args['response_bypass'];
+			}
+			else {
+				//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
+				$response = wp_remote_post( $service['url'], $post_args );
+			}
+
 			### pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
 			
 			$can_hook = true;
 			//if something went wrong with the remote-request "physically", warn
 			if (!is_array($response)) {	//new occurrence of WP_Error?????
 				$response_array = array('safe_message'=>'error object', 'object'=>$response);
-				$form = $this->on_response_failure($form, $debug, $service, $post, $response_array);
+				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response_array);
 				$can_hook = false;
 			}
 			elseif(!$response || !isset($response['response']) || !isset($response['response']['code']) || 200 != $response['response']['code']) {
 				$response['safe_message'] = 'physical request failure';
-				$form = $this->on_response_failure($form, $debug, $service, $post, $response);
+				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response);
 				$can_hook = false;
 			}
 			//otherwise, check for a success "condition" if given
@@ -435,7 +452,7 @@ class Forms3rdPartyIntegration {
 						, 'clause'=>$service['success']
 						, 'response'=>$response['body']
 					);
-					$form = $this->on_response_failure($form, $debug, $service, $post, $failMessage);
+					$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
 					$can_hook = false;
 				}
 			}
@@ -461,7 +478,7 @@ class Forms3rdPartyIntegration {
 						'reason'=>'Service Callback Failure'
 						, 'safe_message' => 'Service Callback Failure'
 						, 'errors'=>$callback_results['errors']);
-					$form = $this->on_response_failure($form, $debug, $service, $post, $failMessage);
+					$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
 				}
 				else {
 					### _log('checking for attachments', print_r($callback_results, true));
@@ -471,7 +488,7 @@ class Forms3rdPartyIntegration {
 			
 			//forced debug contact
 			if($debug['mode'] == 'debug'){
-				$this->send_debug_message($debug['email'], $service, $post, $response, $submission);
+				$this->send_debug_message($debug['email'], $service, $post_args, $response, $submission);
 			}
 			
 		endforeach;	//-- loop services
@@ -510,13 +527,13 @@ class Forms3rdPartyIntegration {
 	 * @param $form reference to CF7 plugin object - contains mail details etc
 	 * @param $debug reference to this plugin "debug" option array
 	 * @param $service reference to service settings
-	 * @param $post reference to service post data
+	 * @param $post_args reference to service post data
 	 * @param $response reference to remote-request response
 	 */
-	private function on_response_failure(&$form, &$debug, &$service, &$post, &$response){
+	private function on_response_failure($form, $debug, $service, $post_args, $response){
 		// failure hooks; pass-by-value
 		
-		$form = apply_filters($this->N('remote_failure'), $form, $debug, $service, $post, $response);
+		$form = apply_filters($this->N('remote_failure'), $form, $debug, $service, $post_args, $response);
 
 		return $form;
 	}//---	end function on_response_failure
