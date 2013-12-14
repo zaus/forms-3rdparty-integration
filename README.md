@@ -218,6 +218,7 @@ _Please note that this documentation is in flux, and may not be accurate for lat
     * alter the [args array](http://codex.wordpress.org/Function_Reference/wp_remote_post#Parameters) sent to `wp_remote_post`
     * allows you to add headers or override the existing settings (timeout, body)
     * if you return an array containing the key `response_bypass`, it will skip the normal POST and instead use that value as the 3rdparty response; note that it must match the format of a regular `wp_remote_post` response.
+    * Note: if using `response_bypass` you should consider including the original arguments in the callback result for debugging purposes.
 3.  `add_action('Forms3rdPartyIntegration_remote_failure', 'mycf7_fail', 10, 5);`
     * hook to modify the Form (CF7 or GF) object if service failure of any kind occurs -- use like:
     
