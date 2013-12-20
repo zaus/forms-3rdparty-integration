@@ -167,7 +167,9 @@ base version, just directly submits values
 == Upgrade Notice ==
 
 = 1.4.6 =
-PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.  Please submit a [GitHub issue](https://github.com/zaus/forms-3rdparty-integration/issues) in addition to making a support forum request if something is broken.
+* PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.
+* Behavior change when reporting `$post` args in `on_response_failure` and similar -- now returns `$post_args`, which contains the header+body array as sent to new hook `...service_filter_args`
+* Please submit a [GitHub issue](https://github.com/zaus/forms-3rdparty-integration/issues) in addition to making a support forum request if something is broken.
 
 = 1.4.5 =
 You may need to configure the 'failure message', or at least refresh and save the admin settings, to avoid PHP 'empty index' warnings.
