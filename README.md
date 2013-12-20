@@ -89,11 +89,11 @@ Using hidden fields can provide an easier way to include arbitrary values on a p
 
 [Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
 
-## How do I map url parameters? ##
+### How do I map url parameters? ###
 Use the "Dynamic Fields" plugin: http://wordpress.org/plugins/forms-3rdparty-dynamic-fields/
 Also at https://github.com/zaus/forms-3rdparty-dynamicfields
 
-## How do I show a custom message on the confirmation screen? ##
+### How do I show a custom message on the confirmation screen? ###
 You can add custom messaging to the plugin's (GF or CF7) email or screen response with something like:
 
     class MyPlugin {
