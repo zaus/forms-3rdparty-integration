@@ -112,9 +112,18 @@
 		$plugin.on('change', '.change-actn', lib.action); // custom target to avoid checkbox pitfall...ugh
 
 		//collapse all metabox sections initially
-		$plugin.find('div.postbox')
+		var $postbox = $plugin.find('div.postbox');
+
+		$postbox
 			.addClass('collapsed')
-			.find('h3').prepend('<span class="actn" data-actn="toggle" data-rel=".postbox">[+]</span> ')
+			.each(function(i,o) {
+				$(o).find('h3')
+					.prepend('<span>[' + ($(o).data('icon') || '+') + ']</span> ')
+					.addClass('actn')
+					.data('actn', "toggle")
+					.data('rel', ".postbox")
+					;
+			})
 			;
 
 		// sortable

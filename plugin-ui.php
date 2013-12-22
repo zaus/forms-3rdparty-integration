@@ -5,7 +5,7 @@
 	$P = $this->N;
 	
 	if( isset($_POST[$P]) && check_admin_referer($P, $P.'_nonce') ) {
-		$options = $_POST[$P];
+		$options = stripslashes_deep($_POST[$P]);
 
 		// expected fields not really used...
 		$expectedFields = array(
@@ -264,7 +264,7 @@
 		</form>
 
 		<div class="last-box">
-			<div class="postbox">
+			<div class="postbox" data-icon="?">
 				<h3 class="hndle"><span>Examples of callback hooks.</span></h3>
 				<div class="description-body inside">
 
