@@ -73,7 +73,7 @@ See section [Hooks][].  See plugin folder `/3rd-parties` for example code for so
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
 
-This plugin includes another hidden field plugin for convenience from [Contact Form 7 Modules: Hidden Fields][].  I had kept the original plugin headers intact which confused some users, and so though it's no longer advertising itself on the plugin listing it's still bundled with this plugin.
+For convenience, you can install the [Contact Form 7 Modules: Hidden Fields][].  This plugin originally included the relevant code, but it was causing issues on install, so is no longer bundled with it.
 
 [Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
 
