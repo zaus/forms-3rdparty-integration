@@ -127,6 +127,11 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.4.7 ###
+* totally removing hidden field plugin -- seems like even though it wasn't referenced, it may have caused the "invalid header" error during install
+* admin ui - js fixes (configurable section icons via `data-icon`; entire metabox title now toggles accordion)
+* stripslashes on submission to fix apostrophes in 'failure response' textarea
+
 ### 1.4.6 ###
 * hook `...service_filter_args` to allow altering post headers, etc
 * fix: removed more args-by-reference (for PHP 5.4 issues, see support forum requests)
