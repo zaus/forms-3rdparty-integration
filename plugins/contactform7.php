@@ -23,7 +23,8 @@ class Forms3rdpartyIntegration_Cf {
 		if( !is_admin() )
 			add_action( 'wpcf7_before_send_mail', array(&Forms3rdPartyIntegration::$instance, 'before_send') );
 
-		add_action( 'init', array( &$this, 'other_includes' ), 20 );
+		// no longer includes other plugins (i.e. hidden.php)
+		// add_action( 'init', array( &$this, 'other_includes' ), 20 );
 	}
 
 	/**
@@ -153,24 +154,6 @@ class Forms3rdpartyIntegration_Cf {
 		return array_merge((array)$submission, $form->posted_data); // &$_POST;
 	}
 
-	/**
-	 * Late-loading - include hidden plugin really late, so the actual plugin has a chance to work first
-	 * @return void n/a
-	 */
-	public function other_includes() {
-		//only run if we haven't before
-		if( ! function_exists('contact_form_7_hidden_fields') ):
-			/**
-			 * Adds [hidden] field processing
-			 * taken from CF7 Modules plugin, included here by JRS
-			 * 
-			 * @see http://wordpress.org/extend/plugins/contact-form-7-modules/
-			 * @seealso http://www.seodenver.com/contact-form-7-hidden-fields/
-			 * @author Katz Web Services http://www.seodenver.com
-			 */
-			include_once('hidden.php');
-		endif;	//check if already included
-	}
 
 	/**
 	 * What to do when the remote request succeeds
