@@ -89,10 +89,10 @@ class Forms3rdPartyIntegration {
 	#region =============== CONSTRUCTOR and INIT (admin, regular) ===============
 	
 	function Forms3rdPartyIntegration() {
-		$this->__construct();
+		$this->__constructF3PI();
 	} // function
 
-	function __construct()
+	function __constructF3PI()
 	{
 		$this->N = __CLASS__;
 		
