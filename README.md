@@ -81,6 +81,12 @@ See section [Hooks].  See plugin folder `/3rd-parties` for example code for some
 [Screenshots]: /extend/plugins/forms-3rd-party-integration/screenshots
 [GitHub issue tracker]: https://github.com/zaus/forms-3rdparty-integration/issues "GitHub issue tracker"
 
+### I need to submit multiple values as... ###
+
+* By default, if more than one value appears in the post request for the same field/key, they will be joined by the 'separator' value like `&post-values=a,b,c`.
+* However, if you use `[]` as the separator it will instead create multiple keys like `&post-values[]=a&post-values[]=b&...`.
+* Use `[#]` to retain the numerical index:  `&post-values[0]=a&post-values[1]=b&...`
+
 ### What about Hidden Fields? ###
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
@@ -92,6 +98,14 @@ For convenience, you can install the [Contact Form 7 Modules: Hidden Fields].  T
 ### How do I map url parameters? ###
 Use the "Dynamic Fields" plugin: http://wordpress.org/plugins/forms-3rdparty-dynamic-fields/
 Also at https://github.com/zaus/forms-3rdparty-dynamicfields
+
+### How do I send XML/submit to SOAP? ###
+For simple xml containers try the "Forms 3rdparty Xpost" plugin: http://wordpress.org/plugins/forms-3rd-party-xpost/
+Also at https://github.com/zaus/forms-3rdparty-xpost
+
+### How do I set headers? ###
+You can also set headers with "Forms 3rdparty Xpost" plugin: http://wordpress.org/plugins/forms-3rd-party-xpost/
+Also at https://github.com/zaus/forms-3rdparty-xpost
 
 ### How do I show a custom message on the confirmation screen? ###
 You can add custom messaging to the plugin's (GF or CF7) email or screen response with something like:
@@ -126,6 +140,11 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.4.8 ###
+* multiple values treated differently depending on separator: 'char', `[]`, or `[#]`
+* static values treated the same as dynamic (so they get above processing)
+* fix: php5 constructor re: https://github.com/zaus/forms-3rdparty-integration/issues/6
 
 ### 1.4.7 ###
 * totally removing hidden field plugin -- seems like even though it wasn't referenced, it may have caused the "invalid header" error during install
