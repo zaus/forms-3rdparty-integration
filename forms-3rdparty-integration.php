@@ -376,37 +376,56 @@ class Forms3rdPartyIntegration {
 
 			$post = array();
 			
-			$service['separator'] = $debug['separator'];
+			$service['separator'] = $debug['separator']; // alias here for reporting
 			
 			//find mapping
 			foreach($service['mapping'] as $mid => $mapping){
-				//add static values and "remove from list"
-				if(v($mapping['val'])){
-					$post[ $mapping[self::PARAM_3RD] ] = $mapping[self::PARAM_SRC];
-
-					#unset($service['mapping'][$mid]); //remove from subsequent processing
-					continue;	//skip
-				}
-			
-				$fsrc = $mapping[self::PARAM_SRC];
 				$third = $mapping[self::PARAM_3RD];
 				
-				//check if we have that field in post data
-				if( isset( $submission[ $fsrc ])){
-					//allow multiple values to attach to same entry
-					if( isset( $post[ $third ] ) ){
-						### echo "multiple @$mid - $fsrc, $third :=\n";
-						$post[ $third ] .= $debug['separator'] . $submission[ $fsrc ];
+				//is this static or dynamic (userinput)?
+				if(v($mapping['val'])){
+					$input = $mapping[self::PARAM_SRC];
+				}
+				else {
+					//check if we have that field in post data
+					if( !isset($submission[ $mapping[self::PARAM_SRC] ]) ) continue;
+
+					$input = $submission[ $mapping[self::PARAM_SRC] ];
+				}
+
+				//allow multiple values to attach to same entry
+				if( isset( $post[ $third ] ) ){
+					### echo "multiple @$mid - $fsrc, $third :=\n";
+
+					if(!is_array($post[$third])) {
+						$post[$third] = array($post[$third]);
 					}
-					else {
-						$post[ $third ] = $submission[ $fsrc ];
-					}
+					$post[$third] []= $input;
+				}
+				else {
+					$post[$third] = $input;
 				}
 			}// foreach mapping
 			
 			//extract special tags;
 			$post = apply_filters($this->N('service_filter_post_'.$sid), $post, $service, $form);
 			$post = apply_filters($this->N('service_filter_post'), $post, $service, $form, $sid);
+
+			// fix for multiple values
+			switch($service['separator']) {
+				case '[]':
+					// must build as querystring then strip `#` out of `[#]=`
+					$post = http_build_query($post);
+					$post = preg_replace('/%5B[0-9]+%5D=/', '%5B%5D=', $post);
+					break;
+				default:
+					// otherwise, find the arrays and implode
+					foreach($post as $f => &$v) {
+						_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
+						if(is_array($v)) $v = implode($service['separator'], $v);
+					}
+					break;
+			}
 			
 			### _log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
 
