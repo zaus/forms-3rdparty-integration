@@ -99,6 +99,14 @@ For convenience, you can install the [Contact Form 7 Modules: Hidden Fields].  T
 Use the "Dynamic Fields" plugin: http://wordpress.org/plugins/forms-3rdparty-dynamic-fields/
 Also at https://github.com/zaus/forms-3rdparty-dynamicfields
 
+### How do I send XML/submit to SOAP? ###
+For simple xml containers try the "Forms 3rdparty Xpost" plugin: http://wordpress.org/plugins/forms-3rd-party-xpost/
+Also at https://github.com/zaus/forms-3rdparty-xpost
+
+### How do I set headers? ###
+You can also set headers with "Forms 3rdparty Xpost" plugin: http://wordpress.org/plugins/forms-3rd-party-xpost/
+Also at https://github.com/zaus/forms-3rdparty-xpost
+
 ### How do I show a custom message on the confirmation screen? ###
 You can add custom messaging to the plugin's (GF or CF7) email or screen response with something like:
 
