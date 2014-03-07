@@ -413,6 +413,9 @@ class Forms3rdPartyIntegration {
 
 			// fix for multiple values
 			switch($service['separator']) {
+				case '[#]':
+					// don't do anything to include numerical index (default behavior of `http_build_query`)
+					break;
 				case '[]':
 					// must build as querystring then strip `#` out of `[#]=`
 					$post = http_build_query($post);
