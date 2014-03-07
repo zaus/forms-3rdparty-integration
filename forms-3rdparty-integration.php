@@ -88,17 +88,19 @@ class Forms3rdPartyIntegration {
 	
 	#region =============== CONSTRUCTOR and INIT (admin, regular) ===============
 	
-	function Forms3rdPartyIntegration() {
-		$this->__construct();
-	} // function
+	// php5 constructor must come first for 'strict standards' -- http://wordpress.org/support/topic/redefining-already-defined-constructor-for-class-wp_widget
 
-	function __construct()
-	{
+	function __construct() {
 		$this->N = __CLASS__;
 		
 		add_action( 'admin_menu', array( &$this, 'admin_init' ), 20 ); // late, so it'll attach menus farther down
 		add_action( 'init', array( &$this, 'init' ) ); // want to run late, but can't because it misses CF7 onsend?
 	} // function
+
+	function Forms3rdPartyIntegration() {
+		$this->__construct();
+	} // function
+
 
 	function admin_init() {
 		# perform your code here
@@ -424,7 +426,8 @@ class Forms3rdPartyIntegration {
 				default:
 					// otherwise, find the arrays and implode
 					foreach($post as $f => &$v) {
-						_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
+						### _log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
+						
 						if(is_array($v)) $v = implode($service['separator'], $v);
 					}
 					break;

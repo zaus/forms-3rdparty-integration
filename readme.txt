@@ -118,6 +118,7 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 = 1.4.8 =
 * multiple values treated differently depending on separator: 'char', `[]`, or `[#]`
 * static values treated the same as dynamic (so they get above processing)
+* fix: php5 constructor re: https://github.com/zaus/forms-3rdparty-integration/issues/6
 
 = 1.4.7 =
 * totally removing hidden field plugin -- seems like even though it wasn't referenced, it may have caused the "invalid header" error during install
