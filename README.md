@@ -34,7 +34,7 @@ Original plugin, [Contact Form 7: 3rdparty Integration] developed with the assis
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
 [How to Integrate Salesforce in Contact Form 7]: http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/ "Original Inspiration"
-[Contact Form 7:** 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
+[Contact Form 7: 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
 [AtlanticBT]: http://www.atlanticbt.com/ "Atlantic BT: Custom Website and Web-application Services"
 [Stephen P. Kane Consulting]: http://www.stephenpkane.com/ "Website Design and Internet Marketing Services"
 [GitHub issue tracker]: https://github.com/zaus/forms-3rdparty-integration/issues "GitHub issue tracker"
@@ -46,13 +46,21 @@ Original plugin, [Contact Form 7: 3rdparty Integration] developed with the assis
 2. Make sure [Contact Form 7]  or [Gravity Forms] is installed
 3. Activate plugin
 4. Go to new admin subpage _"3rdparty Services"_ under the CF7 "Contact" menu or Gravity Forms "Forms" menu and configure services + field mapping.
+5. Turn on 'debug mode' to get emailed a copy of the submission+response data, until you're satisfied everything works, then turn it off
 
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
 
 ## Frequently Asked Questions ##
 
-### I need help ###
+### I need help / My form isn't working ###
+
+Turn on 'debug mode' from the admin page to send you an email with:
+
+* the current plugin configuration, including field mappings
+* the user submission (as provided by CF7/GF)
+* the post as sent to the service (applied mapping)
+* the response sent back from the service, which hopefully includes error codes or explanations (often is the raw HTML of a success/failure page)
 
 Submit an issue to the [GitHub issue tracker] in addition to / instead of the WP Support Forums.
 
