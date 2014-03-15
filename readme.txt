@@ -58,16 +58,19 @@ See [Screenshots][] for visual examples.
 
 Essentially,
 
-1. Name your service
-2. Enter the submission URL -- if your "service" provides an HTML form, you would use the form action here
-3. Choose which forms will submit to this service ("Attach to Forms")
+1. Name your service.
+2. Enter the submission URL -- if your "service" provides an HTML form, you would use the form action here.
+3. Choose which forms will submit to this service ("Attach to Forms").
 4. Set the default "success condition", or leave blank to ignore (or if using post processing, see [Hooks][] - this just looks for the provided text in the service response, and if present assumes "success"
 4. Set an optional "failure message" to show if the remote request fails.  Can include the "nice explanation" as well as the original message provided by the contact form plugin.
-5. Allow hooks for further processing - unchecking it just saves minimal processing power, as it won't try to execute filters
-6. Map your form submission values (from the CF7/GF field tags) to expected fields for your service.  1:1 mapping given as the _name_ (from the HTML input) of the CF7/GF field and the name of the 3rdparty field; you can also provide static values by checking the "Is Value?" checkbox and providing the value in the "Form Submission Field" column.  The "Label" column is optional, and just provided for administrative notes, i.e. so you can remind yourself what each mapping pertains to.
+5. Allow hooks for further processing - unchecking it just saves minimal processing power, as it won't try to execute filters.
+6. Map your form submission values (from the CF7/GF field tags) to expected fields for your service.
+    * 1:1 mapping given as the _name_ (from the HTML input) of the CF7/GF field and the _name_ of the 3rdparty field
+    * You can also provide static values by checking the "Is Value?" checkbox and providing the value in the "Form Submission Field" column.
+    * The "Label" column is optional, and just provided for administrative notes, i.e. so you can remind yourself what each mapping pertains to.
 7. Add, remove, and rearrange mapping - basically just for visual clarity.
-8. Use the provided hooks (as given in the bottom of the service block)
-9. Add new services as needed
+8. Use the provided hooks (as given in the bottom of the service block).
+9. Add new services as needed, drag/drop mappings and service boxes.
 
 = How can I pre/post process the request/results? =
 
@@ -130,6 +133,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 == Changelog ==
+
+= 1.4.8.1 =
+Trying to add some clarity to the admin pages
 
 = 1.4.8 =
 * multiple values treated differently depending on separator: 'char', `[]`, or `[#]`

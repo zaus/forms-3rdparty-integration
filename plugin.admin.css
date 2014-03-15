@@ -12,7 +12,7 @@ div.meta-box h4 { padding-left:1em; }
 	pre { white-space:pre-wrap; padding:2px; margin:0.5em; border:1px dotted #ddd; border-radius:4px; background-color:#FCFCFC; }
 
 .shortcode-description legend { font-weight:bold; }
-.shortcode-description fieldset { border:1px dotted #ccc; clear:both; padding:1em; margin-bottom:1em; }
+.shortcode-description fieldset { border:1px dotted #ccc; clear:both; padding:1em; margin-bottom:1em; background-color:rgb(234, 239, 245); }
 
 div.field { padding-bottom:0.75em; }
 div.field .text { width:50%; }
@@ -20,6 +20,7 @@ div.field em { display:block; margin-left:4em; margin-top:0.5em; }
 
 table.mappings { width:100%; margin:1em 0.5em; border-bottom:1px solid #ccc; border-collapse:collapse; }
 table.mappings td, table.mappings th { border:1px solid #ccc; }
+	table.mappings th .descr { font-weight:normal; font-size:75%; }
 table.mappings caption { font-style:italic; color:#888; margin-bottom:0.2em; }
 table.mappings input { width:100%; }
 table.mappings .thin { width:4em; }

@@ -58,13 +58,13 @@
 			<div class="field">
 				<label for="dbg-email">Email</label>
 				<input id="dbg-email" type="text" class="text" name="<?php echo $P?>[debug][email]" value="<?php echo esc_attr($debugOptions['email'])?>" />
-				<em class="description"><?php _e('Notification for failures - also used if success condition not met for each service.  Comma-separate multiple addresses.', $P)?>.</em>
+				<em class="description"><?php _e('Notification for failures (3rdparty errors, success condition not met) - also used as the debug recipient.  Comma-separate multiple addresses.', $P)?></em>
 			</div>
 			<div class="field">
 				<label for="dbg-debugmode"><?php _e('Debug Mode', $P); ?></label>
-				<input id="dbg-debugmode" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" value="debug"<?php if(isset($debugOptions['mode']) ) echo ' checked="checked"'; ?>  />
+				<input id="dbg-debugmode" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" value="debug"<?php if(isset($debugOptions['mode']) ) echo ' checked="checked"'; ?> />
 				<em class="description"><?php _e('Send debugging information to indicated address, regardless of success or failure', $P)?>.</em>
-				<em class="description">Send service tests to <code><?php echo plugins_url('3rd-parties/service_test.php', __FILE__); ?></code></em>
+				<em class="description"><?php _e('Send service tests for full echo to:', $P); ?> <code><?php echo plugins_url('3rd-parties/service_test.php', __FILE__); ?></code></em>
 			</div>
 			<div class="field">
 				<label for="dbg-sep">Separator</label>
@@ -109,7 +109,7 @@
 					<div class="field">
 						<label for="url-<?php echo $eid?>">Submission URL</label>
 						<input id="url-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][url]" value="<?php echo esc_attr($entity['url'])?>" />
-						<em class="description"><?php _e('The url of the entity submission', $P);?>.</em>
+						<em class="description"><?php _e('The url of the external submission -- usually the <code>action</code> attribute of the 3rd-party form.  See <a href="#dbg-debugmode">Debug Mode</a> setting for a working test url.', $P);?>.</em>
 					</div>
 					
 		
@@ -159,11 +159,20 @@
 				Also, if you accidentally delete all of the mapping fields, try deleting the Service entry and refreshing the page, then adding another Service.', $P);?></caption>
 				<thead>
 					<tr>
-						<th id="th-<?php echo $eid?>-static" class="thin">Is Value?</th>
-						<th id="th-<?php echo $eid, '-', self::PARAM_LBL ?>">Label*</th>
-						<th id="th-<?php echo $eid, '-', self::PARAM_SRC ?>">Form Submission Field</th>
-						<th id="th-<?php echo $eid, '-', self::PARAM_3RD ?>">3rd-Party Field</th>
-						<th id="th-<?php echo $eid?>-action" class="thin">Drag</th>
+						<th id="th-<?php echo $eid?>-static" class="thin" title="<?php _e('If checked, will use the \'Form Submission Field\' column as the submission value, rather than the user input', $P);?>"><?php _e('Is Value?', $P);?></th>
+						<th id="th-<?php echo $eid, '-', self::PARAM_LBL ?>">
+							<strong><?php _e('Label', $P);?>*</strong>
+							<p class="descr"><?php _e('Administrative text -- just describes this row', $P);?></p>
+						</th>
+						<th id="th-<?php echo $eid, '-', self::PARAM_SRC ?>">
+							<strong><?php _e('Form Submission Field', $P);?></strong>
+							<p class="descr"><?php _e('The input name/id from the form plugin (CF7/GF),<br /> or the value to submit if \'Is Value\' is checked', $P);?></p>
+						</th>
+						<th id="th-<?php echo $eid, '-', self::PARAM_3RD ?>">
+							<strong><?php _e('3rd-Party Field', $P);?></strong>
+							<p class="descr"><?php _e('The input name/id from the external service', $P);?></p>
+						</th>
+						<th id="th-<?php echo $eid?>-action" class="thin"><?php _e('Drag', $P);?></th>
 					</tr>
 				</thead>
 				<tbody>
