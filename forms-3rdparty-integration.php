@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, skane
-Version: 1.4.8.1
+Version: 1.4.9
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -17,6 +17,7 @@ Changelog:
 	1.4.6 - post args hook + bypass, fix arg-by-reference
 	1.4.7 - totally removing hidden field plugin; js fixes; stripslashes
 	1.4.8 - fixes for github issue-6 (php5 strict constructor) and issue-8 (configurable multiple values for same key)
+	1.4.9 - matching cf7 v3.9
 */
 
 //declare to instantiate
@@ -40,7 +41,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.4.8.1';
+	const pluginVersion = '1.4.9';
 
 	
 	/**
