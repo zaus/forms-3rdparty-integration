@@ -272,6 +272,11 @@
 				
 		</form>
 
+		<?php
+		do_action($this->N('service_metabox_after'), $P, $options);
+		?>
+
+
 		<div class="last-box">
 			<div class="postbox" data-icon="?">
 				<h3 class="hndle"><span>Examples of callback hooks.</span></h3>
