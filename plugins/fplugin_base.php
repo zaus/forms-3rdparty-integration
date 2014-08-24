@@ -284,10 +284,6 @@ _log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
 	public function remote_failure($form, $debug, $service, $post, $response){
 		//notify frontend
 
-		// http://ninjaforms.com/documentation/developer-api/code-examples/modifying-form-settings-and-behavior/
-
-		### TODO:  not sure what the 'original' failure message would be here...
-		//$conf_setting = 'success_msg';
 		//$form->get_form_setting($conf_setting);
 		$confirmation = $this->update_failure_confirmation($this->GET_ORIGINAL_ERROR_MESSAGE($form), $response, $service);
 		
