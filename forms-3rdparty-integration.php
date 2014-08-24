@@ -18,6 +18,7 @@ Changelog:
 	1.4.7 - totally removing hidden field plugin; js fixes; stripslashes
 	1.4.8 - fixes for github issue-6 (php5 strict constructor) and issue-8 (configurable multiple values for same key)
 	1.4.9 - matching cf7 v3.9
+	1.5.0 - better fplugin base (ninjaforms)
 */
 
 //declare to instantiate
@@ -41,7 +42,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.4.9';
+	const pluginVersion = '1.5.0';
 
 	
 	/**

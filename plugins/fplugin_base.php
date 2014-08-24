@@ -182,6 +182,8 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 
+_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
+
 		if(!$this->IS_PLUGIN_FORM($form)) return $this->_use_form;
 
 _log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
@@ -297,7 +299,7 @@ _log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
 			$post,
 			$response,
 			$this->GET_FORM_TITLE($form),
-			$$this->GET_RECIPIENT($form),
+			$this->GET_RECIPIENT($form),
 			$this->REPORTING_NAME()
 			);
 
