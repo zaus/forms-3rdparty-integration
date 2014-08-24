@@ -8,13 +8,18 @@ new Forms3rdpartyIntegration_Cf;
  */
 class Forms3rdpartyIntegration_Cf {
 
+	/**
+	 * An identifier (i.e. the admin page slug) for the associated Forms Plugin we're attached to
+	 */
+	const FPLUGIN = 'wpcf7';
+
+
 	function __construct() {
 		add_action(Forms3rdPartyIntegration::$instance->N('init'), array(&$this, 'init'));
 		add_filter(Forms3rdPartyIntegration::$instance->N('declare_subpages'), array(&$this, 'add_subpage'));
 		add_filter(Forms3rdPartyIntegration::$instance->N('use_form'), array(&$this, 'use_form'), 10, 4);
 		add_filter(Forms3rdPartyIntegration::$instance->N('select_forms'), array(&$this, 'select_forms'), 10, 1);
 		add_filter(Forms3rdPartyIntegration::$instance->N('get_submission'), array(&$this, 'get_submission'), 10, 2);
-
 	}
 
 	public function init(){
@@ -33,7 +38,7 @@ class Forms3rdpartyIntegration_Cf {
 	 * @return the modified list of subpages
 	 */
 	public function add_subpage($subpagesOf) {
-		$subpagesOf []= 'wpcf7';
+		$subpagesOf []= self::FPLUGIN;
 		return $subpagesOf;
 	}
 
@@ -95,10 +100,14 @@ class Forms3rdpartyIntegration_Cf {
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 
+_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
+
 		if( 'WPCF7_ContactForm' != get_class($form) ) return $this->_use_form;
 		
 		$form_id = $form->id();
 		
+_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
+
 		$this->_use_form = in_array(self::FORM_ID_PREFIX . $form_id, $service_forms);
 		### _log(__CLASS__ . '::' . __FUNCTION__ . ' using form?', $result ? 'Y':'N', $form_id, $service_forms);
 
@@ -181,38 +190,28 @@ class Forms3rdpartyIntegration_Cf {
 			
 			$messages['mail_sent_ok'] =
 			$messages['mail_sent_ng'] = 
-			sprintf(
-				__($service['failure'], Forms3rdPartyIntegration::$instance->N())
-				, $messages['mail_sent_ng']
-				, __($response['safe_message'], Forms3rdPartyIntegration::$instance->N())
-				);
+
+				Forms3rdPartyIntegration::$instance->format_failure_message(
+					$service,
+					$response,
+					$messages['mail_sent_ng']
+					);
+			
 			// $messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $messages['mail_sent_ng'];
 			$form->set_properties(array('messages'=>$messages, 'additional_settings'=>$additional));
 		}
 		else $form->set_properties(array('additional_settings'=>$additional));
 
 		//notify admin
-		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
-			, "\n"
-			, $service['name']
-			, $service['url']
-			, print_r($post, true)
-			, print_r($response, true)
-			, $form->title()
-			, $mail['recipient']
-			, get_bloginfo('url') . $_SERVER['REQUEST_URI']
+		Forms3rdPartyIntegration::$instance->send_service_error(
+			&$service,
+			&$debug,
+			&$post,
+			&$response,
+			$form->title(),
+			$mail['recipient'],
+			'CF7'
 			);
-		$subject = sprintf('CF7-3rdParty Integration Failure: %s'
-			, $service['name']
-			);
-		$headers = array('From: "CF7-3rdparty Debug" <cf7-3rdparty-debug@' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . '>');
-
-		//log if couldn't send debug email
-		if(!wp_mail( $debug['email'], $subject, $body, $headers )){
-			### $form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
-			error_log(__LINE__.':'.__FILE__ .'	response failed from '.$service['url'].', could not send warning email: ' . print_r($response, true));
-		}
-
 		return $form;
 	}//---	end function on_response_failure
 

@@ -567,4 +567,62 @@ class Forms3rdPartyIntegration {
 		return $form;
 	}//---	end function on_response_failure
 
+
+	/**
+	 * Email helper for `remote_failure` hooks
+	 * @param array $service			service configuration
+	 * @param array $debug				the debug settings (to get email)
+	 * @param array $post				details sent to 3rdparty
+	 * @param array $response 			remote-request response
+	 * @param string $form_title		name of the form used
+	 * @param string $form_recipient	email of the original form recipient, so we know who to follow up with
+	 * @param debug_from_id				short identifier of the Form plugin which failed (like 'CF7' or 'GF', etc)
+	 *
+	 * @return true if the warning email sent, false otherwise
+	 */
+	public function send_service_error(&$service, &$debug, &$post, &$response, $form_title, $form_recipient, $debug_from_id) {
+		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
+			, "\n"
+			, $service['name']
+			, $service['url']
+			, print_r($post, true)
+			, print_r($response, true)
+			, $form_title
+			, $form_recipient
+			, get_bloginfo('url') . $_SERVER['REQUEST_URI']
+			);
+		$subject = sprintf('%s-3rdParty Integration Failure: %s'
+			, $debug_from_id
+			, $service['name']
+			);
+		$headers = array(
+			sprintf('From: "%1$s-3rdparty Debug" <%1$s-3rdparty-debug@%2$s>'
+				, $debug_from_id
+				, str_replace('www.', '', $_SERVER['HTTP_HOST'])
+				)
+			);
+
+		//log if couldn't send debug email
+		if(wp_mail( $debug['email'], $subject, $body, $headers )) return true;
+
+		### $form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
+		error_log(__LINE__.':'.__FILE__ .'	response failed from '.$service['url'].', could not send warning email: ' . print_r($response, true));
+		return false;
+	}//--	fn	send_service_error
+
+
+	/**
+	 * Format the configured service failure message using the $response "safe message" and the plugin's original error message
+	 * @param array $service			service configuration
+	 * @param array $response			remote-request response
+	 * @param string $original_message	the plugin's original failure message
+	 * @return the newly formatted failure message
+	 */
+	public function format_failure_message(&$service, &$response, $original_message) {
+		return sprintf(
+				__($service['failure'], $this->N())
+				, $original_message
+				, __($response['safe_message'], $this->N())
+				);
+	}
 }//end class

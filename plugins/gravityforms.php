@@ -8,6 +8,12 @@ new Forms3rdpartyIntegration_Gf;
  */
 class Forms3rdpartyIntegration_Gf {
 
+	/**
+	 * An identifier (i.e. the admin page slug) for the associated Forms Plugin we're attached to
+	 */
+	const FPLUGIN = 'gf_edit_forms';
+
+
 	function __construct() {
 		add_action(Forms3rdPartyIntegration::$instance->N('init'), array(&$this, 'init'));
 		add_filter(Forms3rdPartyIntegration::$instance->N('declare_subpages'), array(&$this, 'add_subpage'));
@@ -30,7 +36,7 @@ class Forms3rdpartyIntegration_Gf {
 	 * @return the modified list of subpages
 	 */
 	public function add_subpage($subpagesOf) {
-		$subpagesOf []= 'gf_edit_forms';
+		$subpagesOf []= self::FPLUGIN;
 		return $subpagesOf;
 	}
 
@@ -75,9 +81,13 @@ class Forms3rdpartyIntegration_Gf {
 		// protect against accidental binding between multiple plugins
 		$this->_use_form = $result;
 
+_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
+		
 		// TODO: figure out a more bulletproof way to confirm it's a GF form
 		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $this->_use_form;
 
+_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
+		
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 
@@ -155,17 +165,15 @@ class Forms3rdpartyIntegration_Gf {
 		return $form;
 	}
 
-	private function update_confirmation($confirmation, $nice_message, $service) {
+	private function update_confirmation($confirmation, $response, $service) {
 
 		if(empty($service['failure'])) {
 			$failure = $confirmation['type'] == 'message'
 				? $confirmation['message']
-				: $nice_message;
+				: $response['safe_message'];
 		}
-		else $failure = sprintf(
-			__($service['failure'], Forms3rdPartyIntegration::$instance->N())
-			, $confirmation['message'] // technically we don't want this for redirect...just don't set it then
-			, __($nice_message, Forms3rdPartyIntegration::$instance->N())
+		else $failure = Forms3rdPartyIntegration::$instance->format_failure_message($service, $response, 
+			$confirmation['message'] // technically we don't want this for redirect...just don't set it then
 			);
 
 		switch($confirmation['type']) {
@@ -201,34 +209,22 @@ class Forms3rdpartyIntegration_Gf {
 		// http://www.gravityhelp.com/documentation/page/Confirmation
 
 		// what confirmation do we update? try them all to be safe?
-		$form['confirmation'] = $this->update_confirmation($form['confirmation'], $response['safe_message'], $service);
+		$form['confirmation'] = $this->update_confirmation($form['confirmation'], $response, $service);
 		foreach($form['confirmations'] as $conf => &$confirmation) {
-			$confirmation = $this->update_confirmation($confirmation, $response['safe_message'], $service);
+			$confirmation = $this->update_confirmation($confirmation, $response, $service);
 		}
 		
 		//notify admin
 
-
-		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
-			, "\n"
-			, $service['name']
-			, $service['url']
-			, print_r($post, true)
-			, print_r($response, true)
-			, $form['title']
-			, isset($form['notification']) ? $form['notification']['to'] : '--na--'
-			, get_bloginfo('url') . $_SERVER['REQUEST_URI']
+		Forms3rdPartyIntegration::$instance->send_service_error(
+			&$service,
+			&$debug,
+			&$post,
+			&$response,
+			$form['title'],
+			isset($form['notification']) ? $form['notification']['to'] : '--na--',
+			'GF'
 			);
-		$subject = sprintf('Gravity Forms-3rdParty Integration Failure: %s'
-			, $service['name']
-			);
-		$headers = array('From: "GF-3rdparty Debug" <gf-3rdparty-debug@' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . '>');
-
-		//log if couldn't send debug email
-		if(!wp_mail( $debug['email'], $subject, $body, $headers )){
-			### $form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
-			error_log(__LINE__.':'.__FILE__ .'	response failed from '.$service['url'].', could not send warning email: ' . print_r($response, true));
-		}
 
 		return $form;
 	}//---	end function on_response_failure
