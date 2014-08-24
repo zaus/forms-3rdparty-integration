@@ -146,10 +146,10 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		// from http://ninjaforms.com/documentation/developer-api/functions/ninja_forms_get_all_forms/
 		// use like https://github.com/wpninjas/ninja-forms/blob/e4bc7d40c6e91ce0eee7c5f50a8a4c88d449d5f8/includes/admin/post-metabox.php#L43
 		$plugin_forms = $this->GET_PLUGIN_FORMS();
-		foreach($forms as $f) {
+		foreach($plugin_forms as $f) {
 			$form = array(
 				'id' => $this->FORM_ID_PREFIX() . $this->GET_FORM_LIST_ID($f)
-				, 'title' => $this->GET_FORM_LIST_TITLE($f)
+				, 'title' => sprintf('(%s) %s', $this->REPORTING_NAME(), $this->GET_FORM_LIST_TITLE($f))
 			);
 			// add to list
 			$forms []= $form;
