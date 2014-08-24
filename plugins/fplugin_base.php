@@ -63,6 +63,16 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the attachment
 	 */
 	abstract protected function ATTACH($form, $to_attach, $service_name);
+	/* EXAMPLE
+			if(isset($form['notification']))
+			$form['notification']['message'] .= "\n\n" .
+				(
+				isset($form['notification']['disableAutoformat']) && $form['notification']['disableAutoformat']
+					? $this->attachment_heading_html($service_name)
+					: $this->attachment_heading($service_name)
+				)
+				. $to_attach;
+	*/
 
 	/**
 	 * How to update the confirmation message for a successful result
@@ -79,7 +89,10 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the message
 	 */
 	abstract protected function SET_BAD_MESSAGE($form, $message);
-
+	
+	/**
+	 * Return the regularly intended confirmation email recipient
+	 */
 	abstract protected function GET_FORM_RECIPIENT($Form);
 
 	/**
@@ -243,7 +256,7 @@ _log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
 	 * @param $service service configuration
 	 * @return $confirmation updated
 	 */
-	private function update_failure_confirmation($confirmation, &$response, &$service) {
+	protected function update_failure_confirmation($confirmation, &$response, &$service) {
 
 		if(empty($service['failure'])) {
 			$failure = empty($confirmation)
