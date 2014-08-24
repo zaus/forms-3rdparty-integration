@@ -49,36 +49,19 @@ class Forms3rdpartyIntegration_Cf {
 	 */
 	public function select_forms($forms){
 		$cf_forms = array();
-		/// *NOTE* CF7 changed how it stores forms at some point, support legacy?
-		if( !function_exists('wpcf7_contact_forms') ) {
-			$cf_forms = get_posts( array(
-				'numberposts' => -1,
-				'orderby' => 'ID',
-				'order' => 'ASC',
-				'post_type' => 'wpcf7_contact_form' ) );
-		}
-		else {
-			$cf_forms = wpcf7_contact_forms();
-		}
-
+		$cf_forms = get_posts( array(
+			'numberposts' => -1,
+			'orderby' => 'ID',
+			'order' => 'ASC',
+			'post_type' => 'wpcf7_contact_form' ) );
+		
 		// now remap $cf to generic format: id, title
 		foreach($cf_forms as $f) {
 			$form = array();
-			/// *NOTE* CF7 changed how forms are stored at some point, supporting legacy...
-			if( isset( $f->id ) ) {
-				$form['id'] = $f->id;	// as serialized option data
-			}
-			else {
-				$form['id'] = $f->ID;	// as WP posttype
-			}
+			$form['id'] = $f->ID;	// as WP posttype
 			
-			if( isset( $f->title ) ) {
-				$form['title'] = $f->title;	// as serialized option data
-			}
-			else {
-				$form['title'] = $f->post_title;	// as WP posttype
-			}
-
+			$form['title'] = $f->post_title;	// as WP posttype
+		
 			// prefix
 			$form['id'] = self::FORM_ID_PREFIX . $form['id'];
 			
@@ -91,6 +74,11 @@ class Forms3rdpartyIntegration_Cf {
 
 
 	private $_use_form;
+
+	/**
+	 * which version of the plugin are we supporting?
+	 */
+	private $_plugin_style;
 
 	/**
 	 * How do decide whether the form is being used
@@ -107,18 +95,10 @@ class Forms3rdpartyIntegration_Cf {
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 
-		// is it old or new style?  (object or array)
-		if( is_array($form) ) {
-			if( !isset($form['id']) || empty($form['id']) ) return $this->_use_form;
-			// something to differentiate it from GF...
-			else if ( !isset($form['messages']) ) return $this->_use_form;
-			$form_id = $form['id'];
-		}
-		else if( 'WPCF7_ContactForm' != get_class($form) ) return $this->_use_form;
-		else {
-			$form_id = $form->id;
-		}
-
+		if( 'WPCF7_ContactForm' != get_class($form) ) return $this->_use_form;
+		
+		$form_id = $form->id();
+		
 		$this->_use_form = in_array(self::FORM_ID_PREFIX . $form_id, $service_forms);
 		### _log(__CLASS__ . '::' . __FUNCTION__ . ' using form?', $result ? 'Y':'N', $form_id, $service_forms);
 
@@ -134,46 +114,45 @@ class Forms3rdpartyIntegration_Cf {
 	/**
 	 * Get the posted submission for the form
 	 * @param  array $submission initial values for submission; may have been provided by hooks
-	 * @param  object $form       the CF7 form object
+	 * @param  object $cf7       the CF7 form object
 	 * @return array             list of posted submission values to manipulate and map
 	 */
-	public function get_submission($submission, $form){
+	public function get_submission($submission, $cf7){
 		if(!$this->_use_form) return;
 
-		// merge with $submission?
-		// which style? new or old
-		if( is_array($form) ) {
-			// extract fields
-			$post = array();
-			foreach($form['fields'] as $index => $properties) {
-				$post[$properties['input_name']] = $_POST[$index];
-			}
-			return array_merge((array)$submission, (array)$post);
+		// could check `$this->_plugin_style`, but safer to just check the data instead
+		
+		return array_merge((array)$submission, WPCF7_Submission::get_instance()->get_posted_data());
 
-		}
-		return array_merge((array)$submission, $form->posted_data); // &$_POST;
+		throw new Exception('Unable to figure out which style of Contact Form 7 from which to retrieve post data');
 	}
 
 
 	/**
 	 * What to do when the remote request succeeds
 	 * @param  array $callback_results list of 'success' (did it work), 'errors' (list of validation errors), 'attach' (email body attachment), 'message' (when failed)
-	 * @param  object $form             the form object
+	 * @param  object $form             the form/plugin object
 	 * @param  array $service          associative array of the service options
 	 * @return void                   n/a
 	 */
 	public function remote_success($form, $callback_results, $service) {
 		//if requested, attach results to message
-		// TODO: doesn't this assume new-style of cf7?  can we just get rid of old-style in use_form and get_submission?
-		if(!empty($callback_results['attach'])){
-			### _log('attaching to mail body', print_r($cf7->mail, true));
-			$form->mail['body'] .= "\n\n" . ($form->mail['use_html'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n"). $callback_results['attach'];
+		if(!empty($callback_results['attach'])) {
+
+			$mail = $form->prop('mail'); // previous style: $form->mail
+			$mail['body'] .= "\n\n" . ($mail['use_html']
+										? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n"
+										: "Service \"{$service['name']}\" Results:\n")
+									. $callback_results['attach'];
+			$form->set_properties(array('mail'=>$mail));
 		}
 		
 		//if requested, attach message to success notification
-		if( !empty($callback_results['message']) ) :
-			$form->messages['mail_sent_ok'] = $callback_results['message'];
-		endif;// has callback message
+		if( !empty($callback_results['message']) ) {
+			$messages = $form->prop('messages');
+			$messages['mail_sent_ok'] = $callback_results['message'];
+			$form->set_properties(array('messages'=>$messages));
+		}// has callback message
 
 		return $form; // yes this is redundant when it's an object, but need it for compatibility with GF
 	}
@@ -191,19 +170,26 @@ class Forms3rdpartyIntegration_Cf {
 	 */
 	public function remote_failure($form, $debug, $service, $post, $response){
 		//notify frontend
-		$form->additional_settings .= "\n".'on_sent_ok: \'if(window.console && console.warn){ console.warn("Failed submitting to '.$service['name'].': '.$response['safe_message'].'"); }\'';
+		$additional = $form->prop('additional_settings');
+		$messages = $form->prop('messages');
+		$mail = $form->prop('mail');
+
+		$additional .= "\n".'on_sent_ok: \'if(window.console && console.warn){ console.warn("Failed submitting to '.$service['name'].': '.$response['safe_message'].'"); }\'';
 		// do we always report, or just pretend it worked, because the original contact plugin may be fine...
 		if(!empty($service['failure'])) {
 			// kind of a hack -- override the success and fail messages, just in case one or other is displayed
-			$form->messages['mail_sent_ok'] =
-			$form->messages['mail_sent_ng'] = 
+			
+			$messages['mail_sent_ok'] =
+			$messages['mail_sent_ng'] = 
 			sprintf(
 				__($service['failure'], Forms3rdPartyIntegration::$instance->N())
-				, $form->messages['mail_sent_ng']
+				, $messages['mail_sent_ng']
 				, __($response['safe_message'], Forms3rdPartyIntegration::$instance->N())
 				);
-			// $form->messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $form->messages['mail_sent_ng'];
+			// $messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $messages['mail_sent_ng'];
+			$form->set_properties(array('messages'=>$messages, 'additional_settings'=>$additional));
 		}
+		else $form->set_properties(array('additional_settings'=>$additional));
 
 		//notify admin
 		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
@@ -212,8 +198,8 @@ class Forms3rdpartyIntegration_Cf {
 			, $service['url']
 			, print_r($post, true)
 			, print_r($response, true)
-			, $form->title
-			, $form->mail['recipient']
+			, $form->title()
+			, $mail['recipient']
 			, get_bloginfo('url') . $_SERVER['REQUEST_URI']
 			);
 		$subject = sprintf('CF7-3rdParty Integration Failure: %s'

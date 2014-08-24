@@ -150,6 +150,11 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.4.9 ###
+Updated cf7 plugin to match [their latest changes](http://contactform7.com/2014/07/02/contact-form-7-39-beta/).
+* using new way to access properties
+* removed remaining support for all older versions of CF7 (it was just getting complicated)
+
 ### 1.4.8.1 ###
 Trying to add some clarity to the admin pages
 
