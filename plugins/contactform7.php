@@ -100,14 +100,10 @@ class Forms3rdpartyIntegration_Cf {
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 
-_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
-
 		if( 'WPCF7_ContactForm' != get_class($form) ) return $this->_use_form;
 		
 		$form_id = $form->id();
 		
-_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
-
 		$this->_use_form = in_array(self::FORM_ID_PREFIX . $form_id, $service_forms);
 		### _log(__CLASS__ . '::' . __FUNCTION__ . ' using form?', $result ? 'Y':'N', $form_id, $service_forms);
 

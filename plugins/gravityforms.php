@@ -81,13 +81,9 @@ class Forms3rdpartyIntegration_Gf {
 		// protect against accidental binding between multiple plugins
 		$this->_use_form = $result;
 
-_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
-		
 		// TODO: figure out a more bulletproof way to confirm it's a GF form
 		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $this->_use_form;
 
-_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
-		
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 

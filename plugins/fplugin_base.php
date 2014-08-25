@@ -182,11 +182,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		// nothing to check against if nothing selected
 		if( empty($service_forms) ) return $this->_use_form;
 
-_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
-
 		if(!$this->IS_PLUGIN_FORM($form)) return $this->_use_form;
-
-_log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
 
 		// did we choose this form?
 		if( in_array($this->FORM_ID_PREFIX() . $this->GET_FORM_ID($form), $service_forms) ) {
@@ -213,9 +209,12 @@ _log(__CLASS__, __FUNCTION__, __LINE__, $this->_use_form);
 		// interacting with user submission example -- http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_process/
 		$all_fields = $this->GET_FORM_SUBMISSION($form);
 
-		$result = array_merge((array)$submission, $all_fields);
 
-				_log(__FUNCTION__, $all_fields);
+		// http://php.net/manual/en/language.operators.array.php
+		// rather than `array_merge`, since we may have numeric indices
+		// `+` returns the union of two arrays, preserving left hand side and ignoring duplicate keys from right
+		$result = (array)$all_fields + (array)$submission;
+
 
 		return $result;
 	}
