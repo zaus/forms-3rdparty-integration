@@ -175,7 +175,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @param  array $service_forms list of forms attached to this service
 	 * @return bool                whether or not to use this form with this service
 	 */
-	public function use_form($result, &$form, $service_id, $service_forms) {
+	public function use_form($result, $form, $service_id, $service_forms) {
 		// protect against accidental binding between multiple plugins
 		$this->_use_form = $result;
 
@@ -203,7 +203,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @param  object $form       the form object
 	 * @return array             list of posted submission values to manipulate and map
 	 */
-	public function get_submission(&$submission, &$form){
+	public function get_submission($submission, $form){
 		if(!$this->in_use()) return;
 
 		// interacting with user submission example -- http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_process/
@@ -233,7 +233,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @param  array $service          associative array of the service options
 	 * @return void                   n/a
 	 */
-	public function remote_success(&$form, &$callback_results, &$service) {
+	public function remote_success($form, $callback_results, $service) {
 		### _log(__FUNCTION__, __CLASS__, $form, $callback_results['form']);
 
 		//if requested, attach results to message
@@ -257,7 +257,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @param $service service configuration
 	 * @return $confirmation updated
 	 */
-	protected function update_failure_confirmation($confirmation, &$response, &$service) {
+	protected function update_failure_confirmation($confirmation, $response, $service) {
 
 		if(empty($service['failure'])) {
 			$failure = empty($confirmation)
