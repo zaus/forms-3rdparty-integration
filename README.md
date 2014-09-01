@@ -23,7 +23,7 @@ Send contact form submissions from plugins CF7 or GF to multiple external servic
 
 ## Description ##
 
-Send [Contact Form 7] or [Gravity Forms] Submissions to a 3rd-party Service, like a CRM.  Multiple configurable services, custom field mapping.  Provides hooks and filters for pre/post processing of results.  Allows you to send separate emails, or attach additional results to existing emails.  Comes with a couple examples of hooks for common CRMs (listrak, mailchimp, salesforce).
+Send [Contact Form 7], [Gravity Forms], or [Ninja Forms] Submissions to a 3rd-party Service, like a CRM.  Multiple configurable services, custom field mapping.  Provides hooks and filters for pre/post processing of results.  Allows you to send separate emails, or attach additional results to existing emails.  Comes with a couple examples of hooks for common CRMs (listrak, mailchimp, salesforce).
 
 The plugin essentially makes a remote request (POST) to a service URL, passing along remapped form submission values.
 
@@ -31,6 +31,7 @@ Based on idea by Alex Hager "[How to Integrate Salesforce in Contact Form 7]".
 
 Original plugin, [Contact Form 7: 3rdparty Integration] developed with the assistance of [AtlanticBT].  Current plugin sponsored by [Stephen P. Kane Consulting].  Please submit bugs / support requests to [GitHub issue tracker] in addition to the Wordpress Support Forums because the Forums do not send emails.
 
+[Ninja Forms]: http://ninjaforms.com/ "Ninja Forms"
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
 [How to Integrate Salesforce in Contact Form 7]: http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/ "Original Inspiration"
@@ -43,13 +44,14 @@ Original plugin, [Contact Form 7: 3rdparty Integration] developed with the assis
 ## Installation ##
 
 1. Unzip, upload plugin folder to your plugins directory (`/wp-content/plugins/`)
-2. Make sure [Contact Form 7]  or [Gravity Forms] is installed
+2. Make sure at least one of [Contact Form 7], [Gravity Forms], or [Ninja Forms] is installed
 3. Activate plugin
-4. Go to new admin subpage _"3rdparty Services"_ under the CF7 "Contact" menu or Gravity Forms "Forms" menu and configure services + field mapping.
+4. Go to new admin subpage _"3rdparty Services"_ under the CF7 "Contact" menu or Gravity Forms (or Ninja Forms) "Forms" menu and configure services + field mapping.
 5. Turn on 'debug mode' to get emailed a copy of the submission+response data, until you're satisfied everything works, then turn it off
 
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
+[Ninja Forms]: http://ninjaforms.com/ "Ninja Forms"
 
 ## Frequently Asked Questions ##
 
@@ -58,7 +60,7 @@ Original plugin, [Contact Form 7: 3rdparty Integration] developed with the assis
 Turn on 'debug mode' from the admin page to send you an email with:
 
 * the current plugin configuration, including field mappings
-* the user submission (as provided by CF7/GF)
+* the user submission (as provided by the form plugin, CF7/GF/Ninja)
 * the post as sent to the service (applied mapping)
 * the response sent back from the service, which hopefully includes error codes or explanations (often is the raw HTML of a success/failure page)
 
@@ -149,6 +151,10 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.6.0 ###
+* integration with [Ninja Forms](http://www.ninjaforms.com)
+* refactored CF7 and GF integrations to take advantage of new FPLUGIN base (to make future integrations easier)
 
 ### 1.4.9 ###
 Updated cf7 plugin to match [their latest changes](http://contactform7.com/2014/07/02/contact-form-7-39-beta/).
@@ -245,6 +251,9 @@ base version, just directly submits values
 [Contact Form 7:** 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
 
 ## Upgrade Notice ##
+
+### 1.6.0 ###
+Due to common form extension base, the way forms are identified has been changed.  Upgrading the plugin will DESELECT your form selections in each service.  Please either write down the selections, or [export](https://github.com/zaus/forms-3rdparty-migrate) the settings so you can reapply your selections.
 
 ### 1.4.6 ###
 * PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.
