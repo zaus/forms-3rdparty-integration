@@ -272,7 +272,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	}
 
 	/**
-	 * Add a javascript warning for failures; also send an email to debugging recipient with details
+	 * Add a warning for failures; also send an email to debugging recipient with details
 	 * parameters passed by reference mostly for efficiency, not actually changed (with the exception of $form)
 	 * 
 	 * @param $form reference to plugin object - contains mail details etc
@@ -289,7 +289,13 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		$confirmation = $this->update_failure_confirmation($this->GET_ORIGINAL_ERROR_MESSAGE($form), $response, $service);
 		
 		// TODO: do we add an error, or overwrite the confirmation message?
-		$form = $this->SET_BAD_MESSAGE($form, $confirmation);
+
+		// NOTE: assumes PHP > 5.3.14 in order to use `get_class`, which is already used by
+		// ninjaforms and cf7 extensions, so...maybe overkill...
+		$hook = function_exists('get_class') ? get_class($this) : __CLASS__;
+		if(apply_filters($hook . '_show_warning', true)) {
+			$form = $this->SET_BAD_MESSAGE($form, $confirmation);
+		}
 
 		//notify admin
 		Forms3rdPartyIntegration::$instance->send_service_error(
@@ -331,5 +337,3 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 
 
 }///---	class	Forms3rdpartyIntegration_FPLUGIN
-
-

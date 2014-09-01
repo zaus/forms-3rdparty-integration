@@ -1,231 +1,156 @@
 <?php
 
-// run it
-new Forms3rdpartyIntegration_Gf;
 
 /**
- * Does the work of integrating cf7 with 3rdparty
+ * Does the work of integrating FPLUGIN (Gravity Forms) with 3rdparty
+ * http://www.gravityhelp.com/documentation
  */
-class Forms3rdpartyIntegration_Gf {
+class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 
 	/**
 	 * An identifier (i.e. the admin page slug) for the associated Forms Plugin we're attached to
 	 */
-	const FPLUGIN = 'gf_edit_forms';
+	protected function FPLUGIN() { return 'gf_edit_forms'; }
+	/**
+	 * What to call the submitting plugin in debug email address; defaults to @see FPLUGIN()
+	 */
+	protected function REPORTING_NAME() { return 'GravityForms'; }
 
-
-	function __construct() {
-		add_action(Forms3rdPartyIntegration::$instance->N('init'), array(&$this, 'init'));
-		add_filter(Forms3rdPartyIntegration::$instance->N('declare_subpages'), array(&$this, 'add_subpage'));
-		add_filter(Forms3rdPartyIntegration::$instance->N('use_form'), array(&$this, 'use_form'), 10, 4);
-		add_filter(Forms3rdPartyIntegration::$instance->N('select_forms'), array(&$this, 'select_forms'), 10, 1);
-		add_filter(Forms3rdPartyIntegration::$instance->N('get_submission'), array(&$this, 'get_submission'), 10, 2);
-	}
-
-	public function init(){
-		if( !is_admin() )
-			// use "..._filter" to actually update the form
-			add_filter( 'gform_pre_submission_filter', array(&Forms3rdPartyIntegration::$instance, 'before_send') );
-
-		add_action( 'init', array( &$this, 'other_includes' ), 20 );
-	}
 
 	/**
-	 * Register plugin as a subpage of the given pages
-	 * @param array $subpagesOf list of pages to be a subpage of -- add your target here
-	 * @return the modified list of subpages
+	 * What to hook as "before_send", so this extension will process submissions
 	 */
-	public function add_subpage($subpagesOf) {
-		$subpagesOf []= self::FPLUGIN;
-		return $subpagesOf;
-	}
+	protected function BEFORE_SEND_FILTER() { return 'gform_pre_submission_filter'; }
 
 	/**
-	 * Used to identify form in select box
+	 * Used to identify form in select box, differentiating them from other plugins' forms
 	 */
-	const FORM_ID_PREFIX = 'gf_';
+	protected function FORM_ID_PREFIX() { return 'gf_'; }
 
 	/**
-	 * Helper to render a select list of available cf7 forms
-	 * @param array $forms list of CF7 forms from function wpcf7_contact_forms()
-	 * @param array $eid entry id - for multiple lists on page
-	 * @param array $selected ids of selected fields
+	 * Get the ID from the plugin's form listing
 	 */
-	public function select_forms($forms){
+	protected function GET_FORM_LIST_ID($list_entry) { return $list_entry->id; }
+	/**
+	 * Get the title/name from the plugin's form listing
+	 */
+	protected function GET_FORM_LIST_TITLE($list_entry) { return $list_entry->title; }
+
+	/**
+	 * Get the ID from the form "object"
+	 */
+	protected function GET_FORM_ID($form) { return $form['id']; }
+	/**
+	 * Get the title from the form "object"
+	 */
+	protected function GET_FORM_TITLE($form) { return $form['title']; }
+
+
+	/**
+	 * Returns an array of the plugin's forms, loosely as ID => NAME;
+	 * will be reformatted into ID => NAME by @see GET_FORM_LIST_ID and @see GET_FORM_LIST_TITLE
+	 */
+	protected function GET_PLUGIN_FORMS() {
 		// from /wp-content/plugins/gravityforms/form_list.php, ~line 51
-		$gf_forms = RGFormsModel::get_forms(true, "title");
-		foreach($gf_forms as $f) {
-			$form = array(
-				'id' => self::FORM_ID_PREFIX . $f->id
-				, 'title' => $f->title
-			);
-			// add to list
-			$forms []= $form;
-		}
-
-		return $forms;
-	}//--	end function select_forms
+		return RGFormsModel::get_forms(true, "title");
+	}
 
 
-	private $_use_form;
 
 	/**
-	 * How do decide whether the form is being used
-	 * @param bool $result           the cascading result: true to use this form
-	 * @param  object $form          the CF7 form object
-	 * @param  int $service_id    service identifier (from hook, option setting)
-	 * @param  array $service_forms list of forms attached to this service
-	 * @return bool                whether or not to use this form with this service
+	 * Determine if the form "object" is from the expected plugin (i.e. check its type)
 	 */
-	public function use_form($result, $form, $service_id, $service_forms) {
-		// protect against accidental binding between multiple plugins
-		$this->_use_form = $result;
-
+	protected function IS_PLUGIN_FORM($form) {
 		// TODO: figure out a more bulletproof way to confirm it's a GF form
-		if( !is_array($form) || !isset($form['id']) || empty($form['id']) ) return $this->_use_form;
-
-		// nothing to check against if nothing selected
-		if( empty($service_forms) ) return $this->_use_form;
-
-
-		$this->_use_form = in_array(self::FORM_ID_PREFIX . $form['id'], $service_forms);
-
-		### _log('gf-int using form? ' . ($result ? 'Yes' : 'No'), $service_id, $form['id']);
-
-		// also add subsequent hooks
-		if($this->_use_form) {
-			add_filter(Forms3rdPartyIntegration::$instance->N('remote_success'), array(&$this, 'remote_success'), 10, 3);
-			add_filter(Forms3rdPartyIntegration::$instance->N('remote_failure'), array(&$this, 'remote_failure'), 10, 5);
-		}
-
-		return $this->_use_form;
+		return is_array($form) && isset($form['id']) && !empty($form['id']);
 	}
 
 	/**
-	 * Get the posted submission for the form
-	 * @param  array $submission initial values for submission; may have been provided by hooks
-	 * @param  object $form       the form object
-	 * @return array             list of posted submission values to manipulate and map
+	 * Get the posted data from the form (or POST, wherever it is)
 	 */
-	public function get_submission($submission, $form){
-		if(!$this->_use_form) return;
-
-		// merge with $submission?
-		$result = array_merge((array)$submission, $_POST);
-		return $result;
+	protected function GET_FORM_SUBMISSION($form) {
+		return $_POST;
 	}
 
 	/**
-	 * Late-loading - include hidden plugin really late, so the actual plugin has a chance to work first
-	 * @return void n/a
+	 * How to attach the callback attachment for the indicated service (using `$this->attachment_heading` or `$this->attachment_heading_html` as appropriate)
+	 * @param $form the form "object"
+	 * @param $to_attach the content to attach
+	 * @param $service_name the name of the service to report in the header
+	 * @return $form, altered to contain the attachment
 	 */
-	public function other_includes() {
-		//only run if we haven't before
-	}
-
-	/**
-	 * What to do when the remote request succeeds
-	 * @param  array $callback_results list of 'success' (did it work), 'errors' (list of validation errors), 'attach' (email body attachment), 'message' (when failed)
-	 * @param  object $form             the form object
-	 * @param  array $service          associative array of the service options
-	 * @return void                   n/a
-	 */
-	public function remote_success($form, $callback_results, $service) {
-		### _log(__FUNCTION__, __CLASS__, $form, $callback_results['form']);
-
-		//if requested, attach results to message
-		if(!empty($callback_results['attach'])){
-			// http://www.gravityhelp.com/documentation/page/Notification
-			### _log('attaching to mail body', print_r($cf7->mail, true));
-			if(isset($form['notification']))
-				$form['notification']['message'] .= "\n\n" . (isset($form['notification']['disableAutoformat']) && $form['notification']['disableAutoformat'] ? "<br /><b>Service &quot;{$service['name']}&quot; Results:</b><br />\n":"Service \"{$service['name']}\" Results:\n") . $callback_results['attach'];
-		}
+	protected function ATTACH($form, $to_attach, $service_name) {
+		// http://www.gravityhelp.com/documentation/page/Notification
+		### _log('attaching to mail body', print_r($cf7->mail, true));
+		if(isset($form['notification']))
+			$form['notification']['message'] .= "\n\n"
+				. (
+					isset($form['notification']['disableAutoformat']) && $form['notification']['disableAutoformat']
+					? $this->attachment_heading_html($service_name)
+					: $this->attachment_heading($service_name)
+					)
+				. $to_attach;
 		
-		//if requested, attach message to success notification
-		if( !empty($callback_results['message']) ) :
-			// http://www.gravityhelp.com/documentation/page/Confirmation
-			switch($form['confirmation']['type']) {
-				case 'message':
-					$form['confirmation']['message'] .= $callback_results['message'];
-					break;
-				case 'redirect':
-					$form['confirmation']['queryString'] .= '&response_message=' . urlencode($callback_results['message']);
-					break;
-				case 'page':
-					/// ???
-					break;
-			}
-			
-		endif;// has callback message
-
 		return $form;
 	}
 
-	private function update_confirmation($confirmation, $response, $service) {
-
-		if(empty($service['failure'])) {
-			$failure = $confirmation['type'] == 'message'
-				? $confirmation['message']
-				: $response['safe_message'];
-		}
-		else $failure = Forms3rdPartyIntegration::$instance->format_failure_message($service, $response, 
-			$confirmation['message'] // technically we don't want this for redirect...just don't set it then
-			);
-
-		switch($confirmation['type']) {
+	/**
+	 * How to update the confirmation message for a successful result
+	 * @param $form the form "object"
+	 * @param $message the content to report
+	 * @return $form, altered to contain the message
+	 */
+	protected function SET_OKAY_MESSAGE($form, $message) {
+		// http://www.gravityhelp.com/documentation/page/Confirmation
+		switch($form['confirmation']['type']) {
 			case 'message':
-				// use both html and newlines just in case auto-formatting is disabled
-				$confirmation['message'] = $failure;
+				$form['confirmation']['message'] .= $message;
 				break;
 			case 'redirect':
-				$confirmation['queryString'] .= '&response_failure=' . urlencode($failure);
+				$form['confirmation']['queryString'] .= '&response_message=' . urlencode($message);
 				break;
 			case 'page':
 				/// ???
-				// all we have is the page id
 				break;
 		}
-		return $confirmation;
+
+		return $form;
 	}
 
 	/**
-	 * Add a javascript warning for failures; also send an email to debugging recipient with details
-	 * parameters passed by reference mostly for efficiency, not actually changed (with the exception of $form)
-	 * 
-	 * @param $form reference to plugin object - contains mail details etc
-	 * @param $debug reference to this plugin "debug" option array
-	 * @param $service reference to service settings
-	 * @param $post reference to service post data
-	 * @param $response reference to remote-request response
-	 * @return the updated form reference
+	 * Fetch the original error message for the form
 	 */
-	public function remote_failure($form, $debug, $service, $post, $response){
-		//notify frontend
+	protected function GET_ORIGINAL_ERROR_MESSAGE($form) {
+		// cheat -- because we're going to deal with multiple confirmation messages,
+		// we'll use a placeholder here, and correctly format it later via sprintf if it's present
+		return '%s'; //$form['confirmation'];
+	}
 
-		// http://www.gravityhelp.com/documentation/page/Confirmation
-
+	/**
+	 * How to update the confirmation message for a failure/error
+	 * @param $form the form "object"
+	 * @param $message the content to report
+	 * @return $form, altered to contain the message
+	 */
+	protected function SET_BAD_MESSAGE($form, $message) {
 		// what confirmation do we update? try them all to be safe?
-		$form['confirmation'] = $this->update_confirmation($form['confirmation'], $response, $service);
+		$form['confirmation'] = sprintf($message, $form['confirmation']);
 		foreach($form['confirmations'] as $conf => &$confirmation) {
-			$confirmation = $this->update_confirmation($confirmation, $response, $service);
+			$confirmation = sprintf($message, $confirmation);
 		}
 		
-		//notify admin
-
-		Forms3rdPartyIntegration::$instance->send_service_error(
-			&$service,
-			&$debug,
-			&$post,
-			&$response,
-			$form['title'],
-			isset($form['notification']) ? $form['notification']['to'] : '--na--',
-			'GF'
-			);
-
 		return $form;
-	}//---	end function on_response_failure
+	}
 
-
-
+	/**
+	 * Return the regularly intended confirmation email recipient
+	 */
+	protected function GET_FORM_RECIPIENT($form) {
+		return isset($form['notification']) ? $form['notification']['to'] : '--na--';
+	}
 
 }///---	class	Forms3rdpartyIntegration_Gf
+
+
+// engage!
+new Forms3rdpartyIntegration_Gf;
