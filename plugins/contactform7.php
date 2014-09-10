@@ -22,9 +22,14 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	protected function BEFORE_SEND_FILTER() { return 'wpcf7_before_send_mail'; }
 
 	/**
+	 * static var so we can reuse it in upgrade too
+	 */
+	const FORM_ID_PREFIX = 'cf7_';
+
+	/**
 	 * Used to identify form in select box, differentiating them from other plugins' forms
 	 */
-	protected function FORM_ID_PREFIX() { return 'cf7_'; }
+	protected function FORM_ID_PREFIX() { return self::FORM_ID_PREFIX; }
 
 	/**
 	 * Get the ID from the plugin's form listing

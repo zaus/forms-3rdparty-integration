@@ -24,7 +24,7 @@
 		#pbug($options);
 		
 		
-		update_option( $P.'_settings', $options);
+		update_option( $this->N('settings'), $options);
 		echo '<div id="message" class="updated fade"><p><strong>' . __('Settings saved.') . '</strong></p></div>';
 	}
 	else {

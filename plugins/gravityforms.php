@@ -23,9 +23,14 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	protected function BEFORE_SEND_FILTER() { return 'gform_pre_submission_filter'; }
 
 	/**
+	 * static var so we can reuse it in upgrade too
+	 */
+	const FORM_ID_PREFIX = 'gf_';
+
+	/**
 	 * Used to identify form in select box, differentiating them from other plugins' forms
 	 */
-	protected function FORM_ID_PREFIX() { return 'gf_'; }
+	protected function FORM_ID_PREFIX() { return self::FORM_ID_PREFIX; }
 
 	/**
 	 * Get the ID from the plugin's form listing

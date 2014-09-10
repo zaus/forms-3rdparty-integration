@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, skane
-Version: 1.6.0
+Version: 1.6.1
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -19,10 +19,17 @@ Changelog:
 	1.4.8 - fixes for github issue-6 (php5 strict constructor) and issue-8 (configurable multiple values for same key)
 	1.4.9 - matching cf7 v3.9
 	1.6.0 - better fplugin base, ninjaforms integration (1.5); refactored gf/cf7 to use fplugin base
+	1.6.1 - upgrade path
 */
 
 //declare to instantiate
 Forms3rdPartyIntegration::$instance = new Forms3rdPartyIntegration;
+
+// handle plugin upgrades
+// http://codex.wordpress.org/Function_Reference/register_activation_hook#Examples
+include_once dirname( __FILE__ ) . '/upgrade.php';
+$ugrader = new Forms3rdPartyIntegrationUpgrade();
+$ugrader->register(__FILE__);
 
 class Forms3rdPartyIntegration { 
 
@@ -42,7 +49,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.0';
+	const pluginVersion = '1.6.1';
 
 	
 	/**
@@ -260,12 +267,41 @@ class Forms3rdPartyIntegration {
 		
 	#region =============== Administrative Settings ========
 	
+	private $_settings;
+	private $_services;
 	/**
 	 * Return the plugin settings
 	 */
-	function get_settings(){
-		return get_option($this->N('settings'));
+	function get_settings($stashed = true){
+		// TODO: if this ever changes, make sure to correspondingly fix 'upgrade.php'
+
+		if( $stashed && isset($this->_settings) ) return $this->_settings;
+
+		$this->_settings = get_option($this->N('settings'));
+		// but we only want the actual settings, not the services
+		$this->_settings = $this->_settings['debug'];
+
+		return $this->_settings;
 	}//---	get_settings
+	/**
+	 * Return the service configurations
+	 */
+	function get_services($stashed = true) {
+		if( $stashed && isset($this->_services) ) return $this->_services;
+
+		$this->_services = get_option($this->N('settings'));
+		// but we only want service listing, not the settings
+		// TODO: this will go away once we move to custom post type like CF7
+		unset($this->_services['debug']);
+
+		return $this->_services;
+	}
+	function save_services($services) {
+		$settings = $this->get_settings(false);
+		$settings = $settings + $services;
+		update_option($this->N('settings'), $settings);
+		$this->_services = $services; // replace stash
+	}
 	
 	/**
 	 * The submenu page
@@ -349,22 +385,14 @@ class Forms3rdPartyIntegration {
 	 */
 	function before_send($form){
 		
-		//get field mappings
-		$settings = $this->get_settings();
-		
-		//extract debug settings, remove from loop
-		$debug = $settings['debug'];
-		unset($settings['debug']);
-		
-		//stop mail from being sent?
-		#$cf7->skip_mail = true;
-		
-		### _log(__CLASS__.'::'.__FUNCTION__.' -- form object', $form);
+		//get field mappings and settings
+		$debug = $this->get_settings();
+		$services = $this->get_services();
 		
 		$submission = false;
 
 		//loop services
-		foreach($settings as $sid => $service):
+		foreach($services as $sid => $service):
 			//check if we're supposed to use this service
 			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
 
