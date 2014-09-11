@@ -1,7 +1,17 @@
 <?php
 header('Content-Type: text/plain');
 
-if( rand() < 0.5 ) echo "success\n";
+$as_success = false;
+
+// manually determine success/failure
+if( isset($_REQUEST['fail']) ) {
+	if( 'true' != $_REQUEST['fail'] ) $as_success = true;
+}
+// randomly determine it
+if( rand() < 0.5 ) $as_success = true;
+
+if($as_success) echo "success\n";
+
 ?>
 --- POST ---
 <?php print_r($_POST) ?>

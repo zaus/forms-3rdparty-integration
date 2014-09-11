@@ -23,12 +23,15 @@
 		);
 		#pbug($options);
 		
+		// update_option( $this->N('settings'), $options);
+		$this->save_settings($options['debug']);
+		$this->save_services($options); // technically, this will overwrite the settings section anyway...
 		
-		update_option( $P.'_settings', $options);
 		echo '<div id="message" class="updated fade"><p><strong>' . __('Settings saved.') . '</strong></p></div>';
 	}
 	else {
-		$options = get_option( $this->N('settings') );
+		$options = array('debug' => $this->get_settings()) + $this->get_services();
+		// get_option( $this->N('settings')
 	}
 	
 	

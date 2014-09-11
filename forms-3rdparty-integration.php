@@ -3,9 +3,9 @@
 
 Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
-Description: Send plugin Forms Submissions (Gravity, CF7, etc) to a 3rd-party URL
+Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, skane
-Version: 1.4.9
+Version: 1.6.1
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -18,10 +18,18 @@ Changelog:
 	1.4.7 - totally removing hidden field plugin; js fixes; stripslashes
 	1.4.8 - fixes for github issue-6 (php5 strict constructor) and issue-8 (configurable multiple values for same key)
 	1.4.9 - matching cf7 v3.9
+	1.6.0 - better fplugin base, ninjaforms integration (1.5); refactored gf/cf7 to use fplugin base
+	1.6.1 - upgrade path
 */
 
 //declare to instantiate
 Forms3rdPartyIntegration::$instance = new Forms3rdPartyIntegration;
+
+// handle plugin upgrades
+// http://codex.wordpress.org/Function_Reference/register_activation_hook#Examples
+include_once dirname( __FILE__ ) . '/upgrade.php';
+$ugrader = new Forms3rdPartyIntegrationUpgrade();
+$ugrader->register(__FILE__);
 
 class Forms3rdPartyIntegration { 
 
@@ -41,7 +49,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.4.9';
+	const pluginVersion = '1.6.1';
 
 	
 	/**
@@ -259,12 +267,47 @@ class Forms3rdPartyIntegration {
 		
 	#region =============== Administrative Settings ========
 	
+	private $_settings;
+	private $_services;
 	/**
 	 * Return the plugin settings
 	 */
-	function get_settings(){
-		return get_option($this->N('settings'));
+	function get_settings($stashed = true){
+		// TODO: if this ever changes, make sure to correspondingly fix 'upgrade.php'
+
+		if( $stashed && isset($this->_settings) ) return $this->_settings;
+
+		$this->_settings = get_option($this->N('settings'));
+		// but we only want the actual settings, not the services
+		$this->_settings = $this->_settings['debug'];
+
+		return $this->_settings;
 	}//---	get_settings
+	/**
+	 * Return the service configurations
+	 */
+	function get_services($stashed = true) {
+		if( $stashed && isset($this->_services) ) return $this->_services;
+
+		$this->_services = get_option($this->N('settings'));
+		// but we only want service listing, not the settings
+		// TODO: this will go away once we move to custom post type like CF7
+		unset($this->_services['debug']);
+
+		return $this->_services;
+	}
+	function save_services($services) {
+		$settings = $this->get_settings(false);
+		$merged = array('debug' => $settings) + (array)$services;
+		update_option($this->N('settings'), $merged);
+		$this->_services = $services; // replace stash
+	}
+	function save_settings($settings) {
+		$services = $this->get_services(false);
+		$merged = array('debug' => $settings) + (array)$services;
+		update_option($this->N('settings'), $merged);
+		$this->_settings = $settings; // replace stash
+	}
 	
 	/**
 	 * The submenu page
@@ -347,29 +390,22 @@ class Forms3rdPartyIntegration {
 	 * @see http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/
 	 */
 	function before_send($form){
-		
-		//get field mappings
-		$settings = $this->get_settings();
-		
-		//extract debug settings, remove from loop
-		$debug = $settings['debug'];
-		unset($settings['debug']);
-		
-		//stop mail from being sent?
-		#$cf7->skip_mail = true;
-		
-		### _log(__CLASS__.'::'.__FUNCTION__.' -- form object', $form);
+		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
+
+		//get field mappings and settings
+		$debug = $this->get_settings();
+		$services = $this->get_services();
 		
 		$submission = false;
 
 		//loop services
-		foreach($settings as $sid => $service):
+		foreach($services as $sid => $service):
 			//check if we're supposed to use this service
 			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
 
 			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
 
-			### _log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
+			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
 			if( !$use_this_form ) continue;
 			
 			// only build the submission once; we've moved the call here so it respects use_form
@@ -399,7 +435,7 @@ class Forms3rdPartyIntegration {
 
 				//allow multiple values to attach to same entry
 				if( isset( $post[ $third ] ) ){
-					### echo "multiple @$mid - $fsrc, $third :=\n";
+					###echo "multiple @$mid - $fsrc, $third :=\n";
 
 					if(!is_array($post[$third])) {
 						$post[$third] = array($post[$third]);
@@ -428,14 +464,14 @@ class Forms3rdPartyIntegration {
 				default:
 					// otherwise, find the arrays and implode
 					foreach($post as $f => &$v) {
-						### _log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
+						###_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
 						
 						if(is_array($v)) $v = implode($service['separator'], $v);
 					}
 					break;
 			}
 			
-			### _log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
+			###_log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
 
 			// change args sent to remote post -- add headers, etc: http://codex.wordpress.org/Function_Reference/wp_remote_post
 			// optionally, return an array with 'response_bypass' set to skip the wp_remote_post in favor of whatever you did in the hook
@@ -458,7 +494,7 @@ class Forms3rdPartyIntegration {
 				$response = wp_remote_post( $service['url'], $post_args );
 			}
 
-			### pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
+			###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
 			
 			$can_hook = true;
 			//if something went wrong with the remote-request "physically", warn
@@ -487,7 +523,7 @@ class Forms3rdPartyIntegration {
 			}
 			
 			if($can_hook && isset($service['hook']) && $service['hook']){
-				### _log('performing hooks for:', $this->N.'_service_'.$sid);
+				###_log('performing hooks for:', $this->N.'_service_'.$sid);
 				
 				//hack for pass-by-reference
 				//holder for callback return results
@@ -499,7 +535,7 @@ class Forms3rdPartyIntegration {
 				do_action($this->N('service_a'.$sid), $response['body'], $param_ref);
 				do_action($this->N('service'), $response['body'], $param_ref, $sid);
 				
-				### _log('after success', $form);
+				###_log('after success', $form);
 
 				//check for callback errors; if none, then attach stuff to message if requested
 				if(!empty($callback_results['errors'])){
@@ -510,7 +546,7 @@ class Forms3rdPartyIntegration {
 					$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
 				}
 				else {
-					### _log('checking for attachments', print_r($callback_results, true));
+					###_log('checking for attachments', print_r($callback_results, true));
 					$form = apply_filters($this->N('remote_success'), $form, $callback_results, $service);
 				}
 			}// can hook
@@ -522,7 +558,7 @@ class Forms3rdPartyIntegration {
 			
 		endforeach;	//-- loop services
 		
-		#_log(__LINE__.':'.__FILE__, '	finished before_send');
+		###_log(__LINE__.':'.__FILE__, '	finished before_send', $form);
 		
 		// some plugins expected usage is as filter, so return (modified?) form
 		return $form;
@@ -567,4 +603,62 @@ class Forms3rdPartyIntegration {
 		return $form;
 	}//---	end function on_response_failure
 
+
+	/**
+	 * Email helper for `remote_failure` hooks
+	 * @param array $service			service configuration
+	 * @param array $debug				the debug settings (to get email)
+	 * @param array $post				details sent to 3rdparty
+	 * @param array $response 			remote-request response
+	 * @param string $form_title		name of the form used
+	 * @param string $form_recipient	email of the original form recipient, so we know who to follow up with
+	 * @param debug_from_id				short identifier of the Form plugin which failed (like 'CF7' or 'GF', etc)
+	 *
+	 * @return true if the warning email sent, false otherwise
+	 */
+	public function send_service_error(&$service, &$debug, &$post, &$response, $form_title, $form_recipient, $debug_from_id) {
+		$body = sprintf('There was an error when trying to integrate with the 3rd party service {%2$s} (%3$s).%1$s%1$s**FORM**%1$sTitle: %6$s%1$sIntended Recipient: %7$s%1$sSource: %8$s%1$s%1$s**SUBMISSION**%1$s%4$s%1$s%1$s**RAW RESPONSE**%1$s%5$s'
+			, "\n"
+			, $service['name']
+			, $service['url']
+			, print_r($post, true)
+			, print_r($response, true)
+			, $form_title
+			, $form_recipient
+			, get_bloginfo('url') . $_SERVER['REQUEST_URI']
+			);
+		$subject = sprintf('%s-3rdParty Integration Failure: %s'
+			, $debug_from_id
+			, $service['name']
+			);
+		$headers = array(
+			sprintf('From: "%1$s-3rdparty Debug" <%1$s-3rdparty-debug@%2$s>'
+				, $debug_from_id
+				, str_replace('www.', '', $_SERVER['HTTP_HOST'])
+				)
+			);
+
+		//log if couldn't send debug email
+		if(wp_mail( $debug['email'], $subject, $body, $headers )) return true;
+
+		###$form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
+		error_log(__LINE__.':'.__FILE__ .'	response failed from '.$service['url'].', could not send warning email: ' . print_r($response, true));
+		return false;
+	}//--	fn	send_service_error
+
+
+	/**
+	 * Format the configured service failure message using the $response "safe message" and the plugin's original error message
+	 * @param array $service			service configuration
+	 * @param array $response			remote-request response
+	 * @param string $original_message	the plugin's original failure message
+	 * @return the newly formatted failure message
+	 */
+	public function format_failure_message(&$service, &$response, $original_message) {
+		return sprintf(
+				__($service['failure'], $this->N())
+				, $original_message
+				, __($response['safe_message'], $this->N())
+				);
+	}
 }//end class
