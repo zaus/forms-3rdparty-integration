@@ -106,12 +106,12 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the message
 	 */
 	protected function SET_OKAY_MESSAGE($form, $message) {
-		$this->set_confirmation(&$form['confirmation'], $message);
+		$this->set_confirmation($form['confirmation'], $message);
 
 		return $form;
 	}
 
-	private function set_confirmation($confirmation, $message) {
+	private function set_confirmation(&$confirmation, $message) {
 				// http://www.gravityhelp.com/documentation/page/Confirmation
 		switch($confirmation['type']) {
 			case 'message':
@@ -144,9 +144,9 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 */
 	protected function SET_BAD_MESSAGE($form, $message, $safe_message) {
 		// what confirmation do we update? try them all to be safe?
-		$this->set_confirmation(&$form['confirmation'], sprintf($message, $form['confirmation']['message']));
+		$this->set_confirmation($form['confirmation'], sprintf($message, $form['confirmation']['message']));
 		foreach($form['confirmations'] as $conf => &$confirmation) {
-			$this->set_confirmation(&$confirmation, sprintf($message, $confirmation['message']));
+			$this->set_confirmation($confirmation, sprintf($message, $confirmation['message']));
 		}
 		
 		return $form;
