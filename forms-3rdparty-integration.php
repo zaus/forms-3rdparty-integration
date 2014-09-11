@@ -298,9 +298,15 @@ class Forms3rdPartyIntegration {
 	}
 	function save_services($services) {
 		$settings = $this->get_settings(false);
-		$settings = $settings + $services;
-		update_option($this->N('settings'), $settings);
+		$merged = array('debug' => $settings) + $services;
+		update_option($this->N('settings'), $merged);
 		$this->_services = $services; // replace stash
+	}
+	function save_settings($settings) {
+		$services = $this->get_services(false);
+		$merged = array('debug' => $settings) + $services;
+		update_option($this->N('settings'), $merged);
+		$this->_settings = $settings; // replace stash
 	}
 	
 	/**

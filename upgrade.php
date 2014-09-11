@@ -62,8 +62,8 @@ class Forms3rdPartyIntegrationUpgrade extends WpPluginUpgradeBase {
 		add_action($this->loaded_hook_name(), array(&$this, 'loaded'));
 
 		## test
-		add_action($this->loaded_hook_name(), array(&$this, 'test'));
-		add_action($this->activated_hook_name(), array(&$this, 'test'));
+		### add_action($this->loaded_hook_name(), array(&$this, 'test'));
+		### add_action($this->activated_hook_name(), array(&$this, 'test'));
 	}
 	
 	public function test($action) {
@@ -83,6 +83,8 @@ class Forms3rdPartyIntegrationUpgrade extends WpPluginUpgradeBase {
 		
 		// compare against prev version and do stuff
 		$prev = get_option( Forms3rdPartyIntegration::$instance->N('version') );
+
+		### error_log('prev version ' . $prev . ', current ' . $current);
 
 		// special case: we've never set the version before; not all plugins will need to upgrade in that case
 		if(empty($prev) || version_compare($prev, $current) < 0) {
@@ -126,15 +128,17 @@ class Forms3rdPartyIntegrationUpgrade extends WpPluginUpgradeBase {
 				foreach($services as &$service) {
 					if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing attached
 
-					// from fplugin_base.php:188 or so
-					foreach($prefixes as $prefix) {
-						// if we don't already have it listed with a prefix, add it
-						$exists = in_array($prefix . $service['id'], $service['forms']);
-						if(!$exists) $service['forms'] []= $prefix . $service['id'];
+					$new_forms_list = array();
+					foreach($service['forms'] as &$form_id) {
+						// old style, no prefix?
+						if( ! is_numeric($form_id) ) continue;
+
+						foreach($prefixes as $prefix) {
+							$new_forms_list []= $prefix . $form_id;
+						}
 					}
-					// remove old entry, just to save space
-					## if(in_array($service['id'], $service['forms'])) unset($service['forms'][index-of-entry]);
-				} // foreach
+					$service['forms'] = $new_forms_list;
+				} // foreach service
 
 				// now save the service changes
 				Forms3rdPartyIntegration::$instance->save_services($services);
