@@ -150,6 +150,13 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 * integration with [Ninja Forms](http://www.ninjaforms.com)
 * refactored CF7 and GF integrations to take advantage of new FPLUGIN base (to make future integrations easier)
 * defined upgrade path
+
+Due to the new common form extension base, the way forms are identified in the settings has been changed.
+Deactivating and reactivating the plugin (which happens automatically on upgrade, but not FTP or other direct file changes) should correct your existing settings.
+
+Depending on how many services you have configured, the upgrade path may DESELECT your form selections in each service or otherwise break some configurations.
+If you are concerned this may affect you, please [export](https://github.com/zaus/forms-3rdparty-migrate) the settings so you can reapply your selections.
+
 = 1.4.9 =
 * Updated cf7 plugin to match [their latest changes](http://contactform7.com/2014/07/02/contact-form-7-39-beta/).
     * using new way to access properties
@@ -243,13 +250,16 @@ base version, just directly submits values
 
 
 [Contact Form 7: 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
+[export]: https://github.com/zaus/forms-3rdparty-migrate
+[GitHub issue]: https://github.com/zaus/forms-3rdparty-integration/issues
+
 
 == Upgrade Notice ==
 
 = 1.6.1 =
 Due to the new common form extension base, the way forms are identified in the settings has been changed.
-Depending on how many services you have configured, the upgrade path may DESELECT your form selections in each service or otherwise break some configurations.
-If you are concerned this may affect you, please [export][] the settings so you can reapply your selections.
+Deactivating and reactivating the plugin (which happens automatically on upgrade, but not FTP or other direct file changes) should correct your existing settings.
+See Changelog for more details.
 
 = 1.4.6 =
 * PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.
