@@ -43,11 +43,6 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * Get the title from the form "object"
 	 */
 	abstract protected function GET_FORM_TITLE($form);
-	/**
-	 * Get the intended recipient from the form "object"
-	 */
-	abstract protected function GET_RECIPIENT($form);
-
 
 	/**
 	 * Determine if the form "object" is from the expected plugin (i.e. check its type)
@@ -95,9 +90,9 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	abstract protected function SET_BAD_MESSAGE($form, $message);
 	
 	/**
-	 * Return the regularly intended confirmation email recipient
+	 * Return the regularly intended confirmation email recipient from the form "object"
 	 */
-	abstract protected function GET_FORM_RECIPIENT($Form);
+	abstract protected function GET_RECIPIENT($form);
 
 	/**
 	 * Fetch the original error message for the form
