@@ -86,7 +86,7 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 */
 	protected function ATTACH($form, $to_attach, $service_name) {
 		// http://www.gravityhelp.com/documentation/page/Notification
-		### _log('attaching to mail body', print_r($cf7->mail, true));
+		###_log('attaching to mail body', print_r($cf7->mail, true));
 		if(isset($form['notification']))
 			$form['notification']['message'] .= "\n\n"
 				. (
@@ -106,20 +106,24 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the message
 	 */
 	protected function SET_OKAY_MESSAGE($form, $message) {
-		// http://www.gravityhelp.com/documentation/page/Confirmation
-		switch($form['confirmation']['type']) {
+		$this->set_confirmation(&$form['confirmation'], $message);
+
+		return $form;
+	}
+
+	private function set_confirmation($confirmation, $message) {
+				// http://www.gravityhelp.com/documentation/page/Confirmation
+		switch($confirmation['type']) {
 			case 'message':
-				$form['confirmation']['message'] .= $message;
+				$confirmation['message'] = $message; // already contains confirmation message, don't append
 				break;
 			case 'redirect':
-				$form['confirmation']['queryString'] .= '&response_message=' . urlencode($message);
+				$confirmation['queryString'] .= '&response_message=' . urlencode($message);
 				break;
 			case 'page':
 				/// ???
 				break;
 		}
-
-		return $form;
 	}
 
 	/**
@@ -140,9 +144,9 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 */
 	protected function SET_BAD_MESSAGE($form, $message, $safe_message) {
 		// what confirmation do we update? try them all to be safe?
-		$form['confirmation'] = sprintf($message, $form['confirmation']);
+		$this->set_confirmation(&$form['confirmation'], sprintf($message, $form['confirmation']['message']));
 		foreach($form['confirmations'] as $conf => &$confirmation) {
-			$confirmation = sprintf($message, $confirmation);
+			$this->set_confirmation(&$confirmation, sprintf($message, $confirmation['message']));
 		}
 		
 		return $form;

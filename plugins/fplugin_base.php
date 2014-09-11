@@ -186,7 +186,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 
 		// did we choose this form?
 		if( in_array($this->FORM_ID_PREFIX() . $this->GET_FORM_ID($form), $service_forms) ) {
-			### _log('fplugin-int using form? ' . ($result ? 'Yes' : 'No'), $service_id, $form['id']);
+			###_log('fplugin-int using form? ' . ($result ? 'Yes' : 'No'), $service_id, $form['id']);
 			$this->set_in_use();
 	
 			// also add subsequent hooks
@@ -232,7 +232,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @return void                   n/a
 	 */
 	public function remote_success($form, $callback_results, $service) {
-		### _log(__FUNCTION__, __CLASS__, $form, $callback_results['form']);
+		###_log(__FUNCTION__, __CLASS__, $form, $callback_results);
 
 		//if requested, attach results to message
 		if(!empty($callback_results['attach'])) {
@@ -244,6 +244,8 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		if( !empty($callback_results['message']) ) {
 			$form = $this->SET_OKAY_MESSAGE($form, $callback_results['message']);
 		}
+
+		###_log(__FUNCTION__, $form);
 
 		return $form;
 	}
@@ -265,6 +267,8 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		else $failure =
 				Forms3rdPartyIntegration::$instance->format_failure_message($service, $response, $confirmation);
 
+		###_log(__FUNCTION__, $failure, $confirmation, $response['safe_message']);
+
 		return $failure;
 	}
 
@@ -280,6 +284,8 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @return the updated form reference
 	 */
 	public function remote_failure($form, $debug, $service, $post, $response){
+		###_log(__FUNCTION__, __CLASS__, $form);
+
 		//notify frontend
 
 		//$form->get_form_setting($conf_setting);
@@ -293,6 +299,9 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		if(apply_filters($hook . '_show_warning', true)) {
 			$form = $this->SET_BAD_MESSAGE($form, $confirmation, $response['safe_message']);
 		}
+
+
+		###_log(__FUNCTION__, __CLASS__, __LINE__);
 
 		//notify admin
 		Forms3rdPartyIntegration::$instance->send_service_error(

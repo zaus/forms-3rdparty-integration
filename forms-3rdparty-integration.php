@@ -390,7 +390,8 @@ class Forms3rdPartyIntegration {
 	 * @see http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/
 	 */
 	function before_send($form){
-		
+		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
+
 		//get field mappings and settings
 		$debug = $this->get_settings();
 		$services = $this->get_services();
@@ -404,7 +405,7 @@ class Forms3rdPartyIntegration {
 
 			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
 
-			### _log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
+			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
 			if( !$use_this_form ) continue;
 			
 			// only build the submission once; we've moved the call here so it respects use_form
@@ -434,7 +435,7 @@ class Forms3rdPartyIntegration {
 
 				//allow multiple values to attach to same entry
 				if( isset( $post[ $third ] ) ){
-					### echo "multiple @$mid - $fsrc, $third :=\n";
+					###echo "multiple @$mid - $fsrc, $third :=\n";
 
 					if(!is_array($post[$third])) {
 						$post[$third] = array($post[$third]);
@@ -463,14 +464,14 @@ class Forms3rdPartyIntegration {
 				default:
 					// otherwise, find the arrays and implode
 					foreach($post as $f => &$v) {
-						### _log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
+						###_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
 						
 						if(is_array($v)) $v = implode($service['separator'], $v);
 					}
 					break;
 			}
 			
-			### _log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
+			###_log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
 
 			// change args sent to remote post -- add headers, etc: http://codex.wordpress.org/Function_Reference/wp_remote_post
 			// optionally, return an array with 'response_bypass' set to skip the wp_remote_post in favor of whatever you did in the hook
@@ -493,7 +494,7 @@ class Forms3rdPartyIntegration {
 				$response = wp_remote_post( $service['url'], $post_args );
 			}
 
-			### pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
+			###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
 			
 			$can_hook = true;
 			//if something went wrong with the remote-request "physically", warn
@@ -522,7 +523,7 @@ class Forms3rdPartyIntegration {
 			}
 			
 			if($can_hook && isset($service['hook']) && $service['hook']){
-				### _log('performing hooks for:', $this->N.'_service_'.$sid);
+				###_log('performing hooks for:', $this->N.'_service_'.$sid);
 				
 				//hack for pass-by-reference
 				//holder for callback return results
@@ -534,7 +535,7 @@ class Forms3rdPartyIntegration {
 				do_action($this->N('service_a'.$sid), $response['body'], $param_ref);
 				do_action($this->N('service'), $response['body'], $param_ref, $sid);
 				
-				### _log('after success', $form);
+				###_log('after success', $form);
 
 				//check for callback errors; if none, then attach stuff to message if requested
 				if(!empty($callback_results['errors'])){
@@ -545,7 +546,7 @@ class Forms3rdPartyIntegration {
 					$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
 				}
 				else {
-					### _log('checking for attachments', print_r($callback_results, true));
+					###_log('checking for attachments', print_r($callback_results, true));
 					$form = apply_filters($this->N('remote_success'), $form, $callback_results, $service);
 				}
 			}// can hook
@@ -557,7 +558,7 @@ class Forms3rdPartyIntegration {
 			
 		endforeach;	//-- loop services
 		
-		#_log(__LINE__.':'.__FILE__, '	finished before_send');
+		###_log(__LINE__.':'.__FILE__, '	finished before_send', $form);
 		
 		// some plugins expected usage is as filter, so return (modified?) form
 		return $form;
@@ -640,7 +641,7 @@ class Forms3rdPartyIntegration {
 		//log if couldn't send debug email
 		if(wp_mail( $debug['email'], $subject, $body, $headers )) return true;
 
-		### $form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
+		###$form->additional_settings .= "\n".'on_sent_ok: \'alert("Could not send debug warning '.$service['name'].'");\'';
 		error_log(__LINE__.':'.__FILE__ .'	response failed from '.$service['url'].', could not send warning email: ' . print_r($response, true));
 		return false;
 	}//--	fn	send_service_error
