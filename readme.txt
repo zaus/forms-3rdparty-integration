@@ -92,6 +92,19 @@ If you instead need to combine/nest fields, check out [Forms: 3rdparty Xpost][].
 
 [Forms: 3rdparty Xpost]: http://wordpress.org/plugins/forms-3rd-party-xpost/
 
+= How do I make a GET request instead of POST? =
+
+_from http://wordpress.org/support/topic/method-get?replies=2#post-5996489_
+
+See 'Hooks' section, #5 of http://wordpress.org/plugins/forms-3rdparty-integration/other_notes/ and the [source code](https://github.com/zaus/forms-3rdparty-integration/blob/master/forms-3rdparty-integration.php#L478).
+
+You'll need to perform `wp_remote_get` inside that filter and set `$post_args['response_bypass']` with the response, something like:
+
+    function my_3rdparty_get_override($post_args, $service, $form) {
+        $post_args['response_bypass'] = wp_remote_get($service['url'], $post_args);
+        return $post_args;
+    }
+
 = What about Hidden Fields? =
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
