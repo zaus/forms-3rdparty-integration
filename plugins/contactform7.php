@@ -76,7 +76,9 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	 * Get the posted data from the form (or POST, wherever it is)
 	 */
 	protected function GET_FORM_SUBMISSION($form) {
-		return WPCF7_Submission::get_instance()->get_posted_data();
+		$submission = WPCF7_Submission::get_instance();
+		if($submission) return $submission->get_posted_data();
+		return array('no submission');
 	}
 
 	/**

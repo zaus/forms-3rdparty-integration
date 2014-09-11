@@ -204,17 +204,15 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * @return array             list of posted submission values to manipulate and map
 	 */
 	public function get_submission($submission, $form){
-		if(!$this->in_use()) return;
+		if(!$this->in_use()) return $submission; // return existing data, which is probably from another plugin's hook
 
 		// interacting with user submission example -- http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_process/
 		$all_fields = $this->GET_FORM_SUBMISSION($form);
-
 
 		// http://php.net/manual/en/language.operators.array.php
 		// rather than `array_merge`, since we may have numeric indices
 		// `+` returns the union of two arrays, preserving left hand side and ignoring duplicate keys from right
 		$result = (array)$all_fields + (array)$submission;
-
 
 		return $result;
 	}
