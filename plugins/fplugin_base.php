@@ -43,6 +43,10 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * Get the title from the form "object"
 	 */
 	abstract protected function GET_FORM_TITLE($form);
+	/**
+	 * Get the intended recipient from the form "object"
+	 */
+	abstract protected function GET_RECIPIENT($form);
 
 
 	/**
@@ -311,29 +315,5 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 
 		return $form;
 	}//---	end function on_response_failure
-
-	private function get_recipient($form) {
-
-		// https://github.com/wpninjas/ninja-forms/blob/e4bc7d40c6e91ce0eee7c5f50a8a4c88d449d5f8/includes/display/processing/email-user.php
-
-		$user_mailto = array();
-		$all_fields = $form->get_all_fields();
-		if(is_array($all_fields) AND !empty($all_fields)){
-			foreach($all_fields as $field_id => $user_value) {
-				$field_row = $form->get_field_settings( $field_id );
-
-				if(isset($field_row['data']['send_email'])){
-					$send_email = $field_row['data']['send_email'];
-				}else{
-					$send_email = 0;
-				}
-
-				if($send_email) {
-					array_push($user_mailto, $user_value);
-				}
-			}// foreach
-		}// if
-	}//--	fn	get_recipient
-
 
 }///---	class	Forms3rdpartyIntegration_FPLUGIN

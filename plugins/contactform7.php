@@ -161,7 +161,7 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	/**
 	 * Return the regularly intended confirmation email recipient
 	 */
-	protected function GET_FORM_RECIPIENT($form) {
+	protected function GET_RECIPIENT($form) {
 		$mail = $form->prop('mail');
 		return isset($mail['recipient']) ? $mail['recipient'] : '--na--';
 	}

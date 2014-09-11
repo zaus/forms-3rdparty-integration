@@ -130,7 +130,7 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	/**
 	 * Return the regularly intended confirmation email recipient
 	 */
-	protected function GET_FORM_RECIPIENT($form) {
+	protected function GET_RECIPIENT($form) {
 		// to get the recipient, we need to scan all form fields
 		// and find ones with `send_email` set?
 

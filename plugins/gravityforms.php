@@ -150,7 +150,7 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	/**
 	 * Return the regularly intended confirmation email recipient
 	 */
-	protected function GET_FORM_RECIPIENT($form) {
+	protected function GET_RECIPIENT($form) {
 		return isset($form['notification']) ? $form['notification']['to'] : '--na--';
 	}
 
