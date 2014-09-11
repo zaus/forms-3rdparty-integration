@@ -12,7 +12,7 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 
 **Requires at least:** 3.0
 
-**Tested up to:** 3.8
+**Tested up to:** 3.9.1
 
 **Stable tag:** trunk
 
