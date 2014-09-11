@@ -117,8 +117,11 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	 * Fetch the original error message for the form
 	 */
 	protected function GET_ORIGINAL_ERROR_MESSAGE($form) {
-		$messages = $form->prop('messages');
-		return $messages['mail_sent_ng'];
+		// cheat -- because we're going to deal with multiple confirmation messages,
+		// we'll use a placeholder here, and correctly format it later via sprintf if it's present
+		return '%s';
+		// $messages = $form->prop('messages');
+		// return $messages['mail_sent_ng'];
 	}
 
 	/**
@@ -135,11 +138,6 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 			sprintf("\non_sent_ok: 'if(window.console && console.warn){ console.warn(\"Failed cf7 integration: %s\"); }'"
 			, addslashes($safe_message));
 		
-		_log(array('message' => $message,
-			'slashed' => addslashes($message),
-			'addl' => $form->prop('additional_settings'),
-			'new' => $additional));
-
 		// recreate property array to submit
 		$result = array('additional_settings' => $additional);
 
@@ -147,10 +145,9 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 
 		// kind of a hack -- override the success and fail messages, just in case one or other is displayed
 		$messages = $form->prop('messages');
-		
-		$messages['mail_sent_ok'] = $messages['mail_sent_ng'] = $message;
-		
-		// $messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $messages['mail_sent_ng'];
+		foreach(array('mail_sent_ok', 'mail_sent_ng') as $msg) {
+			$messages[$msg] = sprintf($message, $messages[$msg]);
+		}
 		$result['messages'] = $messages;
 		
 		$form->set_properties($result);
