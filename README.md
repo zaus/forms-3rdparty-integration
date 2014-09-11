@@ -19,11 +19,11 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 **License:** GPLv2 or later
 
 
-Send contact form submissions from plugins CF7 or GF to multiple external services e.g. CRM.  Configurable, custom field mapping, pre/post processing.
+Send contact form submissions from other plugins to multiple external services e.g. CRM.  Configurable, custom field mapping, pre/post processing.
 
 ## Description ##
 
-Send [Contact Form 7], [Gravity Forms], or [Ninja Forms] Submissions to a 3rd-party Service, like a CRM.  Multiple configurable services, custom field mapping.  Provides hooks and filters for pre/post processing of results.  Allows you to send separate emails, or attach additional results to existing emails.  Comes with a couple examples of hooks for common CRMs (listrak, mailchimp, salesforce).
+Send [Contact Form 7], [Gravity Forms], or [Ninja Forms] Submissions to a 3rd-party Service, like a CRM.  Multiple configurable services, custom field mapping.  Provides hooks and filters for pre/post processing of results.  Allows you to send separate emails, or attach additional results to existing emails.  Comes with a couple examples of hooks for common CRMs (listrak, mailchimp, salesforce).  Check out the FAQ section for add-on plugins that extend this functionality, like sending XML/SOAP posts, setting headers, and dynamic fields.
 
 The plugin essentially makes a remote request (POST) to a service URL, passing along remapped form submission values.
 
@@ -98,6 +98,8 @@ See section [Hooks](#hooks).  See plugin folder `/3rd-parties` for example code 
 * However, if you use `[]` as the separator it will instead create multiple keys like `&post-values[]=a&post-values[]=b&...`.
 * Use `[#]` to retain the numerical index:  `&post-values[0]=a&post-values[1]=b&...`
 
+If you instead need to combine/nest fields, check out [Forms: 3rdparty Xpost](http://wordpress.org/plugins/forms-3rd-party-xpost/).
+
 ### What about Hidden Fields? ###
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
@@ -105,6 +107,11 @@ Using hidden fields can provide an easier way to include arbitrary values on a p
 For convenience, you can install the [Contact Form 7 Modules: Hidden Fields].  This plugin originally included the relevant code, but it was causing issues on install, so is no longer bundled with it.
 
 [Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
+
+### How do I export/import settings? ###
+Use the "Forms 3rdparty Migration" plugin http://wordpress.org/plugins/forms-3rdparty-migrate/, which lets you export and import the raw settings as JSON.
+You can also export settings from the original plugin [Contact Form 7: 3rdparty Integration](http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/) and "upgrade" them for this plugin (although > 1.6.1 you will need to reselect forms).
+Also at https://github.com/zaus/forms-3rdparty-migrate
 
 ### How do I map url parameters? ###
 Use the "Dynamic Fields" plugin: http://wordpress.org/plugins/forms-3rdparty-dynamic-fields/
@@ -119,7 +126,7 @@ You can also set headers with "Forms 3rdparty Xpost" plugin: http://wordpress.or
 Also at https://github.com/zaus/forms-3rdparty-xpost
 
 ### How do I show a custom message on the confirmation screen? ###
-You can add custom messaging to the plugin's (GF or CF7) email or screen response with something like:
+The failure message is shown by default if the 3rdparty post did not succeed.  You can add custom messaging to the plugin's (GF, CF7, Ninja) email or success screen response with something like:
 
     class MyPlugin {
         public function MyPlugin() {
@@ -152,9 +159,10 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
-### 1.6.0 ###
+### 1.6.1 ###
 * integration with [Ninja Forms](http://www.ninjaforms.com)
 * refactored CF7 and GF integrations to take advantage of new FPLUGIN base (to make future integrations easier)
+* defined upgrade path
 
 ### 1.4.9 ###
 Updated cf7 plugin to match [their latest changes](http://contactform7.com/2014/07/02/contact-form-7-39-beta/).
@@ -217,7 +225,7 @@ Trying to add some clarity to the admin pages
 
 ### 1.4.0 ###
 
-*** Forked from [Contact Form 7:** 3rdparty Integration].
+* Forked from [Contact Form 7: 3rdparty Integration].
 * Removed 'hidden field plugin' from 1.3.0, as it's specific to CF7.
 
 ### 1.3.2 ###
@@ -248,12 +256,12 @@ added configuration options, multiple services
 base version, just directly submits values
 
 
-[Contact Form 7:** 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
+[Contact Form 7: 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
 
 ## Upgrade Notice ##
 
-### 1.6.0 ###
-Due to common form extension base, the way forms are identified has been changed.  Upgrading the plugin will DESELECT your form selections in each service.  Please either write down the selections, or [export](https://github.com/zaus/forms-3rdparty-migrate) the settings so you can reapply your selections.
+### 1.6.1 ###
+Due to the new common form extension base, the way forms are identified in the settings has been changed.  Upgrading the plugin should correct your existing settings.  Depending on how many services you have configured, the upgrade path may DESELECT your form selections in each service or otherwise break some configurations.  If you are concerned this may affect you, please [export](https://github.com/zaus/forms-3rdparty-migrate) the settings so you can reapply your selections.
 
 ### 1.4.6 ###
 * PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.

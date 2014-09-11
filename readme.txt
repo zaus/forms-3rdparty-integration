@@ -7,11 +7,11 @@ Tested up to: 3.8
 Stable tag: trunk
 License: GPLv2 or later
 
-Send contact form submissions from plugins CF7 or GF to multiple external services e.g. CRM.  Configurable, custom field mapping, pre/post processing.
+Send contact form submissions from other plugins to multiple external services e.g. CRM.  Configurable, custom field mapping, pre/post processing.
 
 == Description ==
 
-Send [Contact Form 7][] or [Gravity Forms][] Submissions to a 3rd-party Service, like a CRM.  Multiple configurable services, custom field mapping.  Provides hooks and filters for pre/post processing of results.  Allows you to send separate emails, or attach additional results to existing emails.  Comes with a couple examples of hooks for common CRMs (listrak, mailchimp, salesforce).
+Send [Contact Form 7][], [Gravity Forms][], or [Ninja Forms][] Submissions to a 3rd-party Service, like a CRM.  Multiple configurable services, custom field mapping.  Provides hooks and filters for pre/post processing of results.  Allows you to send separate emails, or attach additional results to existing emails.  Comes with a couple examples of hooks for common CRMs (listrak, mailchimp, salesforce).  Check out the FAQ section for add-on plugins that extend this functionality, like sending XML/SOAP posts, setting headers, and dynamic fields.
 
 The plugin essentially makes a remote request (POST) to a service URL, passing along remapped form submission values.
 
@@ -19,6 +19,7 @@ Based on idea by Alex Hager "[How to Integrate Salesforce in Contact Form 7][]".
 
 Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the assistance of [AtlanticBT][].  Current plugin sponsored by [Stephen P. Kane Consulting][].  Please submit bugs / support requests to [GitHub issue tracker][] in addition to the Wordpress Support Forums because the Forums do not send emails.
 
+[Ninja Forms]: http://ninjaforms.com/ "Ninja Forms"
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
 [How to Integrate Salesforce in Contact Form 7]: http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/ "Original Inspiration"
@@ -31,13 +32,14 @@ Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the ass
 == Installation ==
 
 1. Unzip, upload plugin folder to your plugins directory (`/wp-content/plugins/`)
-2. Make sure [Contact Form 7][]  or [Gravity Forms][] is installed
+2. Make sure at least one of [Contact Form 7][], [Gravity Forms][], or [Ninja Forms][] is installed
 3. Activate plugin
 4. Go to new admin subpage _"3rdparty Services"_ under the CF7 "Contact" menu or Gravity Forms "Forms" menu and configure services + field mapping.
 5. Turn on 'debug mode' to get emailed a copy of the submission+response data, until you're satisfied everything works, then turn it off
 
 [Contact Form 7]: http://wordpress.org/extend/plugins/contact-form-7/ "Contact Form 7"
 [Gravity Forms]: http://www.gravityforms.com/ "Gravity Forms"
+[Ninja Forms]: http://ninjaforms.com/ "Ninja Forms"
 
 == Frequently Asked Questions ==
 
@@ -46,7 +48,7 @@ Original plugin, [Contact Form 7: 3rdparty Integration][] developed with the ass
 Turn on 'debug mode' from the admin page to send you an email with:
 
 * the current plugin configuration, including field mappings
-* the user submission (as provided by CF7/GF)
+* the user submission (as provided by CF7/GF/Ninja)
 * the post as sent to the service (applied mapping)
 * the response sent back from the service, which hopefully includes error codes or explanations (often is the raw HTML of a success/failure page)
 
@@ -86,6 +88,10 @@ See section [Hooks][].  See plugin folder `/3rd-parties` for example code for so
 * However, if you use `[]` as the separator it will instead create multiple keys like `&post-values[]=a&post-values[]=b&...`.
 * Use `[#]` to retain the numerical index:  `&post-values[0]=a&post-values[1]=b&...`
 
+If you instead need to combine/nest fields, check out [Forms: 3rdparty Xpost][].
+
+[Forms: 3rdparty Xpost]: http://wordpress.org/plugins/forms-3rd-party-xpost/
+
 = What about Hidden Fields? =
 
 Using hidden fields can provide an easier way to include arbitrary values on a per-form basis, rather than a single "Is Value?" in the Service mapping, as you can then put your form-specific value in the hidden field, and map the hidden field name generically.
@@ -93,6 +99,11 @@ Using hidden fields can provide an easier way to include arbitrary values on a p
 For convenience, you can install the [Contact Form 7 Modules: Hidden Fields][].  This plugin originally included the relevant code, but it was causing issues on install, so is no longer bundled with it.
 
 [Contact Form 7 Modules: Hidden Fields]: http://wordpress.org/extend/plugins/contact-form-7-modules/ "Hidden Fields from CF7 Modules"
+
+= How do I export/import settings? =
+Use the "Forms 3rdparty Migration" plugin http://wordpress.org/plugins/forms-3rdparty-migrate/, which lets you export and import the raw settings as JSON.
+You can also export settings from the original plugin [Contact Form 7: 3rdparty Integration][] and "upgrade" them for this plugin (although > 1.6.1 you will need to reselect forms).
+Also at https://github.com/zaus/forms-3rdparty-migrate
 
 = How do I map url parameters? =
 Use the "Dynamic Fields" plugin: http://wordpress.org/plugins/forms-3rdparty-dynamic-fields/
@@ -107,7 +118,7 @@ You can also set headers with "Forms 3rdparty Xpost" plugin: http://wordpress.or
 Also at https://github.com/zaus/forms-3rdparty-xpost
 
 = How do I show a custom message on the confirmation screen? =
-You can add custom messaging to the plugin's (GF or CF7) email or screen response with something like:
+The failure message is shown by default if the 3rdparty post did not succeed.  You can add custom messaging to the plugin's (GF, CF7, Ninja) email or success screen response with something like:
 
     class MyPlugin {
         public function MyPlugin() {
@@ -123,6 +134,8 @@ You can add custom messaging to the plugin's (GF or CF7) email or screen respons
     }
     new MyPlugin(); // attach hook
 
+[Contact Form 7: 3rdparty Integration]: http://wordpress.org/extend/plugins/contact-form-7-3rd-party-integration/ "CF7 Integration"
+
 == Screenshots ==
 
 __Please note these screenshots are from the previous plugin incarnation, but are still essentially valid.__
@@ -133,11 +146,14 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 == Changelog ==
-
+= 1.6.1 =
+* integration with [Ninja Forms](http://www.ninjaforms.com)
+* refactored CF7 and GF integrations to take advantage of new FPLUGIN base (to make future integrations easier)
+* defined upgrade path
 = 1.4.9 =
-Updated cf7 plugin to match [their latest changes](http://contactform7.com/2014/07/02/contact-form-7-39-beta/).
-* using new way to access properties
-* removed remaining support for all older versions of CF7 (it was just getting complicated)
+* Updated cf7 plugin to match [their latest changes](http://contactform7.com/2014/07/02/contact-form-7-39-beta/).
+    * using new way to access properties
+    * removed remaining support for all older versions of CF7 (it was just getting complicated)
 
 = 1.4.8.1 =
 Trying to add some clarity to the admin pages
@@ -230,10 +246,15 @@ base version, just directly submits values
 
 == Upgrade Notice ==
 
+= 1.6.1 =
+Due to the new common form extension base, the way forms are identified in the settings has been changed.
+Depending on how many services you have configured, the upgrade path may DESELECT your form selections in each service or otherwise break some configurations.
+If you are concerned this may affect you, please [export][] the settings so you can reapply your selections.
+
 = 1.4.6 =
 * PHP 5.4 errors with (deprecated) passing arguments by reference should be fixed.
 * Behavior change when reporting `$post` args in `on_response_failure` and similar -- now returns `$post_args`, which contains the header+body array as sent to new hook `...service_filter_args`
-* Please submit a [GitHub issue](https://github.com/zaus/forms-3rdparty-integration/issues) in addition to making a support forum request if something is broken.
+* Please submit a [GitHub issue][] in addition to making a support forum request if something is broken.
 
 = 1.4.5 =
 You may need to configure the 'failure message', or at least refresh and save the admin settings, to avoid PHP 'empty index' warnings.
@@ -246,6 +267,9 @@ See 1.3.0 notice
 
 = 1.3.0 =
 Fixes should accomodate CF7 < v1.2 and changes to >= v1.2 -- please test and check when upgrading, and report any errors to the plugin forum.
+
+[export]: https://github.com/zaus/forms-3rdparty-migrate
+[GitHub issue]: https://github.com/zaus/forms-3rdparty-integration/issues
 
 == Hooks ==
 
