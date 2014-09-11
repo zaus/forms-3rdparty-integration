@@ -131,7 +131,13 @@ class Forms3rdPartyIntegrationUpgrade extends WpPluginUpgradeBase {
 					$new_forms_list = array();
 					foreach($service['forms'] as &$form_id) {
 						// old style, no prefix?
-						if( ! is_numeric($form_id) ) continue;
+						if( ! is_numeric($form_id) ) {
+							// don't really need to preserve this, since this shouldn't ever happen
+							// unless someone migrated and messed with settings on purpose
+							// any any invalid values will disappear the next time the plugin settings are saved
+							$new_forms_list []= $form_id;
+							continue;
+						}
 
 						foreach($prefixes as $prefix) {
 							$new_forms_list []= $prefix . $form_id;
