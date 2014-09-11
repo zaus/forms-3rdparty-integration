@@ -85,9 +85,10 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	 * How to update the confirmation message for a failure/error
 	 * @param $form the form "object"
 	 * @param $message the content to report
+	 * @param $safe_message a short, sanitized error message, which may already be part of the $message
 	 * @return $form, altered to contain the message
 	 */
-	abstract protected function SET_BAD_MESSAGE($form, $message);
+	abstract protected function SET_BAD_MESSAGE($form, $message, $safe_message);
 	
 	/**
 	 * Return the regularly intended confirmation email recipient from the form "object"
@@ -260,12 +261,11 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 
 		if(empty($service['failure'])) {
 			$failure = empty($confirmation)
-				? $confirmation
-				: $response['safe_message'];
+				? $response['safe_message']
+				: $confirmation;
 		}
-		else $failure = Forms3rdPartyIntegration::$instance->format_failure_message($service, $response, 
-			$confirmation
-			);
+		else $failure =
+				Forms3rdPartyIntegration::$instance->format_failure_message($service, $response, $confirmation);
 
 		return $failure;
 	}
@@ -293,7 +293,7 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		// ninjaforms and cf7 extensions, so...maybe overkill...
 		$hook = function_exists('get_class') ? get_class($this) : __CLASS__;
 		if(apply_filters($hook . '_show_warning', true)) {
-			$form = $this->SET_BAD_MESSAGE($form, $confirmation);
+			$form = $this->SET_BAD_MESSAGE($form, $confirmation, $response['safe_message']);
 		}
 
 		//notify admin

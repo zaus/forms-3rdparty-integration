@@ -135,9 +135,10 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 * How to update the confirmation message for a failure/error
 	 * @param $form the form "object"
 	 * @param $message the content to report
+	 * @param $safe_message a short, sanitized error message, which may already be part of the $message
 	 * @return $form, altered to contain the message
 	 */
-	protected function SET_BAD_MESSAGE($form, $message) {
+	protected function SET_BAD_MESSAGE($form, $message, $safe_message) {
 		// what confirmation do we update? try them all to be safe?
 		$form['confirmation'] = sprintf($message, $form['confirmation']);
 		foreach($form['confirmations'] as $conf => &$confirmation) {

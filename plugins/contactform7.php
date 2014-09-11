@@ -125,14 +125,21 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	 * How to update the confirmation message for a failure/error
 	 * @param $form the form "object"
 	 * @param $message the content to report
+	 * @param $safe_message a short, sanitized error message, which may already be part of the $message
 	 * @return $form, altered to contain the message
 	 */
-	protected function SET_BAD_MESSAGE($form, $message) {
+	protected function SET_BAD_MESSAGE($form, $message, $safe_message) {
 
-		$additional = sprintf("%s\non_sent_ok: 'if(window.console && console.warn){ console.warn(\"Failed cf7 integration: %s\"); }'"
-			, $form->prop('additional_settings')
-			, $message);
+		// make sure $safe_message doesn't have any newlines...
+		$additional = $form->prop('additional_settings') . 
+			sprintf("\non_sent_ok: 'if(window.console && console.warn){ console.warn(\"Failed cf7 integration: %s\"); }'"
+			, addslashes($safe_message));
 		
+		_log(array('message' => $message,
+			'slashed' => addslashes($message),
+			'addl' => $form->prop('additional_settings'),
+			'new' => $additional));
+
 		// recreate property array to submit
 		$result = array('additional_settings' => $additional);
 
@@ -141,14 +148,7 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 		// kind of a hack -- override the success and fail messages, just in case one or other is displayed
 		$messages = $form->prop('messages');
 		
-		$messages['mail_sent_ok'] =
-		$messages['mail_sent_ng'] = 
-
-			Forms3rdPartyIntegration::$instance->format_failure_message(
-				$service,
-				$response,
-				$messages['mail_sent_ng']
-				);
+		$messages['mail_sent_ok'] = $messages['mail_sent_ng'] = $message;
 		
 		// $messages['mail_sent_ok'] = isset($service['failure']) ? $service['failure'] : $messages['mail_sent_ng'];
 		$result['messages'] = $messages;
