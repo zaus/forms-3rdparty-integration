@@ -70,7 +70,7 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 		// http://ninjaforms.com/documentation/developer-api/code-examples/modifying-form-settings-and-behavior/
 		// need to hook before `ninja_form_process`?
 		// although may be able to use hook `ninja_forms_user_email` in post_process -- https://github.com/wpninjas/ninja-forms/blob/e4bc7d40c6e91ce0eee7c5f50a8a4c88d449d5f8/includes/display/processing/filter-msgs.php
-		$setting = 'user_email_msg';
+		$setting = 'admin_email_msg'; //'user_email_msg'?;
 		$body = $form->get_form_setting($setting);
 
 
@@ -82,10 +82,9 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 					: $this->attachment_heading($service_name)
 				)
 				. $to_attach;
-			$form->update_form_setting($setting);
+			$form->update_form_setting($setting, $body);
 		}
 
-		
 		return $form; // just to match expectation
 	}
 
