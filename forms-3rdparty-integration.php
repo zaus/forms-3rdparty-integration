@@ -4,7 +4,7 @@
 Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
-Author: zaus, atlanticbt, skane
+Author: zaus, atlanticbt, spkane
 Version: 1.6.1
 Author URI: http://drzaus.com
 Changelog:
