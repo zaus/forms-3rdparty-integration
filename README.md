@@ -4,7 +4,7 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 
 ----
 
-**Contributors:** zaus, atlanticbt, skane
+**Contributors:** zaus, atlanticbt, spkane
 
 **Donate link:** http://drzaus.com/donate
 

@@ -1,5 +1,5 @@
 === Forms: 3rd-Party Integration ===
-Contributors: zaus, atlanticbt, skane
+Contributors: zaus, atlanticbt, spkane
 Donate link: http://drzaus.com/donate
 Tags: contact form, form, contact form 7, CF7, gravity forms, GF, CRM, mapping, 3rd-party service, services, remote request
 Requires at least: 3.0
