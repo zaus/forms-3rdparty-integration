@@ -393,27 +393,29 @@ class Forms3rdPartyIntegration {
 		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
 
 		//get field mappings and settings
-		$debug = $this->get_settings();
 		$services = $this->get_services();
 		
-		$submission = false;
+		// unlikely, but skip handling if nothing to do
+		if(empty($services)) return $form;
+
+		$debug = $this->get_settings();
+
+		// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
+		// only build the submission once
+		$submission = apply_filters($this->N('get_submission'), array(), $form);
 
 		//loop services
 		foreach($services as $sid => $service):
 			//check if we're supposed to use this service
 			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
 
+			// it's more like "use_this_service", actually...
 			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
+			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
 
 			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
 			if( !$use_this_form ) continue;
 			
-			// only build the submission once; we've moved the call here so it respects use_form
-			if(false === $submission) {
-				// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
-				$submission = apply_filters($this->N('get_submission'), array(), $form);
-			}
-
 			$post = array();
 			
 			$service['separator'] = $debug['separator']; // alias here for reporting
