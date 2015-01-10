@@ -49,7 +49,9 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	/**
 	 * Determine if the form "object" is from the expected plugin (i.e. check its type)
 	 */
-	protected function IS_PLUGIN_FORM($form) { return 'Ninja_Forms_Processing' == get_class($form); }
+	protected function IS_PLUGIN_FORM($form) { 
+		return is_object($form) && 'Ninja_Forms_Processing' == get_class($form);
+	}
 
 	/**
 	 * Get the posted data from the form (or POST, wherever it is)
