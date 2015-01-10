@@ -3,7 +3,7 @@ Contributors: zaus, atlanticbt, spkane
 Donate link: http://drzaus.com/donate
 Tags: contact form, form, contact form 7, CF7, gravity forms, GF, CRM, mapping, 3rd-party service, services, remote request
 Requires at least: 3.0
-Tested up to: 3.9.1
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 
@@ -159,6 +159,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 == Changelog ==
+= 1.6.3 =
+* fix form plugin checking when multiple contact form plugins used at same time
+
 = 1.6.1 =
 * integration with [Ninja Forms](http://www.ninjaforms.com)
 * refactored CF7 and GF integrations to take advantage of new FPLUGIN base (to make future integrations easier)

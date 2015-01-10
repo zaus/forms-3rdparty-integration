@@ -69,7 +69,7 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	 * Determine if the form "object" is from the expected plugin (i.e. check its type)
 	 */
 	protected function IS_PLUGIN_FORM($form) {
-		return 'WPCF7_ContactForm' == get_class($form);
+		return is_object($form) && 'WPCF7_ContactForm' == get_class($form);
 	}
 
 	/**
