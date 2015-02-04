@@ -136,7 +136,7 @@
 					return ui;
 				}
 			, placeholder: "ui-state-highlight"
-		}).disableSelection()
+		})
 			.end()
 			.find('div.meta-box-sortables').sortable({distance:30, tolerance:'pointer'});
 
