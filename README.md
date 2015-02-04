@@ -12,7 +12,7 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 
 **Requires at least:** 3.0
 
-**Tested up to:** 3.9.1
+**Tested up to:** 4.1
 
 **Stable tag:** trunk
 
@@ -171,6 +171,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.6.3 ###
+* fix form plugin checking when multiple contact form plugins used at same time
 
 ### 1.6.1 ###
 * integration with [Ninja Forms](http://www.ninjaforms.com)
