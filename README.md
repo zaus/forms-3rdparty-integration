@@ -172,6 +172,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.6.3.1 ###
+* Fix for longstanding (?) Firefox admin bug preventing field editing
+
 ### 1.6.3 ###
 * fix form plugin checking when multiple contact form plugins used at same time
 
