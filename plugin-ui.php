@@ -226,7 +226,7 @@
 			</fieldset><!-- Mappings -->
 			
 			<section class="info example hook-example">
-			<fieldset class="postbox"><legend class="hndle"><span>Hooks</span></legend>
+			<fieldset class="postbox"><legend class="hndle"><code>Hooks</code></legend>
 				<div class="inside">
 					<div class="description">
 						<p>The following are examples of action callbacks and content filters you can use to customize this service.</p>

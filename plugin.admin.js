@@ -117,7 +117,7 @@
 		$postbox
 			.addClass('collapsed')
 			.each(function(i,o) {
-				$(o).find('.hndle')
+				$(o).find('.hndle').first()
 					.prepend('<span>[' + ($(o).data('icon') || '+') + ']</span> ')
 					.addClass('actn')
 					.data('actn', "toggle")
