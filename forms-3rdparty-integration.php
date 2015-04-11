@@ -401,8 +401,7 @@ class Forms3rdPartyIntegration {
 		$debug = $this->get_settings();
 
 		// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
-		// only build the submission once
-		$submission = apply_filters($this->N('get_submission'), array(), $form);
+		$submission = false;
 
 		//loop services
 		foreach($services as $sid => $service):
@@ -411,11 +410,18 @@ class Forms3rdPartyIntegration {
 
 			// it's more like "use_this_service", actually...
 			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
-			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
-
+			
 			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
 			if( !$use_this_form ) continue;
 			
+			// only build the submission once, now that we know we're going to use this service/form
+			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form);
+	
+			// now we can conditionally check whether use the service based upon submission data
+			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
+			if( !$use_this_form ) continue;
+			
+			// populate the 3rdparty post args
 			$post = array();
 			
 			$service['separator'] = $debug['separator']; // alias here for reporting
