@@ -13,8 +13,11 @@ if( rand() < 0.5 ) $as_success = true;
 if($as_success) echo "success\n";
 
 ?>
---- POST ---
+--- POST (array) ---
 <?php print_r($_POST) ?>
+
+--- POST (raw) ---
+<?php print_r(file_get_contents('php://input')) ?>
 
 --- GET ---
 <?php print_r($_GET) ?>

@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.6.3.1
+Version: 1.6.4
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -20,6 +20,8 @@ Changelog:
 	1.4.9 - matching cf7 v3.9
 	1.6.0 - better fplugin base, ninjaforms integration (1.5); refactored gf/cf7 to use fplugin base
 	1.6.1 - upgrade path
+	1.6.3 - fixes, updates, ff bugfix
+	1.6.4 - conditional submission hook
 */
 
 //declare to instantiate
@@ -49,7 +51,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.3.1';
+	const pluginVersion = '1.6.4';
 
 	
 	/**
@@ -140,7 +142,6 @@ class Forms3rdPartyIntegration {
 					, 'url'=>plugins_url('3rd-parties/service_test.php', __FILE__)
 					, 'success'=>''
 					, 'forms' => array()
-					, 'hook' => false
 					, 'timeout' => self::DEFAULT_TIMEOUT // timeout in seconds
 					, 'mapping' => array(
 						array(self::PARAM_LBL=>'The submitter name',self::PARAM_SRC=>'your-name', self::PARAM_3RD=>'name')
@@ -393,9 +394,14 @@ class Forms3rdPartyIntegration {
 		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
 
 		//get field mappings and settings
-		$debug = $this->get_settings();
 		$services = $this->get_services();
 		
+		// unlikely, but skip handling if nothing to do
+		if(empty($services)) return $form;
+
+		$debug = $this->get_settings();
+
+		// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
 		$submission = false;
 
 		//loop services
@@ -403,17 +409,20 @@ class Forms3rdPartyIntegration {
 			//check if we're supposed to use this service
 			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
 
+			// it's more like "use_this_service", actually...
 			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
-
+			
 			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
 			if( !$use_this_form ) continue;
 			
-			// only build the submission once; we've moved the call here so it respects use_form
-			if(false === $submission) {
-				// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
-				$submission = apply_filters($this->N('get_submission'), array(), $form);
-			}
-
+			// only get the submission once, now that we know we're going to use this service/form
+			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form);
+	
+			// now we can conditionally check whether use the service based upon submission data
+			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
+			if( !$use_this_form ) continue;
+			
+			// populate the 3rdparty post args
 			$post = array();
 			
 			$service['separator'] = $debug['separator']; // alias here for reporting
@@ -485,8 +494,11 @@ class Forms3rdPartyIntegration {
 			);
 
 			//remote call
+			
+			// once more conditionally check whether use the service based upon (mapped) submission data
+			if(false === $post_args) continue;
 			// optional bypass -- replace with a SOAP call, etc
-			if(isset($post_args['response_bypass'])) {
+			elseif(isset($post_args['response_bypass'])) {
 				$response = $post_args['response_bypass'];
 			}
 			else {
@@ -522,7 +534,7 @@ class Forms3rdPartyIntegration {
 				}
 			}
 			
-			if($can_hook && isset($service['hook']) && $service['hook']){
+			if($can_hook){
 				###_log('performing hooks for:', $this->N.'_service_'.$sid);
 				
 				//hack for pass-by-reference

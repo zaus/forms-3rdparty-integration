@@ -14,7 +14,6 @@
 			,'mapping'
 			, 'success'
 			, 'failure'
-			, 'hook'
 			, 'forms'
 			, 'timeout'
 			,self::PARAM_LBL
@@ -86,7 +85,6 @@
 				, 'success'=>''
 				, 'failure' => ''
 				, 'forms' => array()
-				, 'hook' => false
 				, 'timeout' => self::DEFAULT_TIMEOUT
 				, 'mapping' => array()
 				));
@@ -142,11 +140,6 @@
 						<label for="timeout-<?php echo $eid?>">Request timeout</label>
 						<input id="timout-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][timeout]" value="<?php echo esc_attr($entity['timeout'])?>" />
 						<em class="description"><?php echo sprintf(__('How long (in seconds) to attempt the 3rd-party remote request before giving up.  Default %d', $P), self::DEFAULT_TIMEOUT);?>.</em>
-					</div>
-					<div class="field">
-						<label for="hook-<?php echo $eid?>">Allow Hooks?</label>
-						<input id="hook-<?php echo $eid?>" type="checkbox" class="checkbox hook change-actn" data-actn="toggle-sibling" data-after=".hook-example" data-rel=".postbox" name="<?php echo $P?>[<?php echo $eid?>][hook]" value="true"<?php if(isset($entity['hook']) && $entity['hook']) echo ' checked="checked"'; ?> />
-						<em class="description"><?php _e('Allow hooks - see bottom of section for example', $P);?>:</em>
 					</div>
 				</div>
 			</fieldset><!-- Service -->
@@ -232,8 +225,8 @@
 				</table>
 			</fieldset><!-- Mappings -->
 			
-			<section class="info example hook-example<?php if(!isset($entity['hook']) || empty($entity['hook'])) echo ' collapsed'?>">
-			<fieldset><legend><span>Hooks</span></legend>
+			<section class="info example hook-example">
+			<fieldset class="postbox"><legend class="hndle"><code>Hooks</code></legend>
 				<div class="inside">
 					<div class="description">
 						<p>The following are examples of action callbacks and content filters you can use to customize this service.</p>
