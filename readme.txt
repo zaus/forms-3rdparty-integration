@@ -148,7 +148,7 @@ The failure message is shown by default if the 3rdparty post did not succeed.  Y
     new MyPlugin(); // attach hook
 
 = How do I conditionally submit? (if field == ...) =
-Use hook 'use_submission':
+Use hook '...use_submission' to check the form submission (pre-mapping), making sure to pick the appropriate scenario, like:
 
     add_filter('Forms3rdPartyIntegration_use_submission', 'f3i_conditional_submit', 10, 3);
     function f3i_conditional_submit($use_this_form, $submission, $sid) {
@@ -161,7 +161,18 @@ Use hook 'use_submission':
         // if there was a value for it (e.g. for checkboxes) -- use
         if(isset($submission['if-send']) && !empty($submission['if-send'])) return $use_this_form; // or true, i guess
         
-        return $use_this_form;
+        return $use_this_form; // or `false`, depending on your desired default
+    }
+
+If you want to check _after_ the fields have been mapped, you can "reuse" the hook '...service_filter_args' and return `false` to skip, rather than bypass:
+
+    add_filter('Forms3rdPartyIntegration_service_filter_args', 'f3i_conditional_post', 10, 3);
+    function f3i_conditional_post($post_args, $service, $form) {
+        // your skip scenarios, checking `body` subarray instead
+        if(isset($post_args['body']['maybe-send']) && ...) return false;
+
+        // regular behavior
+        return $post_args;
     }
 
 

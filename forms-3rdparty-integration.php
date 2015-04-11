@@ -142,7 +142,6 @@ class Forms3rdPartyIntegration {
 					, 'url'=>plugins_url('3rd-parties/service_test.php', __FILE__)
 					, 'success'=>''
 					, 'forms' => array()
-					, 'hook' => false
 					, 'timeout' => self::DEFAULT_TIMEOUT // timeout in seconds
 					, 'mapping' => array(
 						array(self::PARAM_LBL=>'The submitter name',self::PARAM_SRC=>'your-name', self::PARAM_3RD=>'name')
@@ -416,7 +415,7 @@ class Forms3rdPartyIntegration {
 			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
 			if( !$use_this_form ) continue;
 			
-			// only build the submission once, now that we know we're going to use this service/form
+			// only get the submission once, now that we know we're going to use this service/form
 			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form);
 	
 			// now we can conditionally check whether use the service based upon submission data
@@ -495,8 +494,11 @@ class Forms3rdPartyIntegration {
 			);
 
 			//remote call
+			
+			// once more conditionally check whether use the service based upon (mapped) submission data
+			if(false === $post_args) continue;
 			// optional bypass -- replace with a SOAP call, etc
-			if(isset($post_args['response_bypass'])) {
+			elseif(isset($post_args['response_bypass'])) {
 				$response = $post_args['response_bypass'];
 			}
 			else {
@@ -532,7 +534,7 @@ class Forms3rdPartyIntegration {
 				}
 			}
 			
-			if($can_hook && isset($service['hook']) && $service['hook']){
+			if($can_hook){
 				###_log('performing hooks for:', $this->N.'_service_'.$sid);
 				
 				//hack for pass-by-reference
