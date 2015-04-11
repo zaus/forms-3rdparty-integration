@@ -190,7 +190,8 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 == Changelog ==
 
 = 1.6.4 =
-* conditional submission hook
+* conditional submission hooks (see FAQ)
+* removed somewhat useless 'can-hook' setting, since I assume everybody wants success processing.  Comment via github or author website contact form if you really need it.
 
 = 1.6.3.1 =
 * Fix for longstanding (?) Firefox admin bug (issue #36) preventing field editing/input selection
