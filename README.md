@@ -155,6 +155,23 @@ The failure message is shown by default if the 3rdparty post did not succeed.  Y
     }
     new MyPlugin(); // attach hook
 
+### How do I conditionally submit? (if field == ...) ###
+Use hook 'use_submission':
+
+    add_filter('Forms3rdPartyIntegration_use_submission', 'f3i_conditional_submit', 10, 3);
+    function f3i_conditional_submit($use_this_form, $submission, $sid) {
+        // if there was a specific value -- skip
+        if(isset($submission['maybe-send']) && 'no' == $submission['maybe-send']) return false;
+        // if there was a specific value -- use
+        if(isset($submission['maybe-send']) && 'yes' == $submission['maybe-send']) return $use_this_form; // or true, i guess
+        // if there was a value for it (e.g. for checkboxes) -- skip
+        if(isset($submission['if-not-send'])) return false;
+        // if there was a value for it (e.g. for checkboxes) -- use
+        if(isset($submission['if-send']) && !empty($submission['if-send'])) return $use_this_form; // or true, i guess
+        
+        return $use_this_form;
+    }
+
 
 ## Screenshots ##
 
@@ -171,6 +188,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.6.4 ###
+* conditional submission hook
 
 ### 1.6.3.1 ###
 * Fix for longstanding (?) Firefox admin bug (issue #36) preventing field editing/input selection
