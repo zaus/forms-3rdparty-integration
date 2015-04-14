@@ -189,6 +189,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.6.4.1 =
+* quick fix for global section toggle bug
+
 = 1.6.4 =
 * conditional submission hooks (see FAQ)
 * removed somewhat useless 'can-hook' setting, since I assume everybody wants success processing.  Comment via github or author website contact form if you really need it.
