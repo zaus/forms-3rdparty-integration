@@ -51,7 +51,7 @@
 		<?php wp_nonce_field($P, $P.'_nonce'); ?>
 			
 		
-		<fieldset class="postbox"><legend class="hndle"><span>Global Values</span></legend><div class="inside">
+		<fieldset class="postbox"><legend><span>Global Values</span></legend><div class="inside">
 			<?php
 			$debugOptions = $options['debug'];
 			//remove from list for looping

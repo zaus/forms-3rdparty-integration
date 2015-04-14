@@ -112,7 +112,7 @@
 		$plugin.on('change', '.change-actn', lib.action); // custom target to avoid checkbox pitfall...ugh
 
 		//collapse all metabox sections initially
-		var $postbox = $plugin.find('.postbox');
+		var $postbox = $plugin.find('.postbox').not(function(i) { return i < 1 });
 
 		$postbox
 			.addClass('collapsed')
@@ -125,6 +125,7 @@
 					;
 			})
 			;
+		//$postbox.first().removeClass('collapsed'); // not the debug section
 
 		// sortable
 		$plugin.find('table.mappings tbody').sortable({
