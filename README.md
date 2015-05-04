@@ -200,6 +200,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.6.4.2 ###
+* including original `$submission` in `service_filter_post` hook for [dynamicfields calc](https://wordpress.org/plugins/forms-3rdparty-dynamic-fields/)
+
 ### 1.6.4.1 ###
 * quick fix for global section toggle bug
 
