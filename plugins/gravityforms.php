@@ -74,7 +74,7 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 * Get the posted data from the form (or POST, wherever it is)
 	 */
 	protected function GET_FORM_SUBMISSION($form) {
-		return $_POST;
+		return stripslashes_deep($_POST); // fix issue #42
 	}
 
 	/**
