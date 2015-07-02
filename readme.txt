@@ -189,6 +189,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.6.4.3 =
+* fix escaped slashes for gravity forms submissions, see [GitHub issue #42](https://github.com/zaus/forms-3rdparty-integration/issues/42)
+
 = 1.6.4.2 =
 * including original `$submission` in `service_filter_post` hook for [dynamicfields calc](https://wordpress.org/plugins/forms-3rdparty-dynamic-fields/)
 
