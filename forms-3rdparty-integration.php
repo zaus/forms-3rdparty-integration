@@ -509,6 +509,7 @@ class Forms3rdPartyIntegration {
 			}
 
 			###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
+			### _log(__LINE__.':'.__FILE__, '	response from '.$service['url'], $submission, $post_args, $response);
 			
 			$can_hook = true;
 			//if something went wrong with the remote-request "physically", warn
@@ -595,6 +596,7 @@ class Forms3rdPartyIntegration {
 			, array('From: "'.self::pluginPageTitle.' Debug" <'.$this->N.'-debug@' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . '>')
 		) ) {
 			///TODO: log? another email? what?
+			error_log( sprintf("%s:%s	could not send F3P debug email (to: %s) for service %s", __LINE__, __FILE__, $email, $service['url']) );
 		}
 
 	}
@@ -676,3 +678,16 @@ class Forms3rdPartyIntegration {
 				);
 	}
 }//end class
+
+/*
+// some servers need at least one 'sacrificial' `error_log` call to make _log call work???
+
+error_log('f3p-after-declare:' . $_SERVER["REQUEST_URI"]);
+
+if(!function_exists('_log')) {
+function _log($args) {
+	$args = func_get_args();
+	error_log( print_r($args, true) );
+}
+}
+*/
