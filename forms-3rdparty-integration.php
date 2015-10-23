@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.6.4.2
+Version: 1.6.5
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -23,6 +23,7 @@ Changelog:
 	1.6.3 - fixes, updates, ff bugfix
 	1.6.4 - conditional submission hook
 	1.6.4.2 - including original $submission in `service_filter_post` hook
+	1.6.5 - github issue #43, indexed placeholder
 */
 
 //declare to instantiate
@@ -52,7 +53,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.4.1';
+	const pluginVersion = '1.6.5';
 
 	
 	/**
@@ -385,6 +386,33 @@ class Forms3rdPartyIntegration {
 
 	#endregion =============== Administrative Settings ========
 	
+
+	/**
+	 * Prepare the service post with numerical placeholder, see github issue #43
+	 * @param $post the service submission
+	 * 
+	 * @see https://github.com/zaus/forms-3rdparty-integration/issues/43
+	 */
+	function placeholder_separator($post) {
+		$new = array(); // add results to new so we don't pollute the enumerator
+		// find the arrays and reformat keys with index
+		foreach($post as $f => $v) {
+			if(is_array($v)) {
+				// for each item in the submission array,
+				// get its numerical index and replace the
+				// placeholder in the destination field
+
+				foreach($v as $i => $p) {
+					$k = str_replace('%i', $i, $f);
+					$new[$k] = $p;
+				}
+
+				unset($post[$f]); // now remove original, since we need to reattach under a different key
+			}
+		}
+		return array_merge($post, $new);
+	}
+
 	/**
 	 * Callback to perform before Form (i.e. Contact-Form-7, Gravity Forms) fires
 	 * @param $form
@@ -465,6 +493,10 @@ class Forms3rdPartyIntegration {
 			switch($service['separator']) {
 				case '[#]':
 					// don't do anything to include numerical index (default behavior of `http_build_query`)
+					break;
+				case '[%]':
+					// see github issue #43
+					$post = $this->placeholder_separator($post);
 					break;
 				case '[]':
 					// must build as querystring then strip `#` out of `[#]=`
