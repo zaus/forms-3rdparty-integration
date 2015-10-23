@@ -194,11 +194,11 @@
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>c" class="invisible">Is Value?</label>
 							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>c" type="checkbox" class="checkbox c" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][val]" value="1"<?php if(v($pair['val'])) echo ' checked="checked"'; ?> />
 						</td>
-						<td headers="th-<?php echo $eid?>-cf7">
+						<td headers="th-<?php echo $eid, '-', self::PARAM_SRC ?>">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>d" class="invisible">Label:</label>
 							<strong><input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>d" type="text" class="text d" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_LBL ?>]" value="<?php echo esc_attr($pair[self::PARAM_LBL])?>" /></strong>
 						</td>
-						<td headers="th-<?php echo $eid?>-cf7">
+						<td headers="th-<?php echo $eid, '-', self::PARAM_SRC ?>">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>a" class="invisible">Form Submission Field:</label>
 							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>a" type="text" class="text a" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_SRC ?>]" value="<?php echo esc_attr($pair[self::PARAM_SRC])?>" />
 						</td>
