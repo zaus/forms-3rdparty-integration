@@ -23,6 +23,7 @@ Changelog:
 	1.6.3 - fixes, updates, ff bugfix
 	1.6.4 - conditional submission hook
 	1.6.4.2 - including original $submission in `service_filter_post` hook
+	1.6.4.3 - fix escape slashes in GF
 	1.6.5 - github issue #43, indexed placeholder
 */
 
