@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.6.5
+Version: 1.6.5.1
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -54,7 +54,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.5';
+	const pluginVersion = '1.6.5.1';
 
 	
 	/**
@@ -549,7 +549,11 @@ class Forms3rdPartyIntegration {
 				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response_array);
 				$can_hook = false;
 			}
-			elseif(!$response || !isset($response['response']) || !isset($response['response']['code']) || 200 != $response['response']['code']) {
+			elseif(!$response
+					|| !isset($response['response'])
+					|| !isset($response['response']['code'])
+					|| ! apply_filters($this->N('is_success'), 200 <= $response['response']['code'] && $response['response']['code'] < 400)
+					) {
 				$response['safe_message'] = 'physical request failure';
 				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response);
 				$can_hook = false;
