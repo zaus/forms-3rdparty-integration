@@ -200,6 +200,11 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.6.5.1 ###
+* fix Github issue #43 ([valid success response codes](https://github.com/zaus/forms-3rdparty-integration/issues/43))
+* fix Github issue #27 ([admin label](https://github.com/zaus/forms-3rdparty-integration/issues/27))
+* exposed `$service` to hook `get_submission` to make extensions easier
+
 ### 1.6.4.3 ###
 * fix escaped slashes for gravity forms submissions, see [GitHub issue #42](https://github.com/zaus/forms-3rdparty-integration/issues/42)
 

@@ -24,7 +24,7 @@ Changelog:
 	1.6.4 - conditional submission hook
 	1.6.4.2 - including original $submission in `service_filter_post` hook
 	1.6.4.3 - fix escape slashes in GF
-	1.6.5/.1 - github issue #43, indexed placeholder; added service to `get_submission` hook
+	1.6.5/.1 - github issue #43, indexed placeholder; github #27; added service to `get_submission` hook
 */
 
 //declare to instantiate
