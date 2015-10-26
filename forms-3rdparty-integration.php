@@ -24,7 +24,7 @@ Changelog:
 	1.6.4 - conditional submission hook
 	1.6.4.2 - including original $submission in `service_filter_post` hook
 	1.6.4.3 - fix escape slashes in GF
-	1.6.5 - github issue #43, indexed placeholder
+	1.6.5/.1 - github issue #43, indexed placeholder; added service to `get_submission` hook
 */
 
 //declare to instantiate
@@ -446,7 +446,7 @@ class Forms3rdPartyIntegration {
 			if( !$use_this_form ) continue;
 			
 			// only get the submission once, now that we know we're going to use this service/form
-			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form);
+			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
 	
 			// now we can conditionally check whether use the service based upon submission data
 			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
