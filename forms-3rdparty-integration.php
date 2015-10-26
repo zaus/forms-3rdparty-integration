@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.6.4.3
+Version: 1.6.5.1
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -24,6 +24,7 @@ Changelog:
 	1.6.4 - conditional submission hook
 	1.6.4.2 - including original $submission in `service_filter_post` hook
 	1.6.4.3 - fix escape slashes in GF
+	1.6.5/.1 - github issue #43, indexed placeholder; added service to `get_submission` hook
 */
 
 //declare to instantiate
@@ -53,7 +54,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.4.3';
+	const pluginVersion = '1.6.5.1';
 
 	
 	/**
@@ -386,6 +387,33 @@ class Forms3rdPartyIntegration {
 
 	#endregion =============== Administrative Settings ========
 	
+
+	/**
+	 * Prepare the service post with numerical placeholder, see github issue #43
+	 * @param $post the service submission
+	 * 
+	 * @see https://github.com/zaus/forms-3rdparty-integration/issues/43
+	 */
+	function placeholder_separator($post) {
+		$new = array(); // add results to new so we don't pollute the enumerator
+		// find the arrays and reformat keys with index
+		foreach($post as $f => $v) {
+			if(is_array($v)) {
+				// for each item in the submission array,
+				// get its numerical index and replace the
+				// placeholder in the destination field
+
+				foreach($v as $i => $p) {
+					$k = str_replace('%i', $i, $f);
+					$new[$k] = $p;
+				}
+
+				unset($post[$f]); // now remove original, since we need to reattach under a different key
+			}
+		}
+		return array_merge($post, $new);
+	}
+
 	/**
 	 * Callback to perform before Form (i.e. Contact-Form-7, Gravity Forms) fires
 	 * @param $form
@@ -418,7 +446,7 @@ class Forms3rdPartyIntegration {
 			if( !$use_this_form ) continue;
 			
 			// only get the submission once, now that we know we're going to use this service/form
-			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form);
+			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
 	
 			// now we can conditionally check whether use the service based upon submission data
 			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
@@ -466,6 +494,10 @@ class Forms3rdPartyIntegration {
 			switch($service['separator']) {
 				case '[#]':
 					// don't do anything to include numerical index (default behavior of `http_build_query`)
+					break;
+				case '[%]':
+					// see github issue #43
+					$post = $this->placeholder_separator($post);
 					break;
 				case '[]':
 					// must build as querystring then strip `#` out of `[#]=`
@@ -518,7 +550,11 @@ class Forms3rdPartyIntegration {
 				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response_array);
 				$can_hook = false;
 			}
-			elseif(!$response || !isset($response['response']) || !isset($response['response']['code']) || 200 != $response['response']['code']) {
+			elseif(!$response
+					|| !isset($response['response'])
+					|| !isset($response['response']['code'])
+					|| ! apply_filters($this->N('is_success'), 200 <= $response['response']['code'] && $response['response']['code'] < 400)
+					) {
 				$response['safe_message'] = 'physical request failure';
 				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response);
 				$can_hook = false;
