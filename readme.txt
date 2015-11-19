@@ -191,7 +191,15 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 == Changelog ==
 
 = 1.6.6 =
-* Can now map GF and Ninja Forms by field label as well as id
+* Can now map GF and Ninja Forms by field label as well as id per issue #35 ([map by name](https://github.com/zaus/forms-3rdparty-integration/issues/35))
+
+= 1.6.5.1 =
+* fix Github issue #43 ([valid success response codes](https://github.com/zaus/forms-3rdparty-integration/issues/43))
+* fix Github issue #27 ([admin label](https://github.com/zaus/forms-3rdparty-integration/issues/27))
+* exposed `$service` to hook `get_submission` to make extensions easier
+
+= 1.6.4.3 =
+* fix escaped slashes for gravity forms submissions, see [GitHub issue #42](https://github.com/zaus/forms-3rdparty-integration/issues/42)
 
 = 1.6.4.2 =
 * including original `$submission` in `service_filter_post` hook for [dynamicfields calc](https://wordpress.org/plugins/forms-3rdparty-dynamic-fields/)
