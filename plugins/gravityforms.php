@@ -74,7 +74,35 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 * Get the posted data from the form (or POST, wherever it is)
 	 */
 	protected function GET_FORM_SUBMISSION($form) {
-		return stripslashes_deep($_POST); // fix issue #42
+		$submission = stripslashes_deep($_POST); // fix issue #42
+
+		### _log('gf-sub', $submission, $form['fields']);
+		
+		// per issue #35 also include by name
+		foreach($submission as $id => $val) {
+			// find the field by id -- bonus, this handles checkbox 'input_4_3' -> '4'?
+			$fid = intval( str_replace('input_', '', $id) );
+			if($fid == 0) continue; // not a mappable input
+
+			$field = $this->findfield($form['fields'], $fid);
+
+			if($field !== false) {
+				if(isset($submission[ $field->label ]))
+					// preserve indexes
+					$submission[ $field->label ] = array_merge((array) $submission[ $field->label ], array($val));
+				else
+					$submission[ $field->label ] = $val;
+			}
+		}
+
+		return $submission;
+	}
+
+	private function findfield($fields, $fid) {
+		foreach($fields as $i => $field) {
+			if($field->id == $fid) return $field;
+		}
+		return false;
 	}
 
 	/**
