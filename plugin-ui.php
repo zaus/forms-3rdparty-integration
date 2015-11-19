@@ -37,6 +37,8 @@
 	//prepare list of contact forms --
 	$forms = apply_filters($this->N('select_forms'), array());
 
+	$debugUrl = plugins_url('3rd-parties/service_test.php', __FILE__);
+
 ?>
 		<div id="<?php echo $P?>" class="wrap metabox-holder"><div id="poststuff">
 		
@@ -66,7 +68,7 @@
 				<label for="dbg-debugmode"><?php _e('Debug Mode', $P); ?></label>
 				<input id="dbg-debugmode" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" value="debug"<?php if(isset($debugOptions['mode']) ) echo ' checked="checked"'; ?> />
 				<em class="description"><?php _e('Send debugging information to indicated address, regardless of success or failure', $P)?>.</em>
-				<em class="description"><?php _e('Send service tests for full echo to:', $P); ?> <code><?php echo plugins_url('3rd-parties/service_test.php', __FILE__); ?></code></em>
+				<em class="description"><?php _e('Send service tests for full echo to:', $P); ?> <code><?php echo $debugUrl ?></code></em>
 			</div>
 			<div class="field">
 				<label for="dbg-sep">Separator</label>
@@ -100,7 +102,7 @@
 			
 			<div class="description-body inside">
 			
-			<fieldset><legend><span>Service</span></legend>
+			<fieldset class="postbox open"><legend class="hndle"><span>Service</span></legend>
 				<div class="inside">
 					<div class="field">
 						<label for="name-<?php echo $eid?>">Service Name</label>
@@ -109,8 +111,8 @@
 			
 					<div class="field">
 						<label for="url-<?php echo $eid?>">Submission URL</label>
-						<input id="url-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][url]" value="<?php echo esc_attr($entity['url'])?>" />
-						<em class="description"><?php _e('The url of the external submission -- usually the <code>action</code> attribute of the 3rd-party form.  See <a href="#dbg-debugmode">Debug Mode</a> setting for a working test url.', $P);?>.</em>
+						<input id="url-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][url]" value="<?php echo esc_attr(empty($entity['url']) ? $debugUrl : $entity['url'])?>" />
+						<em class="description"><?php echo sprintf(__('The url of the external submission -- usually the <code>action</code> attribute of the 3rd-party form.  See <a href="%s">Debug Mode</a> setting for a <a href="%s">working test url</a>.', $P), '#dbg-debugmode', $debugUrl);?></em>
 					</div>
 					
 		
@@ -148,7 +150,7 @@
 			do_action($this->N('service_settings'), $eid, $P, $entity);
 			?>
 
-			<fieldset><legend><span>Mapping</span></legend>
+			<fieldset class="postbox open"><legend class="hndle"><span>Mapping</span></legend>
 				<table class="mappings inside">
 				<caption><?php _e('Listing of Form(s) Plugin fields to 3rd-party Mappings.  <br />
 				* Note that the label is just for you to remind yourself what the mapping is for, and does not do anything.  <br />

@@ -58,7 +58,16 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	 */
 	protected function GET_FORM_SUBMISSION($form) {
 		// interacting with user submission example -- http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_process/
-		return $form->get_all_fields();
+		$submission = $form->get_all_fields();
+
+		// per issue #35 also include by name
+		foreach($submission as $id => $val) {
+			$field = $form->get_field_settings($id);
+			### _log('nja-fld ' . $id, $field);
+			$submission[ $field['data']['label'] ] = $val;
+		}
+
+		return $submission;
 	}
 
 	/**

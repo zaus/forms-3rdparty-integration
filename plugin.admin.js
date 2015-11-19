@@ -115,9 +115,11 @@
 		var $postbox = $plugin.find('.postbox').not(function(i) { return i < 1 });
 
 		$postbox
-			.addClass('collapsed')
 			.each(function(i,o) {
-				$(o).find('.hndle').first()
+				var $me = $(o);
+				if(! $me.hasClass('open') ) $me.addClass('collapsed');
+			
+				$me.find('.hndle').first()
 					.prepend('<span>[' + ($(o).data('icon') || '+') + ']</span> ')
 					.addClass('actn')
 					.data('actn', "toggle")
