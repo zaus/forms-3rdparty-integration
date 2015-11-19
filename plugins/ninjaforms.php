@@ -63,8 +63,8 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 		// per issue #35 also include by name
 		foreach($submission as $id => $val) {
 			$field = $form->get_field_settings($id);
-			_log('nja-fld ' . $id, $field);
-			$submission[ $field['label'] ] = $val;
+			### _log('nja-fld ' . $id, $field);
+			$submission[ $field['data']['label'] ] = $val;
 		}
 
 		return $submission;
