@@ -12,7 +12,7 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 
 **Requires at least:** 3.0
 
-**Tested up to:** 4.1
+**Tested up to:** 4.3
 
 **Stable tag:** trunk
 
@@ -80,6 +80,7 @@ Essentially,
 5. Allow hooks for further processing - unchecking it just saves minimal processing power, as it won't try to execute filters.
 6. Map your form submission values (from the CF7/GF field tags) to expected fields for your service.
     * 1:1 mapping given as the _name_ (from the HTML input) of the CF7/GF field and the _name_ of the 3rdparty field
+    * For GF and Ninja Forms, you may map either by the field name or the field label
     * You can also provide static values by checking the "Is Value?" checkbox and providing the value in the "Form Submission Field" column.
     * The "Label" column is optional, and just provided for administrative notes, i.e. so you can remind yourself what each mapping pertains to.
 7. Add, remove, and rearrange mapping - basically just for visual clarity.
@@ -199,6 +200,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.6.6 ###
+* Can now map GF and Ninja Forms by field label as well as id
 
 ### 1.6.4.2 ###
 * including original `$submission` in `service_filter_post` hook for [dynamicfields calc](https://wordpress.org/plugins/forms-3rdparty-dynamic-fields/)
