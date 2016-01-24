@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.6.6
+Version: 1.6.6.1
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -26,6 +26,7 @@ Changelog:
 	1.6.4.3 - fix escape slashes in GF
 	1.6.5/.1 - github issue #43, indexed placeholder; github #27; added service to `get_submission` hook
 	1.6.6 - postbox open toggle, issue #35
+	1.6.6.1 - adding debug message bypass hook
 */
 
 //declare to instantiate
@@ -55,7 +56,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.5.1';
+	const pluginVersion = '1.6.6.1';
 
 	
 	/**
@@ -626,8 +627,11 @@ class Forms3rdPartyIntegration {
 	 * @return void             n/a
 	 */
 	private function send_debug_message($email, $service, $post, $response, $submission){
+		// allow hooks to bypass, if for example we're not getting debug emails or we want to use some fancy logging service
+		$passthrough = apply_filters($this->N('debug_message'), true, $service, $post, $submission, $response);
+		
 		// did the debug message send?
-		if( !wp_mail( $email
+		if( !$passthrough || !wp_mail( $email
 			, self::pluginPageTitle . " Debug: {$service['name']}"
 			, "*** Service ***\n".print_r($service, true)."\n*** Post (Form) ***\n" . get_bloginfo('url') . $_SERVER['REQUEST_URI'] . "\n".print_r($submission, true)."\n*** Post (to Service) ***\n".print_r($post, true)."\n*** Response ***\n".print_r($response, true)
 			, array('From: "'.self::pluginPageTitle.' Debug" <'.$this->N.'-debug@' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . '>')

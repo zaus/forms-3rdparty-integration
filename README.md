@@ -201,6 +201,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.6.6.1 ###
+* debug logging hook
+
 ### 1.6.6 ###
 * Can now map GF and Ninja Forms by field label as well as id per issue #35 ([map by name](https://github.com/zaus/forms-3rdparty-integration/issues/35))
 
@@ -403,7 +406,8 @@ _Please note that this documentation is in flux, and may not be accurate for lat
     * accepts params `$P`, `$entity` corresponding to the index of each service entity and this plugin's namespace, and the `$options` settings array (representing the full plugin settings)
     * allows you to append a metabox (or anything else) to the plugin admin settings page
     * name form fields with plugin namespace to automatically save:  `$P[YOUR_CUSTOM_FIELD]` $rarr; `Forms3rdPartyIntegration[YOUR_CUSTOM_FIELD]`
-
+6. `add_filter('Forms3rdPartyIntegration_debug_message', 'YOUR_HOOK', 10, 5);`
+    * bypass/alternate debug logging
 
 Basic examples provided for service hooks directly on plugin Admin page (collapsed box "Examples of callback hooks").  Code samples for common CRMS included in the `/3rd-parties` plugin folder.
 
