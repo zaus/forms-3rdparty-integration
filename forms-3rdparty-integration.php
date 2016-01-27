@@ -390,7 +390,7 @@ class Forms3rdPartyIntegration {
 	 * Helper to render the `value=$expected checked=?` part of an $input (checkbox, radio, option)
 	 */
 	public function selected_input($current, $expected, $type) {
-		if(strpos($current, $expected) !== false) return " value='$expected' $type='$type'";
+		if(in_array($expected, $current)) return " value='$expected' $type='$type'";
 		return " value='$expected'";
 	}
 	/**
@@ -618,8 +618,10 @@ class Forms3rdPartyIntegration {
 				}
 			}// can hook
 			
-			//forced debug contact
-			if(strpos($debug['mode'], 'debug') !== false) {
+			### _log(__FUNCTION__, $debug, strpos($debug['mode'], 'debug'));
+			
+			//forced debug contact; support legacy setting too
+			if(isset($debug['mode']) && ($debug['mode'] == 'debug') || in_array('debug', $debug['mode']) ) {
 				$this->send_debug_message($debug, $service, $post_args, $response, $submission);
 			}
 			
@@ -642,7 +644,7 @@ class Forms3rdPartyIntegration {
 	 */
 	private function send_debug_message($debug, $service, $post, $response, $submission){
 		// allow hooks to bypass, if for example we're not getting debug emails or we want to use some fancy logging service
-		$passthrough = apply_filters($this->N('debug_message'), true, $service, $post, $submission, $response);
+		$passthrough = apply_filters($this->N('debug_message'), true, $service, $post, $submission, $response, $debug);
 		
 		// not all hosting services allow arbitrary emails
 		$sendAs = isset($debug['sender']) && !empty($debug['sender'])
@@ -659,20 +661,20 @@ class Forms3rdPartyIntegration {
 			, array($sendAs)
 		) ) {
 			///TODO: log? another email? what?
-			error_log( sprintf("%s:%s	could not send F3P debug email (to: %s) for service %s", __LINE__, __FILE__, $email, $service['url']) );
+			error_log( sprintf("%s:%s	could not send F3P debug email (to: %s) for service %s", __LINE__, __FILE__, $recipients, $service['url']) );
 			
-			if(strpos($debug['mode'], 'log') !== false) {
+			if(in_array('log', $debug['mode'])) {
 				$log = array(
-					'sentAs' => $sentAs,
+					'sendAs' => $sendAs,
 					'recipients' => $recipients,
 					'submission' => $submission,
 					'post' => $post,
 					'response' => $response
 				);
 				
-				if(strpos($debug['mode'], 'full') !== false) $log['service'] = $service;
+				if(in_array('full', $debug['mode'])) $log['service'] = $service;
 				
-				error_log( print_r($log, true) );
+				error_log( __CLASS__ . ':: ' . print_r($log, true) );
 			}
 		}
 	}

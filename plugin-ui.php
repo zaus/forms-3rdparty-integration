@@ -67,22 +67,22 @@
 			<div class="field">
 				<label for="dbg-email">Email Sender</label>
 				<input id="dbg-email" type="text" class="text" name="<?php echo $P?>[debug][sender]" value="<?php echo esc_attr($debugOptions['sender'])?>" />
-				<em class="description"><?php _e('Optionally specify the "Sent from" email address for the debug mail.  If not provided will default to the blog administrator.  Note: some hosting providers may reject arbitrary addresses.', $P)?></em>
+				<em class="description"><?php _e('Optionally specify the "Sent from" email address for the notifications (failure, debug emails).  If not provided will default to the blog administrator.  Note: some hosting providers may reject arbitrary addresses.', $P)?></em>
 			</div>
 			<div class="field">
 				<label for="dbg-debugmode"><?php _e('Debug Mode', $P); ?></label>
-				<input id="dbg-debugmode" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" <?php echo $this->selected_input_array($debugOptions, 'mode', 'debug', 'checked'); ?> />
+				<input id="dbg-debugmode" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode][]" <?php echo $this->selected_input_array($debugOptions, 'mode', 'debug', 'checked'); ?> />
 				<em class="description"><?php _e('Send debugging information to indicated address, regardless of success or failure', $P)?>.</em>
 				<em class="description"><?php _e('Send service tests for full echo to:', $P); ?> <code><?php echo $debugUrl ?></code></em>
 			</div>
 			<div class="field">
 				<label for="dbg-fallback"><?php _e('Logging Fallback', $P); ?></label>
-				<input id="dbg-fallback" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" <?php echo $this->selected_input_array($debugOptions, 'mode', 'log', 'checked'); ?> />
+				<input id="dbg-fallback" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode][]" <?php echo $this->selected_input_array($debugOptions, 'mode', 'log', 'checked'); ?> />
 				<em class="description"><?php _e('If unable to send the debug message, do we log the response instead?', $P)?>.</em>
 			</div>
 			<div class="field">
 				<label for="dbg-full"><?php _e('Logging Fallback - include service', $P); ?></label>
-				<input id="dbg-full" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode]" <?php echo $this->selected_input_array($debugOptions, 'mode', 'full', 'checked'); ?> />
+				<input id="dbg-full" type="checkbox" class="checkbox" name="<?php echo $P?>[debug][mode][]" <?php echo $this->selected_input_array($debugOptions, 'mode', 'full', 'checked'); ?> />
 				<em class="description"><?php _e('Because the service dump may contain a lot of information, do we include it in the logging fallback?  This does not affect the normal debug message.', $P)?>.</em>
 			</div>
 			<div class="field">
