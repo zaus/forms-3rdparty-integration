@@ -203,6 +203,8 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ### 1.6.6.1 ###
 * debug logging hook
+* fixed #52 - some hosting providers rejected arbitrary sender addresses
+* more options for debug mail failure logging
 
 ### 1.6.6 ###
 * Can now map GF and Ninja Forms by field label as well as id per issue #35 ([map by name](https://github.com/zaus/forms-3rdparty-integration/issues/35))
