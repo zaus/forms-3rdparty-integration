@@ -26,7 +26,7 @@ Changelog:
 	1.6.4.3 - fix escape slashes in GF
 	1.6.5/.1 - github issue #43, indexed placeholder; github #27; added service to `get_submission` hook
 	1.6.6 - postbox open toggle, issue #35
-	1.6.6.1 - adding debug message bypass hook
+	1.6.6.1 - adding debug message bypass hook, fixing email sender issue
 */
 
 //declare to instantiate
@@ -386,7 +386,21 @@ class Forms3rdPartyIntegration {
 		<?php
 	}//--	end function form_select_input
 
-
+	/**
+	 * Helper to render the `value=$expected checked=?` part of an $input (checkbox, radio, option)
+	 */
+	public function selected_input($current, $expected, $type) {
+		if(strpos($current, $expected) !== false) return " value='$expected' $type='$type'";
+		return " value='$expected'";
+	}
+	/**
+	 * Helper to render the `value=$expected checked=?` part of an $input (checkbox, radio, option)
+	 */
+	public function selected_input_array($array, $currentKey, $expected, $type) {
+		return isset($array[$currentKey])
+			? $this->selected_input($array[$currentKey], $expected, $type) 
+			: $this->selected_input('', $expected, $type);
+	}
 	#endregion =============== Administrative Settings ========
 	
 
@@ -605,8 +619,8 @@ class Forms3rdPartyIntegration {
 			}// can hook
 			
 			//forced debug contact
-			if($debug['mode'] == 'debug'){
-				$this->send_debug_message($debug['email'], $service, $post_args, $response, $submission);
+			if(strpos($debug['mode'], 'debug') !== false) {
+				$this->send_debug_message($debug, $service, $post_args, $response, $submission);
 			}
 			
 		endforeach;	//-- loop services
@@ -619,27 +633,48 @@ class Forms3rdPartyIntegration {
 	
 	/**
 	 * How to send the debug message
-	 * @param  string $email      recipient
+	 * @param  string $debug      debug options -- 'email' and 'sender'
 	 * @param  array $service    service options
 	 * @param  array $post       details sent to 3rdparty
 	 * @param  object $response   the response object
 	 * @param  object $submission the form submission
 	 * @return void             n/a
 	 */
-	private function send_debug_message($email, $service, $post, $response, $submission){
+	private function send_debug_message($debug, $service, $post, $response, $submission){
 		// allow hooks to bypass, if for example we're not getting debug emails or we want to use some fancy logging service
 		$passthrough = apply_filters($this->N('debug_message'), true, $service, $post, $submission, $response);
 		
+		// not all hosting services allow arbitrary emails
+		$sendAs = isset($debug['sender']) && !empty($debug['sender'])
+			? $debug['sender']
+			: get_bloginfo('admin_email'); //'From: "'.self::pluginPageTitle.' Debug" <'.$this->N.'-debug@' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . '>';
+		$recipients = isset($debug['email']) && !empty($debug['email'])
+			? str_replace(';', ',', $debug['email'])
+			: get_bloginfo('admin_email');
+		
 		// did the debug message send?
-		if( !$passthrough || !wp_mail( $email
+		if( !$passthrough || !wp_mail( $recipients
 			, self::pluginPageTitle . " Debug: {$service['name']}"
 			, "*** Service ***\n".print_r($service, true)."\n*** Post (Form) ***\n" . get_bloginfo('url') . $_SERVER['REQUEST_URI'] . "\n".print_r($submission, true)."\n*** Post (to Service) ***\n".print_r($post, true)."\n*** Response ***\n".print_r($response, true)
-			, array('From: "'.self::pluginPageTitle.' Debug" <'.$this->N.'-debug@' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . '>')
+			, array($sendAs)
 		) ) {
 			///TODO: log? another email? what?
 			error_log( sprintf("%s:%s	could not send F3P debug email (to: %s) for service %s", __LINE__, __FILE__, $email, $service['url']) );
+			
+			if(strpos($debug['mode'], 'log') !== false) {
+				$log = array(
+					'sentAs' => $sentAs,
+					'recipients' => $recipients,
+					'submission' => $submission,
+					'post' => $post,
+					'response' => $response
+				);
+				
+				if(strpos($debug['mode'], 'full') !== false) $log['service'] = $service;
+				
+				error_log( print_r($log, true) );
+			}
 		}
-
 	}
 	
 	/**
