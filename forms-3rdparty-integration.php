@@ -399,7 +399,7 @@ class Forms3rdPartyIntegration {
 	public function selected_input_array($array, $currentKey, $expected, $type) {
 		return isset($array[$currentKey])
 			? $this->selected_input($array[$currentKey], $expected, $type) 
-			: $this->selected_input('', $expected, $type);
+			: $this->selected_input(array(), $expected, $type);
 	}
 	#endregion =============== Administrative Settings ========
 	
