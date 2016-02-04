@@ -621,7 +621,7 @@ class Forms3rdPartyIntegration {
 			### _log(__FUNCTION__, $debug, strpos($debug['mode'], 'debug'));
 			
 			//forced debug contact; support legacy setting too
-			if(isset($debug['mode']) && ($debug['mode'] == 'debug') || in_array('debug', $debug['mode']) ) {
+			if(isset($debug['mode']) && ($debug['mode'] == 'debug' || in_array('debug', $debug['mode'])) ) {
 				$this->send_debug_message($debug, $service, $post_args, $response, $submission);
 			}
 			
