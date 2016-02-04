@@ -201,6 +201,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.6.6.3 ###
+* bugfixes #53 and #55
+
 ### 1.6.6.1 ###
 * debug logging hook
 * fixed #52 - some hosting providers rejected arbitrary sender addresses
