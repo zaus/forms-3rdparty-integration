@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.6.6.3
+Version: 1.6.6.4
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -27,6 +27,7 @@ Changelog:
 	1.6.5/.1 - github issue #43, indexed placeholder; github #27; added service to `get_submission` hook
 	1.6.6 - postbox open toggle, issue #35
 	1.6.6.1 - adding debug message bypass hook, fixing email sender issue; 1.6.6.2 + 1.6.6.3 quick fix
+	1.6.6.4 - omitting numerical placeholder in indexed nesting via xpost github issue #7
 */
 
 //declare to instantiate
@@ -56,7 +57,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.6.3';
+	const pluginVersion = '1.6.6.4';
 
 	
 	/**
@@ -141,7 +142,7 @@ class Forms3rdPartyIntegration {
 			
 			//register options
 			$default_options = array(
-				'debug' => array('email'=>get_bloginfo('admin_email'), 'separator'=>', ')
+				'debug' => array('email'=>get_bloginfo('admin_email'), 'separator'=>', ', 'mode' => array())
 				, 0 => array(
 					'name'=>'Service 1'
 					, 'url'=>plugins_url('3rd-parties/service_test.php', __FILE__)
@@ -410,7 +411,7 @@ class Forms3rdPartyIntegration {
 	 * 
 	 * @see https://github.com/zaus/forms-3rdparty-integration/issues/43
 	 */
-	function placeholder_separator($post) {
+	function placeholder_separator($post, $includeIndex = true) {
 		$new = array(); // add results to new so we don't pollute the enumerator
 		// find the arrays and reformat keys with index
 		foreach($post as $f => $v) {
@@ -420,8 +421,15 @@ class Forms3rdPartyIntegration {
 				// placeholder in the destination field
 
 				foreach($v as $i => $p) {
-					$k = str_replace('%i', $i, $f);
-					$new[$k] = $p;
+					if($includeIndex) {
+						$k = str_replace('%i', $i, $f);
+						$new[$k] = $p;
+					}
+					else {
+						$k = str_replace('%i', '', $f);
+						if(!isset($new[$k])) $new[$k] = array();
+						$new[$k][$i] = $p;
+					}
 				}
 
 				unset($post[$f]); // now remove original, since we need to reattach under a different key
@@ -513,7 +521,12 @@ class Forms3rdPartyIntegration {
 					break;
 				case '[%]':
 					// see github issue #43
-					$post = $this->placeholder_separator($post);
+					$post = $this->placeholder_separator($post, true);
+					break;
+				case '[%#]':
+				case '[!%]':
+					// see github issue xpost/#7
+					$post = $this->placeholder_separator($post, false);
 					break;
 				case '[]':
 					// must build as querystring then strip `#` out of `[#]=`
