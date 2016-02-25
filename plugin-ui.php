@@ -88,7 +88,7 @@
 			<div class="field">
 				<label for="dbg-sep">Separator</label>
 				<input id="dbg-sep" type="text" class="text" name="<?php echo $P?>[debug][separator]" value="<?php echo esc_attr($debugOptions['separator'])?>" />
-				<em class="description"><?php _e('Separator for multiple-mapped fields (i.e. if `fname` and `lname` are mapped to the `name` field, how to separate them)', $P)?>.</em>
+				<em class="description"><?php _e('Separator for multiple-mapped fields (i.e. if `fname` and `lname` are mapped to the `name` field, how to separate them)', $P)?>. <a title="<?php _e('Help: Read More') ?>" href="https://github.com/zaus/forms-3rdparty-integration#i-need-to-submit-multiple-values-as">(?)</a></em>
 			</div>
 		</div></fieldset>
 		

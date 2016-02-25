@@ -422,13 +422,19 @@ class Forms3rdPartyIntegration {
 
 				foreach($v as $i => $p) {
 					if($includeIndex) {
+						_log('includeindex', $k, str_replace('%i', $i, $f), $i, $f);
+						
 						$k = str_replace('%i', $i, $f);
 						$new[$k] = $p;
 					}
 					else {
+						_log('excludeindex', $k, explode('%i', $f), $i, $f);
+						
+						list($k, $sub) = explode('%i', $f);
 						$k = str_replace('%i', '', $f);
 						if(!isset($new[$k])) $new[$k] = array();
-						$new[$k][$i] = $p;
+						if(!isset($new[$k][$i])) $new[$k][$i] = array();
+						$new[$k][$i][$sub] = $p;
 					}
 				}
 
