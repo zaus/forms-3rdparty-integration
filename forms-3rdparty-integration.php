@@ -414,6 +414,9 @@ class Forms3rdPartyIntegration {
 	function placeholder_separator($post, $includeIndex = true) {
 		$new = array(); // add results to new so we don't pollute the enumerator
 		// find the arrays and reformat keys with index
+		
+		_log(__FUNCTION__, $post);
+		
 		foreach($post as $f => $v) {
 			if(is_array($v)) {
 				// for each item in the submission array,
@@ -422,16 +425,22 @@ class Forms3rdPartyIntegration {
 
 				foreach($v as $i => $p) {
 					if($includeIndex) {
-						_log('includeindex', $k, str_replace('%i', $i, $f), $i, $f);
-						
 						$k = str_replace('%i', $i, $f);
+						_log('includeindex', array($k, $i, $f));
+						
 						$new[$k] = $p;
 					}
 					else {
-						_log('excludeindex', $k, explode('%i', $f), $i, $f);
+						$n = strpos($f, '%i');
+						if(false === $n) {
+							$new[$f] = $p;
+							continue;
+						}
 						
-						list($k, $sub) = explode('%i', $f);
-						$k = str_replace('%i', '', $f);
+						$k = substr($f, 0, $n);
+						$sub = trim( substr($f, $n+2) , '/\\' );
+						_log('excludeindex', array($k, $sub, $i, $f));
+						
 						if(!isset($new[$k])) $new[$k] = array();
 						if(!isset($new[$k][$i])) $new[$k][$i] = array();
 						$new[$k][$i][$sub] = $p;
@@ -441,6 +450,8 @@ class Forms3rdPartyIntegration {
 				unset($post[$f]); // now remove original, since we need to reattach under a different key
 			}
 		}
+		
+		_log(__FUNCTION__ . '--after', $new);
 		return array_merge($post, $new);
 	}
 
