@@ -98,6 +98,7 @@ See section [Hooks](#hooks).  See plugin folder `/3rd-parties` for example code 
 * By default, if more than one value appears in the post request for the same field/key, they will be joined by the 'separator' value like `&post-values=a,b,c`.
 * However, if you use `[]` as the separator it will instead create multiple keys like `&post-values[]=a&post-values[]=b&...`.
 * Use `[#]` to retain the numerical index:  `&post-values[0]=a&post-values[1]=b&...`
+* Use `[%]` to place the numerical index at desired location; specifically useful with nested fields via Xpost below (and issues [#11](https://github.com/zaus/forms-3rdparty-xpost/issues/11) and [#7](https://github.com/zaus/forms-3rdparty-xpost/issues/7)).
 
 If you instead need to combine/nest fields, check out [Forms: 3rdparty Xpost](http://wordpress.org/plugins/forms-3rd-party-xpost/).
 
@@ -201,8 +202,13 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.6.6.4 ###
+* fix array value without index placeholder bug introduced in [github #43](https://github.com/zaus/forms-3rdparty-integration/issues/43)
+* final bugfix to #55 (default options `mode` array)
+* tried to address [Xpost issue #7](https://github.com/zaus/forms-3rdparty-xpost/issues/7), but not the right place for it
+
 ### 1.6.6.3 ###
-* bugfixes #53 and #55
+* bugfixes [#53](https://github.com/zaus/forms-3rdparty-integration/issues/53) and [#55](https://github.com/zaus/forms-3rdparty-integration/issues/55)
 
 ### 1.6.6.1 ###
 * debug logging hook
