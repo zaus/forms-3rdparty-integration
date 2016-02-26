@@ -411,47 +411,30 @@ class Forms3rdPartyIntegration {
 	 * 
 	 * @see https://github.com/zaus/forms-3rdparty-integration/issues/43
 	 */
-	function placeholder_separator($post, $includeIndex = true) {
+	function placeholder_separator($post) {
 		$new = array(); // add results to new so we don't pollute the enumerator
 		// find the arrays and reformat keys with index
 		
-		_log(__FUNCTION__, $post);
+		###_log(__FUNCTION__ . '@' . __LINE__, $post);
 		
 		foreach($post as $f => $v) {
-			if(is_array($v)) {
+			// do we have a placeholder to fix for an array (iss #43)
+			if(is_array($v) && false !== strpos($f, '%i')) {
 				// for each item in the submission array,
 				// get its numerical index and replace the
 				// placeholder in the destination field
 
 				foreach($v as $i => $p) {
-					if($includeIndex) {
-						$k = str_replace('%i', $i, $f);
-						_log('includeindex', array($k, $i, $f));
-						
-						$new[$k] = $p;
-					}
-					else {
-						$n = strpos($f, '%i');
-						if(false === $n) {
-							$new[$f] = $p;
-							continue;
-						}
-						
-						$k = substr($f, 0, $n);
-						$sub = trim( substr($f, $n+2) , '/\\' );
-						_log('excludeindex', array($k, $sub, $i, $f));
-						
-						if(!isset($new[$k])) $new[$k] = array();
-						if(!isset($new[$k][$i])) $new[$k][$i] = array();
-						$new[$k][$i][$sub] = $p;
-					}
+					$k = str_replace('%i', $i, $f);
+					$new[$k] = $p;
 				}
 
 				unset($post[$f]); // now remove original, since we need to reattach under a different key
 			}
 		}
 		
-		_log(__FUNCTION__ . '--after', $new);
+		###_log(__FUNCTION__  . '@' . __LINE__, $new);
+		
 		return array_merge($post, $new);
 	}
 
@@ -538,12 +521,7 @@ class Forms3rdPartyIntegration {
 					break;
 				case '[%]':
 					// see github issue #43
-					$post = $this->placeholder_separator($post, true);
-					break;
-				case '[%#]':
-				case '[!%]':
-					// see github issue xpost/#7
-					$post = $this->placeholder_separator($post, false);
+					$post = $this->placeholder_separator($post);
 					break;
 				case '[]':
 					// must build as querystring then strip `#` out of `[#]=`
