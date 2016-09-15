@@ -118,8 +118,8 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 			// this is a little tricky, because the $form object isn't available from their hook
 			// like it is with GF or CF7, so we interpose an 'intermediary' hook
 			// which will provide the form object instead
-
-			add_filter( $this->BEFORE_SEND_FILTER(), array(&Forms3rdPartyIntegration::$instance, 'before_send') );
+			$filter = apply_filters(Forms3rdPartyIntegration::$instance->N('plugin_hooks'), (array) $this->BEFORE_SEND_FILTER());
+			foreach($filter as $f) add_filter( $f, array(&Forms3rdPartyIntegration::$instance, 'before_send') );
 		}
 
 		//add_action( 'init', array( &$this, 'other_includes' ), 20 );

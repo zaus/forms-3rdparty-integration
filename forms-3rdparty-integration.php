@@ -28,6 +28,7 @@ Changelog:
 	1.6.6 - postbox open toggle, issue #35
 	1.6.6.1 - adding debug message bypass hook, fixing email sender issue; 1.6.6.2 + 1.6.6.3 quick fix
 	1.6.6.4 - omitting numerical placeholder in indexed nesting via xpost github issue #7
+	1.6.6.5 - url hooks, fplugin hooks github #62
 */
 
 //declare to instantiate
@@ -57,7 +58,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.6.6.4';
+	const pluginVersion = '1.6.6.5';
 
 	
 	/**
@@ -142,11 +143,12 @@ class Forms3rdPartyIntegration {
 			
 			//register options
 			$default_options = array(
-				'debug' => array('email'=>get_bloginfo('admin_email'), 'separator'=>', ', 'mode' => array())
+				'debug' => array('email'=>get_bloginfo('admin_email'), 'separator'=>', ', 'mode' => array(), 'sender' => '')
 				, 0 => array(
 					'name'=>'Service 1'
 					, 'url'=>plugins_url('3rd-parties/service_test.php', __FILE__)
 					, 'success'=>''
+					, 'failure'=>''
 					, 'forms' => array()
 					, 'timeout' => self::DEFAULT_TIMEOUT // timeout in seconds
 					, 'mapping' => array(
@@ -561,7 +563,12 @@ class Forms3rdPartyIntegration {
 			}
 			else {
 				//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
-				$response = wp_remote_post( $service['url'], $post_args );
+
+				$response = wp_remote_post(
+					// allow hooks to modify the URL with submission, like send as url-encoded XML, etc
+					apply_filters($this->N('service_filter_url'), $service['url'], $post_args),
+					$post_args
+				);
 			}
 
 			###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
