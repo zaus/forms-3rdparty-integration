@@ -689,7 +689,11 @@ class Forms3rdPartyIntegration {
 				
 				if(in_array('full', $debug['mode'])) $log['service'] = $service;
 				
-				error_log( __CLASS__ . ':: ' . print_r($log, true) );
+				$as_json = is_array($post['body']) && isset($post['body']['_json']) && $post['body']['_json'];
+				$dump = $as_json
+							? wp_json_encode($log, defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : 0)
+							: print_r($log, true);
+				error_log( __CLASS__ . ':: ' . $dump );
 			}
 		}
 	}

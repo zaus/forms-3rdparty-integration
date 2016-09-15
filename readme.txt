@@ -198,6 +198,8 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 = 1.6.6.5 =
 * added URL filter to allow customizing GET requests with post body arguments, or shortcodes
 * filter added to fplugin_base to allow multiple attachments per [github #62](https://github.com/zaus/forms-3rdparty-integration/issues/62)
+* fix [github #68](https://github.com/zaus/forms-3rdparty-integration/issues/68)
+* 'secret' debugging feature for error dump if logging after unable to send email: add a truthy value to post mapping with 3rdparty key `_json`
 
 = 1.6.6.4 =
 * fix array value without index placeholder bug introduced in [github #43](https://github.com/zaus/forms-3rdparty-integration/issues/43)
