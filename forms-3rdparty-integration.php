@@ -143,11 +143,12 @@ class Forms3rdPartyIntegration {
 			
 			//register options
 			$default_options = array(
-				'debug' => array('email'=>get_bloginfo('admin_email'), 'separator'=>', ', 'mode' => array())
+				'debug' => array('email'=>get_bloginfo('admin_email'), 'separator'=>', ', 'mode' => array(), 'sender' => '')
 				, 0 => array(
 					'name'=>'Service 1'
 					, 'url'=>plugins_url('3rd-parties/service_test.php', __FILE__)
 					, 'success'=>''
+					, 'failure'=>''
 					, 'forms' => array()
 					, 'timeout' => self::DEFAULT_TIMEOUT // timeout in seconds
 					, 'mapping' => array(
