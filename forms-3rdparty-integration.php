@@ -27,7 +27,7 @@ Changelog:
 	1.6.5/.1 - github issue #43, indexed placeholder; github #27; added service to `get_submission` hook
 	1.6.6 - postbox open toggle, issue #35
 	1.6.6.1 - adding debug message bypass hook, fixing email sender issue; 1.6.6.2 + 1.6.6.3 quick fix
-	1.6.6.4 - omitting numerical placeholder in indexed nesting via xpost github issue #7
+	1.6.6.4 - omitting numerical placeholder in indexed nesting via xpost github issue #7; is_success extra params
 	1.6.6.5 - url hooks, fplugin hooks github #62
 */
 
@@ -584,7 +584,7 @@ class Forms3rdPartyIntegration {
 			elseif(!$response
 					|| !isset($response['response'])
 					|| !isset($response['response']['code'])
-					|| ! apply_filters($this->N('is_success'), 200 <= $response['response']['code'] && $response['response']['code'] < 400)
+					|| ! apply_filters($this->N('is_success'), 200 <= $response['response']['code'] && $response['response']['code'] < 400, $response, $service)
 					) {
 				$response['safe_message'] = 'physical request failure';
 				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response);
