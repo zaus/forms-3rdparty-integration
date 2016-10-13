@@ -479,167 +479,14 @@ class Forms3rdPartyIntegration {
 			if( !$use_this_form ) continue;
 			
 			// populate the 3rdparty post args
-			$post = array();
-			
-			$service['separator'] = $debug['separator']; // alias here for reporting
-			
-			//find mapping
-			foreach($service['mapping'] as $mid => $mapping){
-				$third = $mapping[self::PARAM_3RD];
-				
-				//is this static or dynamic (userinput)?
-				if(v($mapping['val'])){
-					$input = $mapping[self::PARAM_SRC];
-				}
-				else {
-					//check if we have that field in post data
-					if( !isset($submission[ $mapping[self::PARAM_SRC] ]) ) continue;
+			$sendResult = $this->send($submission, $form, $service, $sid, $debug);
+			if($sendResult === self::RET_SEND_STOP) break;
+			elseif($sendResult === self::RET_SEND_SKIP) continue;
 
-					$input = $submission[ $mapping[self::PARAM_SRC] ];
-				}
+			$response = $sendResult['response'];
+			$post_args = $sendResult['post_args'];
 
-				//allow multiple values to attach to same entry
-				if( isset( $post[ $third ] ) ){
-					###echo "multiple @$mid - $fsrc, $third :=\n";
-
-					if(!is_array($post[$third])) {
-						$post[$third] = array($post[$third]);
-					}
-					$post[$third] []= $input;
-				}
-				else {
-					$post[$third] = $input;
-				}
-			}// foreach mapping
-			
-			//extract special tags;
-			$post = apply_filters($this->N('service_filter_post_'.$sid), $post, $service, $form, $submission);
-			$post = apply_filters($this->N('service_filter_post'), $post, $service, $form, $sid, $submission);
-
-			// fix for multiple values
-			switch($service['separator']) {
-				case '[#]':
-					// don't do anything to include numerical index (default behavior of `http_build_query`)
-					break;
-				case '[%]':
-					// see github issue #43
-					$post = $this->placeholder_separator($post);
-					break;
-				case '[]':
-					// must build as querystring then strip `#` out of `[#]=`
-					$post = http_build_query($post);
-					$post = preg_replace('/%5B[0-9]+%5D=/', '%5B%5D=', $post);
-					break;
-				default:
-					// otherwise, find the arrays and implode
-					foreach($post as $f => &$v) {
-						###_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
-						
-						if(is_array($v)) $v = implode($service['separator'], $v);
-					}
-					break;
-			}
-			
-			###_log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
-
-			// change args sent to remote post -- add headers, etc: http://codex.wordpress.org/Function_Reference/wp_remote_post
-			// optionally, return an array with 'response_bypass' set to skip the wp_remote_post in favor of whatever you did in the hook
-			$post_args = apply_filters($this->N('service_filter_args')
-				, array(
-					'timeout' => empty($service['timeout']) ? self::DEFAULT_TIMEOUT : $service['timeout']
-					,'body'=>$post
-					)
-				, $service
-				, $form
-			);
-
-			//remote call
-			
-			// once more conditionally check whether use the service based upon (mapped) submission data
-			if(false === $post_args) continue;
-			// optional bypass -- replace with a SOAP call, etc
-			elseif(isset($post_args['response_bypass'])) {
-				$response = $post_args['response_bypass'];
-			}
-			else {
-				//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
-
-				$response = wp_remote_post(
-					// allow hooks to modify the URL with submission, like send as url-encoded XML, etc
-					apply_filters($this->N('service_filter_url'), $service['url'], $post_args),
-					$post_args
-				);
-			}
-
-			###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
-			### _log(__LINE__.':'.__FILE__, '	response from '.$service['url'], $submission, $post_args, $response);
-			
-			$can_hook = true;
-			//if something went wrong with the remote-request "physically", warn
-			if (!is_array($response)) {	//new occurrence of WP_Error?????
-				$response_array = array('safe_message'=>'error object', 'object'=>$response);
-				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response_array);
-				$can_hook = false;
-			}
-			elseif(!$response
-					|| !isset($response['response'])
-					|| !isset($response['response']['code'])
-					|| ! apply_filters($this->N('is_success'), 200 <= $response['response']['code'] && $response['response']['code'] < 400, $response, $service)
-					) {
-				$response['safe_message'] = 'physical request failure';
-				$form = $this->on_response_failure($form, $debug, $service, $post_args, $response);
-				$can_hook = false;
-			}
-			//otherwise, check for a success "condition" if given
-			elseif(!empty($service['success'])) {
-				if(strpos($response['body'], $service['success']) === false){
-					$failMessage = array(
-						'reason'=>'Could not locate success clause within response'
-						, 'safe_message' => 'Success Clause not found'
-						, 'clause'=>$service['success']
-						, 'response'=>$response['body']
-					);
-					$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
-					$can_hook = false;
-				}
-			}
-			
-			if($can_hook){
-				###_log('performing hooks for:', $this->N.'_service_'.$sid);
-				
-				//hack for pass-by-reference
-				//holder for callback return results
-				$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');
-				// TODO: use object?
-				$param_ref = array();	foreach($callback_results as $k => &$v){ $param_ref[$k] = &$v; }
-				
-				//allow hooks
-				do_action($this->N('service_a'.$sid), $response['body'], $param_ref);
-				do_action($this->N('service'), $response['body'], $param_ref, $sid);
-				
-				###_log('after success', $form);
-
-				//check for callback errors; if none, then attach stuff to message if requested
-				if(!empty($callback_results['errors'])){
-					$failMessage = array(
-						'reason'=>'Service Callback Failure'
-						, 'safe_message' => 'Service Callback Failure'
-						, 'errors'=>$callback_results['errors']);
-					$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
-				}
-				else {
-					###_log('checking for attachments', print_r($callback_results, true));
-					$form = apply_filters($this->N('remote_success'), $form, $callback_results, $service);
-				}
-			}// can hook
-			
-			### _log(__FUNCTION__, $debug, strpos($debug['mode'], 'debug'));
-			
-			//forced debug contact; support legacy setting too
-			if(isset($debug['mode']) && ($debug['mode'] == 'debug' || in_array('debug', $debug['mode'])) ) {
-				$this->send_debug_message($debug, $service, $post_args, $response, $submission);
-			}
-			
+			$form = $this->handle_results($submission, $response, $post_args, $form, $service, $sid, $debug);
 		endforeach;	//-- loop services
 		
 		###_log(__LINE__.':'.__FILE__, '	finished before_send', $form);
@@ -647,13 +494,206 @@ class Forms3rdPartyIntegration {
 		// some plugins expected usage is as filter, so return (modified?) form
 		return $form;
 	}//---	end function before_send
-	
+
+	const RET_SEND_SKIP = -1;
+	const RET_SEND_STOP = -2;
+	const RET_SEND_OKAY = 1;
+
+	/**
+	 * Create and perform the 3rdparty submission
+	 * @param $submission user input submission
+	 * @param $form the plugin form source
+	 * @param $service current service being sent
+	 * @param $sid service id
+	 * @param $debug debug settings
+	 * @return array|int either [response, post_args] or an interrupt value like @see RET_SEND_SKIP
+	 */
+	public function send($submission, $form, $service, $sid, $debug) {
+		$post = array();
+
+		$service['separator'] = $debug['separator']; // alias here for reporting
+
+		//find mapping
+		foreach($service['mapping'] as $mid => $mapping){
+			$third = $mapping[self::PARAM_3RD];
+
+			//is this static or dynamic (userinput)?
+			if(v($mapping['val'])){
+				$input = $mapping[self::PARAM_SRC];
+			}
+			else {
+				//check if we have that field in post data
+				if( !isset($submission[ $mapping[self::PARAM_SRC] ]) ) continue;
+
+				$input = $submission[ $mapping[self::PARAM_SRC] ];
+			}
+
+			//allow multiple values to attach to same entry
+			if( isset( $post[ $third ] ) ){
+				###echo "multiple @$mid - $fsrc, $third :=\n";
+
+				if(!is_array($post[$third])) {
+					$post[$third] = array($post[$third]);
+				}
+				$post[$third] []= $input;
+			}
+			else {
+				$post[$third] = $input;
+			}
+		}// foreach mapping
+
+		//extract special tags;
+		$post = apply_filters($this->N('service_filter_post_'.$sid), $post, $service, $form, $submission);
+		$post = apply_filters($this->N('service_filter_post'), $post, $service, $form, $sid, $submission);
+
+		// fix for multiple values
+		switch($service['separator']) {
+			case '[#]':
+				// don't do anything to include numerical index (default behavior of `http_build_query`)
+				break;
+			case '[%]':
+				// see github issue #43
+				$post = $this->placeholder_separator($post);
+				break;
+			case '[]':
+				// must build as querystring then strip `#` out of `[#]=`
+				$post = http_build_query($post);
+				$post = preg_replace('/%5B[0-9]+%5D=/', '%5B%5D=', $post);
+				break;
+			default:
+				// otherwise, find the arrays and implode
+				foreach($post as $f => &$v) {
+					###_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
+
+					if(is_array($v)) $v = implode($service['separator'], $v);
+				}
+				break;
+		}
+
+		###_log(__LINE__.':'.__FILE__, '	sending post to '.$service['url'], $post);
+
+		// change args sent to remote post -- add headers, etc: http://codex.wordpress.org/Function_Reference/wp_remote_post
+		// optionally, return an array with 'response_bypass' set to skip the wp_remote_post in favor of whatever you did in the hook
+		$post_args = apply_filters($this->N('service_filter_args')
+			, array(
+				'timeout' => empty($service['timeout']) ? self::DEFAULT_TIMEOUT : $service['timeout']
+			,'body'=>$post
+			)
+			, $service
+			, $form
+		);
+
+		//remote call
+
+		// once more conditionally check whether use the service based upon (mapped) submission data
+		if(false === $post_args) return self::RET_SEND_SKIP;
+		// optional bypass -- replace with a SOAP call, etc
+		elseif(isset($post_args['response_bypass'])) {
+			$response = $post_args['response_bypass'];
+		}
+		else {
+			//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
+
+			$response = wp_remote_post(
+			// allow hooks to modify the URL with submission, like send as url-encoded XML, etc
+				apply_filters($this->N('service_filter_url'), $service['url'], $post_args),
+				$post_args
+			);
+		}
+
+		###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
+		### _log(__LINE__.':'.__FILE__, '	response from '.$service['url'], $submission, $post_args, $response);
+
+		return array('response' => $response, 'post_args' => $post_args);
+	}//--	fn	send
+
+	/**
+	 * Interpret and respond accordingly to the post results
+	 *
+	 * @param $submission
+	 * @param $response
+	 * @param $post_args
+	 * @param $form
+	 * @param $service
+	 * @param $sid
+	 * @param $debug
+	 */
+	public function handle_results($submission, $response, $post_args, $form, $service, $sid, $debug) {
+		$can_hook = true;
+		//if something went wrong with the remote-request "physically", warn
+		if (!is_array($response)) {	//new occurrence of WP_Error?????
+			$response_array = array('safe_message'=>'error object', 'object'=>$response);
+			$form = $this->on_response_failure($form, $debug, $service, $post_args, $response_array);
+			$can_hook = false;
+		}
+		elseif(!$response
+			|| !isset($response['response'])
+			|| !isset($response['response']['code'])
+			|| ! apply_filters($this->N('is_success'), 200 <= $response['response']['code'] && $response['response']['code'] < 400, $response, $service)
+		) {
+			$response['safe_message'] = 'physical request failure';
+			$form = $this->on_response_failure($form, $debug, $service, $post_args, $response);
+			$can_hook = false;
+		}
+		//otherwise, check for a success "condition" if given
+		elseif(!empty($service['success'])) {
+			if(strpos($response['body'], $service['success']) === false){
+				$failMessage = array(
+					'reason'=>'Could not locate success clause within response'
+				, 'safe_message' => 'Success Clause not found'
+				, 'clause'=>$service['success']
+				, 'response'=>$response['body']
+				);
+				$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
+				$can_hook = false;
+			}
+		}
+
+		if($can_hook){
+			###_log('performing hooks for:', $this->N.'_service_'.$sid);
+
+			//hack for pass-by-reference
+			//holder for callback return results
+			$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');
+			// TODO: use object?
+			$param_ref = array();	foreach($callback_results as $k => &$v){ $param_ref[$k] = &$v; }
+
+			//allow hooks
+			do_action($this->N('service_a'.$sid), $response['body'], $param_ref);
+			do_action($this->N('service'), $response['body'], $param_ref, $sid);
+
+			###_log('after success', $form);
+
+			//check for callback errors; if none, then attach stuff to message if requested
+			if(!empty($callback_results['errors'])){
+				$failMessage = array(
+					'reason'=>'Service Callback Failure'
+				, 'safe_message' => 'Service Callback Failure'
+				, 'errors'=>$callback_results['errors']);
+				$form = $this->on_response_failure($form, $debug, $service, $post_args, $failMessage);
+			}
+			else {
+				###_log('checking for attachments', print_r($callback_results, true));
+				$form = apply_filters($this->N('remote_success'), $form, $callback_results, $service);
+			}
+		}// can hook
+
+		### _log(__FUNCTION__, $debug, strpos($debug['mode'], 'debug'));
+
+		//forced debug contact; support legacy setting too
+		if(isset($debug['mode']) && ($debug['mode'] == 'debug' || in_array('debug', $debug['mode'])) ) {
+			$this->send_debug_message($debug, $service, $post_args, $response, $submission);
+		}
+
+		return $form;
+	}
+
 	/**
 	 * How to send the debug message
 	 * @param  string $debug      debug options -- 'email' and 'sender'
 	 * @param  array $service    service options
 	 * @param  array $post       details sent to 3rdparty
-	 * @param  object $response   the response object
+	 * @param  array|object $response   the response object
 	 * @param  object $submission the form submission
 	 * @return void             n/a
 	 */
@@ -697,16 +737,17 @@ class Forms3rdPartyIntegration {
 			}
 		}
 	}
-	
+
 	/**
 	 * Add a javascript warning for failures; also send an email to debugging recipient with details
 	 * parameters passed by reference mostly for efficiency, not actually changed (with the exception of $form)
-	 * 
-	 * @param $form reference to CF7 plugin object - contains mail details etc
-	 * @param $debug reference to this plugin "debug" option array
-	 * @param $service reference to service settings
-	 * @param $post_args reference to service post data
-	 * @param $response reference to remote-request response
+	 *
+	 * @param $form object CF7 plugin object - contains mail details etc
+	 * @param $debug array this plugin "debug" option array
+	 * @param $service array service settings
+	 * @param $post_args array service post data
+	 * @param $response mixed|object remote-request response
+	 * @return mixed|object|void the updated $form
 	 */
 	private function on_response_failure($form, $debug, $service, $post_args, $response){
 		// failure hooks; pass-by-value
