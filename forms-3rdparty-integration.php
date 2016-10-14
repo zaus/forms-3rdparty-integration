@@ -364,16 +364,17 @@ class Forms3rdPartyIntegration {
 	
 		return esc_url_raw( $url );
 	}
-	
+
 	/**
 	 * Helper to render a select list of available forms
 	 * @param array $forms list of  forms from functions like wpcf7_contact_forms()
 	 * @param array $eid entry id - for multiple lists on page
 	 * @param array $selected ids of selected fields
+	 * @param string $field optionally specify the field name
 	 */
-	public function form_select_input($forms, $eid, $selected){
+	public function form_select_input($forms, $eid, $selected, $field = 'forms'){
 		?>
-		<select class="multiple" multiple="multiple" id="forms-<?php echo $eid?>" name="<?php echo $this->N?>[<?php echo $eid?>][forms][]">
+		<select class="multiple" multiple="multiple" id="<?php echo $field, '-', $eid?>" name="<?php echo "{$this->N}[$eid][$field][]"?>">
 			<?php
 			foreach($forms as $f){
 				$form_id = $f['id'];
@@ -684,7 +685,7 @@ class Forms3rdPartyIntegration {
 		if(isset($debug['mode']) && ($debug['mode'] == 'debug' || in_array('debug', $debug['mode'])) ) {
 			// TMI with new WP_HTTP_Requests_Response object
 			if( isset($response['http_response']) && is_object($response['http_response']) ) $response = $response['http_response'];
-			
+
 			$this->send_debug_message($debug, $service, $post_args, $response, $submission);
 		}
 
