@@ -682,6 +682,9 @@ class Forms3rdPartyIntegration {
 
 		//forced debug contact; support legacy setting too
 		if(isset($debug['mode']) && ($debug['mode'] == 'debug' || in_array('debug', $debug['mode'])) ) {
+			// TMI with new WP_HTTP_Requests_Response object
+			if( isset($response['http_response']) && is_object($response['http_response']) ) $response = $response['http_response'];
+			
 			$this->send_debug_message($debug, $service, $post_args, $response, $submission);
 		}
 
