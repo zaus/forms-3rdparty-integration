@@ -12,7 +12,7 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 
 **Requires at least:** 3.0
 
-**Tested up to:** 4.3
+**Tested up to:** 4.6.1
 
 **Stable tag:** trunk
 
@@ -189,6 +189,24 @@ If you want to check _after_ the fields have been mapped, you can "reuse" the ho
         return $post_args;
     }
 
+### How do I resend a service call? ###
+
+Using public instance functions `send` and `handle_results`:
+
+    $f3p = Forms3rdPartyIntegration::$instance;
+    $debug = $f3p->get_settings();
+    // $sid - maybe get it from the current filter
+    // $form - maybe get it from the current filter
+    // $submission - probably save it somewhere, or rebuilt it from a database entry, etc
+    // $service = $f3p->get_services()[$sid];
+
+    $sendResult = $f3p->send($submission, $form, $service, $sid, $debug);
+    if($sendResult === Forms3rdPartyIntegration::RET_SEND_STOP || $sendResult === Forms3rdPartyIntegration::RET_SEND_SKIP) return;
+
+    $response = $sendResult['response'];
+    $post_args = $sendResult['post_args'];
+
+    return $f3p->handle_results($submission, $response, $post_args, $form, $service, $sid, $debug);
 
 ## Screenshots ##
 
@@ -205,6 +223,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.7 ###
+* refactored internal methods to make them reusable externally, specifically for 'forms-3rdparty-postagain' plugin
 
 ### 1.6.6.5 ###
 * added URL filter to allow customizing GET requests with post body arguments, or shortcodes
