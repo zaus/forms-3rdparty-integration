@@ -137,7 +137,7 @@
 							// print various forms
 							$this->form_select_input($forms, $eid, isset($entity['forms']) ? $entity['forms'] : '');
 						?>
-						<em class="description"><?php _e('Choose which forms submit to this service', $P);?>.</em>
+						<em class="description"><?php _e('Choose which forms submit to this service.', $P);?> <?php _e('Hold <kbd>CTRL</kbd> to (un)select more than one');?>.</em>
 					</div>
 					
 					<div class="field">

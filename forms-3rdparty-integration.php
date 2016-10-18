@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7
+Version: 1.7.1
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -685,7 +685,7 @@ class Forms3rdPartyIntegration {
 		//forced debug contact; support legacy setting too
 		if(isset($debug['mode']) && ($debug['mode'] == 'debug' || in_array('debug', $debug['mode'])) ) {
 			// TMI with new WP_HTTP_Requests_Response object
-			if( isset($response['http_response']) && is_object($response['http_response']) ) $response = $response['http_response'];
+			if( !is_a($response, 'WP_Error') && isset($response['http_response']) && is_object($response['http_response']) ) $response = $response['http_response'];
 
 			$this->send_debug_message($debug, $service, $post_args, $response, $submission);
 		}
