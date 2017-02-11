@@ -74,6 +74,17 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	*/
 
 	/**
+	 * Insert new fields into the form's submission
+	 * @param $form the original form "object"
+	 * @param $newfields key/value pairs to inject
+	 * @return $form, altered to contain the new fields
+	 */
+	public function INJECT($form, $newfields) {
+		return $form;
+	}
+
+
+	/**
 	 * How to update the confirmation message for a successful result
 	 * @param $form the form "object"
 	 * @param $message the content to report
@@ -192,6 +203,8 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 			// also add subsequent hooks
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_success'), array(&$this, 'remote_success'), 10, 3);
 			add_filter(Forms3rdPartyIntegration::$instance->N('remote_failure'), array(&$this, 'remote_failure'), 10, 5);
+			// expose injection point for other plugins
+			add_filter(Forms3rdPartyIntegration::$instance->N('inject'), array(&$this, 'INJECT'), 10, 2);
 		}
 
 		return $this->_use_form;
