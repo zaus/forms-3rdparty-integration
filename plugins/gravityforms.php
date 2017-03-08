@@ -147,19 +147,12 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 		### _log(__CLASS__, __FUNCTION__,  array('originalPOST' => $debug, 'newPOST' => $_POST, 'newfields' => $newfields, 'originalLead' => $lead0, 'lead' => $lead));
 
 		// https://www.gravityhelp.com/documentation/article/gform_field_value_parameter_name/
-		// but this is too late for injection
+		// but this is too late for injection so don't try it
 		//$this->_newfields = $newfields; // save for next hook
 		//add_filter( 'gform_field_value', array(&$this, 'populate_fields'), 10, 3 );
 
 		return $form;
 	}
-
-	function populate_fields( $value, $field, $name ) {
-		$values = $this->_newfields;
-		### _log(__CLASS__, __FUNCTION__, $values);
-		return isset( $values[ $name ] ) ? $values[ $name ] : $value;
-	}
-
 
 	/**
 	 * How to update the confirmation message for a successful result

@@ -106,7 +106,8 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the new fields
 	 */
 	public function INJECT($form, $newfields) {
-		_log(__CLASS__, __FUNCTION__, $newfields);
+		// TODO: TBD
+		### _log(__CLASS__, __FUNCTION__, $newfields);
 		return $form;
 	}
 

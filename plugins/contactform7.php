@@ -108,7 +108,16 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the new fields
 	 */
 	public function INJECT($form, $newfields) {
-		_log(__CLASS__, __FUNCTION__, $newfields);
+
+		// by the time we've hooked to CF7 it's too late to modify $_POST (within the Submission class) or use hook `wpcf7_posted_data`
+
+		$submission = WPCF7_Submission::get_instance();
+		### _log(__CLASS__, __FUNCTION__, $newfields, $submission);
+
+		// will it merge?  probably not
+		$data = &$submission->get_posted_data();
+		$data = $newfields + $data;
+
 		return $form;
 	}
 
