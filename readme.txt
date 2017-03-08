@@ -3,7 +3,7 @@ Contributors: zaus, atlanticbt, spkane
 Donate link: http://drzaus.com/donate
 Tags: contact form, form, contact form 7, CF7, gravity forms, GF, CRM, mapping, 3rd-party service, services, remote request
 Requires at least: 3.0
-Tested up to: 4.6.1
+Tested up to: 4.7.2
 Stable tag: trunk
 License: GPLv2 or later
 
@@ -213,6 +213,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 == Changelog ==
+
+= 1.7.2 =
+* added injection hooks for [Forms: 3rdparty Inject Results](https://github.com/zaus/forms-3rdparty-inject-results)
 
 = 1.7 =
 * refactored internal methods to make them reusable externally, specifically for 'forms-3rdparty-postagain' plugin

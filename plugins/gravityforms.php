@@ -128,6 +128,33 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	}
 
 	/**
+	 * Insert new fields into the form's submission
+	 * @param $form the original form "object"
+	 * @param $newfields key/value pairs to inject
+	 * @return $form, altered to contain the new fields
+	 */
+	public function INJECT($form, $newfields) {
+		### _log(__CLASS__, __FUNCTION__, $newfields);
+
+		// inject into 'submission' -- ultimately, GF use rgpost and more to pull from the $_POST array
+		// but the new fields must match up to an existing GF field
+		// array union op (+) preserves keys from first array, so start with new fields to overwrite
+		$_POST = $newfields + $_POST;
+
+		### note: calling `get_current_lead` sets it within singleton, preventing our inject modification from being relevant
+		### $lead = GFFormsModel::get_current_lead();
+
+		### _log(__CLASS__, __FUNCTION__,  array('originalPOST' => $debug, 'newPOST' => $_POST, 'newfields' => $newfields, 'originalLead' => $lead0, 'lead' => $lead));
+
+		// https://www.gravityhelp.com/documentation/article/gform_field_value_parameter_name/
+		// but this is too late for injection so don't try it
+		//$this->_newfields = $newfields; // save for next hook
+		//add_filter( 'gform_field_value', array(&$this, 'populate_fields'), 10, 3 );
+
+		return $form;
+	}
+
+	/**
 	 * How to update the confirmation message for a successful result
 	 * @param $form the form "object"
 	 * @param $message the content to report

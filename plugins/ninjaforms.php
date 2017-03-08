@@ -100,6 +100,19 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	}
 
 	/**
+	 * Insert new fields into the form's submission
+	 * @param $form the original form "object"
+	 * @param $newfields key/value pairs to inject
+	 * @return $form, altered to contain the new fields
+	 */
+	public function INJECT($form, $newfields) {
+		// TODO: TBD
+		### _log(__CLASS__, __FUNCTION__, $newfields);
+		return $form;
+	}
+
+
+	/**
 	 * How to update the confirmation message for a successful result
 	 * @param $form the form "object"
 	 * @param $message the content to report
