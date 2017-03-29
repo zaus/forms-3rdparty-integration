@@ -134,17 +134,22 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the new fields
 	 */
 	public function INJECT($form, $newfields) {
-		### _log(__CLASS__, __FUNCTION__, $newfields);
+		### _log(__CLASS__, __FUNCTION__,  array('oldPOST' => $_POST));
 
 		// inject into 'submission' -- ultimately, GF use rgpost and more to pull from the $_POST array
 		// but the new fields must match up to an existing GF field
 		// array union op (+) preserves keys from first array, so start with new fields to overwrite
-		$_POST = $newfields + $_POST;
+		// but be aware that union op will overwrite with an empty value, particularly problematic when used with #postagain plugin
+			# $_POST = $newfields + $_POST;
+		foreach($newfields as $k => $v) {
+			// don't overwrite with empty values (but is that always appropriate?), see forms-3rdparty-inject-results#1
+			if(!empty($v)) $_POST[$k] = $v;
+		}
 
 		### note: calling `get_current_lead` sets it within singleton, preventing our inject modification from being relevant
 		### $lead = GFFormsModel::get_current_lead();
 
-		### _log(__CLASS__, __FUNCTION__,  array('originalPOST' => $debug, 'newPOST' => $_POST, 'newfields' => $newfields, 'originalLead' => $lead0, 'lead' => $lead));
+		### _log(__CLASS__, __FUNCTION__,  array('newPOST' => $_POST, 'newfields' => $newfields));
 
 		// https://www.gravityhelp.com/documentation/article/gform_field_value_parameter_name/
 		// but this is too late for injection so don't try it

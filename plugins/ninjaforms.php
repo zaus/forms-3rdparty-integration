@@ -106,8 +106,11 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	 * @return $form, altered to contain the new fields
 	 */
 	public function INJECT($form, $newfields) {
-		// TODO: TBD
-		### _log(__CLASS__, __FUNCTION__, $newfields);
+		// TODO: TBD -- maybe this works like gravity forms?
+		foreach($newfields as $k => $v) {
+			// don't overwrite with empty values (but is that always appropriate?), see forms-3rdparty-inject-results#1
+			if(!empty($v)) $_POST[$k] = $v;
+		}
 		return $form;
 	}
 
