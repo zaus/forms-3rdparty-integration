@@ -215,7 +215,7 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 == Changelog ==
 
 = 1.7.2 =
-* added injection hooks for [Forms: 3rdparty Inject Results](https://github.com/zaus/forms-3rdparty-inject-results)
+* added injection hooks for [Forms: 3rdparty Inject Results](https://github.com/zaus/forms-3rdparty-inject-results) -- use via `$form = apply_filters(Forms3rdPartyIntegration::$instance->N('inject'), $form, $values_to_inject);`
 
 = 1.7 =
 * refactored internal methods to make them reusable externally, specifically for 'forms-3rdparty-postagain' plugin
