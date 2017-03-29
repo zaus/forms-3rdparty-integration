@@ -203,6 +203,24 @@ Using public instance functions `send` and `handle_results`:
 
     return $f3p->handle_results($submission, $response, $post_args, $form, $service, $sid, $debug);
 
+
+= How do I include part of the response in another service call? =
+
+See "Forms: 3rdparty Post Again"
+
+- Github https://github.com/zaus/forms-3rdparty-postagain
+- Wordpress https://wordpress.org/plugins/forms-3rdparty-post-again/
+
+= How do I include part of the response the contact form results? =
+
+See "Forms: 3rdparty Inject Results"
+
+- Github https://github.com/zaus/forms-3rdparty-inject-results
+- Wordpress https://wordpress.org/plugins/forms-3rdparty-inject-results/
+
+However, currently only confirmed working with Gravity Forms.
+
+
 == Screenshots ==
 
 __Please note these screenshots are from the previous plugin incarnation, but are still essentially valid.__
@@ -213,6 +231,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 == Changelog ==
+
+= 1.7.2.1 =
+* fix minor conflict between Inject Results and Post-Again
 
 = 1.7.2 =
 * added injection hooks for [Forms: 3rdparty Inject Results](https://github.com/zaus/forms-3rdparty-inject-results)

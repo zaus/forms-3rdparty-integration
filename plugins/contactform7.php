@@ -116,7 +116,12 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 
 		// will it merge?  probably not
 		$data = &$submission->get_posted_data();
-		$data = $newfields + $data;
+		// don't overwrite with empty values (but is that always appropriate?), see forms-3rdparty-inject-results#1
+		# $data = $newfields + $data;
+		foreach($newfields as $k => $v) {
+			if(!empty($v)) $data[$k] = $v;
+		}
+
 
 		return $form;
 	}
