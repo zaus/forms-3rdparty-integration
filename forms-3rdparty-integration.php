@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7.2.1
+Version: 1.7.3
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -31,6 +31,7 @@ Changelog:
 	1.6.6.5 - url hooks, fplugin hooks github #62
 	1.7 - split out processing so other plugins can submit forms (f3i-postagain)
 	1.7.2 - injection hooks for forms, only really works with GF; .1 suffix fixes postagain bug
+	1.7.3 - slight before_send refactor to make GF Resend easier
 */
 
 //declare to instantiate
@@ -60,7 +61,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.7.2.1';
+	const pluginVersion = '1.7.3';
 
 	
 	/**
@@ -460,8 +461,6 @@ class Forms3rdPartyIntegration {
 		if(empty($services)) return $form;
 
 		$debug = $this->get_settings();
-
-		//
 
 		//loop services
 		foreach($services as $sid => $service):
