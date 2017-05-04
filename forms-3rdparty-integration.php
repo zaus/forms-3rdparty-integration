@@ -465,22 +465,9 @@ class Forms3rdPartyIntegration {
 
 		//loop services
 		foreach($services as $sid => $service):
-			//check if we're supposed to use this service
-			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
+			$submission = $this->use_form($submission, $form, $service, $sid);
+			if($submission === self::RET_SEND_SKIP) continue;
 
-			// it's more like "use_this_service", actually...
-			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
-			
-			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
-			if( !$use_this_form ) continue;
-			
-			// only get the submission once, now that we know we're going to use this service/form
-			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
-	
-			// now we can conditionally check whether use the service based upon submission data
-			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
-			if( !$use_this_form ) continue;
-			
 			// populate the 3rdparty post args
 			$sendResult = $this->send($submission, $form, $service, $sid, $debug);
 			if($sendResult === self::RET_SEND_STOP) break;
@@ -491,9 +478,9 @@ class Forms3rdPartyIntegration {
 
 			$form = $this->handle_results($submission, $response, $post_args, $form, $service, $sid, $debug);
 		endforeach;	//-- loop services
-		
+
 		###_log(__LINE__.':'.__FILE__, '	finished before_send', $form);
-		
+
 		// some plugins expected usage is as filter, so return (modified?) form
 		return $form;
 	}//---	end function before_send
@@ -501,6 +488,34 @@ class Forms3rdPartyIntegration {
 	const RET_SEND_SKIP = -1;
 	const RET_SEND_STOP = -2;
 	const RET_SEND_OKAY = 1;
+
+	/**
+	 * Check for the given service if we're supposed to use it with this form+submission
+	 * @param $submission
+	 * @param $form
+	 * @param $service
+	 * @param $sid
+	 * @return int|mixed either the submission or a "skip" placeholder
+	 */
+	public function use_form($submission, $form, $service, $sid) {
+		//check if we're supposed to use this service
+		if( !isset($service['forms']) || empty($service['forms']) ) return self::RET_SEND_SKIP; // nothing provided
+
+		// it's more like "use_this_service", actually...
+		$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
+
+		###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
+		if( !$use_this_form ) return self::RET_SEND_SKIP;
+
+		// only get the submission once, now that we know we're going to use this service/form
+		if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
+
+		// now we can conditionally check whether use the service based upon submission data
+		$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
+		if( !$use_this_form ) return self::RET_SEND_SKIP;
+
+		return $submission;
+	}
 
 	/**
 	 * Create and perform the 3rdparty submission
