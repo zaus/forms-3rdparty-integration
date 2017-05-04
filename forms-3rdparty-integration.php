@@ -505,7 +505,7 @@ class Forms3rdPartyIntegration {
 	 */
 	public function use_form($form, $service, $sid) {
 		//check if we're supposed to use this service
-		if( !isset($service['forms']) || empty($service['forms']) ) return self::RET_SEND_SKIP; // nothing provided
+		if( !isset($service['forms']) || empty($service['forms']) ) return false; // nothing provided
 
 		// it's more like "use_this_service", actually...
 		$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
