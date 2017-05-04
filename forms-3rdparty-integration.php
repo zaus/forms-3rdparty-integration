@@ -445,11 +445,12 @@ class Forms3rdPartyIntegration {
 
 	/**
 	 * Callback to perform before Form (i.e. Contact-Form-7, Gravity Forms) fires
-	 * @param $form
+	 * @param $form the plugin form
+	 * @param $submission alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data; initially a flag (if not provided) to only formulate the submission once
 	 * 
 	 * @see http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/
 	 */
-	function before_send($form){
+	function before_send($form, $submission = false){
 		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
 
 		//get field mappings and settings
@@ -460,13 +461,20 @@ class Forms3rdPartyIntegration {
 
 		$debug = $this->get_settings();
 
-		// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
-		$submission = false;
+		//
 
 		//loop services
 		foreach($services as $sid => $service):
-			$submission = $this->use_form($submission, $form, $service, $sid);
-			if($submission === self::RET_SEND_SKIP) continue;
+			$use_this_form = $this->use_form($form, $service, $sid);
+			if(!$use_this_form) continue;
+
+			// only get the submission once, now that we know we're going to use this service/form
+			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
+
+			// now we can conditionally check whether use the service based upon submission data
+			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
+			if( !$use_this_form ) continue;
+
 
 			// populate the 3rdparty post args
 			$sendResult = $this->send($submission, $form, $service, $sid, $debug);
@@ -490,14 +498,13 @@ class Forms3rdPartyIntegration {
 	const RET_SEND_OKAY = 1;
 
 	/**
-	 * Check for the given service if we're supposed to use it with this form+submission
-	 * @param $submission
+	 * Check for the given service if we're supposed to use it with this form
 	 * @param $form
 	 * @param $service
 	 * @param $sid
-	 * @return int|mixed either the submission or a "skip" placeholder
+	 * @return bool whether to skip or not
 	 */
-	public function use_form($submission, $form, $service, $sid) {
+	public function use_form($form, $service, $sid) {
 		//check if we're supposed to use this service
 		if( !isset($service['forms']) || empty($service['forms']) ) return self::RET_SEND_SKIP; // nothing provided
 
@@ -505,16 +512,8 @@ class Forms3rdPartyIntegration {
 		$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
 
 		###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
-		if( !$use_this_form ) return self::RET_SEND_SKIP;
 
-		// only get the submission once, now that we know we're going to use this service/form
-		if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
-
-		// now we can conditionally check whether use the service based upon submission data
-		$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
-		if( !$use_this_form ) return self::RET_SEND_SKIP;
-
-		return $submission;
+		return $use_this_form;
 	}
 
 	/**
