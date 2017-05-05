@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7.2.1
+Version: 1.7.3
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -31,6 +31,7 @@ Changelog:
 	1.6.6.5 - url hooks, fplugin hooks github #62
 	1.7 - split out processing so other plugins can submit forms (f3i-postagain)
 	1.7.2 - injection hooks for forms, only really works with GF; .1 suffix fixes postagain bug
+	1.7.3 - slight before_send refactor to make GF Resend easier
 */
 
 //declare to instantiate
@@ -60,7 +61,7 @@ class Forms3rdPartyIntegration {
 	 * Version of current plugin -- match it to the comment
 	 * @var string
 	 */
-	const pluginVersion = '1.7.2.1';
+	const pluginVersion = '1.7.3';
 
 	
 	/**
@@ -445,11 +446,12 @@ class Forms3rdPartyIntegration {
 
 	/**
 	 * Callback to perform before Form (i.e. Contact-Form-7, Gravity Forms) fires
-	 * @param $form
+	 * @param $form the plugin form
+	 * @param $submission alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data; initially a flag (if not provided) to only formulate the submission once
 	 * 
 	 * @see http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/
 	 */
-	function before_send($form){
+	function before_send($form, $submission = false){
 		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
 
 		//get field mappings and settings
@@ -460,27 +462,19 @@ class Forms3rdPartyIntegration {
 
 		$debug = $this->get_settings();
 
-		// alias to submission data - in GF it's $_POST, in CF7 it's $cf7->posted_data
-		$submission = false;
-
 		//loop services
 		foreach($services as $sid => $service):
-			//check if we're supposed to use this service
-			if( !isset($service['forms']) || empty($service['forms']) ) continue; // nothing provided
+			$use_this_form = $this->use_form($form, $service, $sid);
+			if(!$use_this_form) continue;
 
-			// it's more like "use_this_service", actually...
-			$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
-			
-			###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
-			if( !$use_this_form ) continue;
-			
 			// only get the submission once, now that we know we're going to use this service/form
 			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
-	
+
 			// now we can conditionally check whether use the service based upon submission data
 			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);
 			if( !$use_this_form ) continue;
-			
+
+
 			// populate the 3rdparty post args
 			$sendResult = $this->send($submission, $form, $service, $sid, $debug);
 			if($sendResult === self::RET_SEND_STOP) break;
@@ -491,9 +485,9 @@ class Forms3rdPartyIntegration {
 
 			$form = $this->handle_results($submission, $response, $post_args, $form, $service, $sid, $debug);
 		endforeach;	//-- loop services
-		
+
 		###_log(__LINE__.':'.__FILE__, '	finished before_send', $form);
-		
+
 		// some plugins expected usage is as filter, so return (modified?) form
 		return $form;
 	}//---	end function before_send
@@ -501,6 +495,25 @@ class Forms3rdPartyIntegration {
 	const RET_SEND_SKIP = -1;
 	const RET_SEND_STOP = -2;
 	const RET_SEND_OKAY = 1;
+
+	/**
+	 * Check for the given service if we're supposed to use it with this form
+	 * @param $form
+	 * @param $service
+	 * @param $sid
+	 * @return bool whether to skip or not
+	 */
+	public function use_form($form, $service, $sid) {
+		//check if we're supposed to use this service
+		if( !isset($service['forms']) || empty($service['forms']) ) return false; // nothing provided
+
+		// it's more like "use_this_service", actually...
+		$use_this_form = apply_filters($this->N('use_form'), false, $form, $sid, $service['forms']);
+
+		###_log('are we using this form?', $use_this_form ? "YES" : "NO", $sid, $service);
+
+		return $use_this_form;
+	}
 
 	/**
 	 * Create and perform the 3rdparty submission
