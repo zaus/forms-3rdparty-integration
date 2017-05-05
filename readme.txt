@@ -232,6 +232,10 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.7.3 =
+* slight refactor of `before_send` to make reposting GF submissions easier
+
+
 = 1.7.2.1 =
 * fix minor conflict between Inject Results and Post-Again
 

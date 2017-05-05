@@ -114,8 +114,8 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 		$submission = WPCF7_Submission::get_instance();
 		### _log(__CLASS__, __FUNCTION__, $newfields, $submission);
 
-		// will it merge?  probably not
-		$data = &$submission->get_posted_data();
+		// TODO: how to merge?  can't assign non-variable by reference? (using `&`)
+		$data = $submission->get_posted_data();
 		// don't overwrite with empty values (but is that always appropriate?), see forms-3rdparty-inject-results#1
 		# $data = $newfields + $data;
 		foreach($newfields as $k => $v) {
