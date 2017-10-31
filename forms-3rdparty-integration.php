@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7.3
+Version: 1.7.4
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -32,6 +32,7 @@ Changelog:
 	1.7 - split out processing so other plugins can submit forms (f3i-postagain)
 	1.7.2 - injection hooks for forms, only really works with GF; .1 suffix fixes postagain bug
 	1.7.3 - slight before_send refactor to make GF Resend easier
+	1.7.4 - another slight fix to make GF Resend do submission hooks too (so Reformat will work with it as well)
 */
 
 //declare to instantiate
@@ -451,8 +452,9 @@ class Forms3rdPartyIntegration {
 	 * 
 	 * @see http://www.alexhager.at/how-to-integrate-salesforce-in-contact-form-7/
 	 */
-	function before_send($form, $submission = false){
+	function before_send($form, $submission = array()){
 		###_log(__LINE__.':'.__FILE__, '	begin before_send', $form);
+		$submissionInit = false; // only get the submission once when that we know we're going to use this service/form
 
 		//get field mappings and settings
 		$services = $this->get_services();
@@ -468,7 +470,10 @@ class Forms3rdPartyIntegration {
 			if(!$use_this_form) continue;
 
 			// only get the submission once, now that we know we're going to use this service/form
-			if(false === $submission) $submission = apply_filters($this->N('get_submission'), array(), $form, $service);
+			if(false === $submissionInit) {
+				$submission = apply_filters($this->N('get_submission'), $submission, $form, $service);
+				$submissionInit = true;
+			}
 
 			// now we can conditionally check whether use the service based upon submission data
 			$use_this_form = apply_filters($this->N('use_submission'), $use_this_form, $submission, $sid);

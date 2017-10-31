@@ -239,6 +239,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.7.4 ###
+* another slight fix to make GF Resend do submission hooks too (so Reformat will work with it as well)
+
 ### 1.7.3 ###
 * slight refactor of `before_send` to make reposting GF submissions easier
 
