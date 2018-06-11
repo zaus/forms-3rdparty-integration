@@ -171,10 +171,15 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 		return $form;
 	}
 
+	private $confirmationMessage;
+
 	private function set_confirmation(&$confirmation, $message) {
-				// http://www.gravityhelp.com/documentation/page/Confirmation
+		// http://www.gravityhelp.com/documentation/page/Confirmation
 		switch($confirmation['type']) {
 			case 'message':
+				// need to hang on to the message and 'properly' hook to it if you want script tags
+				$this->confirmationMessage = $message;
+				add_filter('gform_confirmation', array(&$this, 'bind_confirmation'), 10, 3); // to bypass sanitization, or maybe version changed and this is how it should happen
 				$confirmation['message'] = $message; // already contains confirmation message, don't append
 				break;
 			case 'redirect':
@@ -184,6 +189,15 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 				/// ???
 				break;
 		}
+	}
+
+	/**
+	 * Must late-bind confirmation message if you want to preserve javascript
+	 */
+	public function bind_confirmation($message, $form, $entry) {
+		###_log(__FUNCTION__, $message);
+
+		return $this->confirmationMessage;
 	}
 
 	/**
