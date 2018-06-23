@@ -130,6 +130,20 @@
 						<em class="description"><?php echo sprintf(__('The url of the external submission -- usually the <code>action</code> attribute of the 3rd-party form.  See <a href="%s">Debug Mode</a> setting for a <a href="%s">working test url</a>.', $P), '#dbg-debugmode', $debugUrl);?></em>
 					</div>
 					
+					<div class="field">
+						<?php
+						$methods = apply_filters($this->N('submit_methods'), array(
+							'post' => 'Post',
+							'get' => 'Get'
+						), $eid, $P, $entity);
+						if(empty($entity['method'])) $entity['method'] = 'post';
+						foreach($methods as $mkey => $mlabel):
+						?>
+						<input id="mthd-<?php echo $mkey, $eid?>" type="radio" class="radio" name="<?php echo $P?>[<?php echo $eid?>][method]" value="<?php echo esc_attr($mkey)?>" <?php checked($entity['method'], $mkey) ?> />
+						<label for="mthd-<?php echo $mkey, $eid?>">Submit as <?php _e($mlabel, $P) ?></label>
+						<?php endforeach; ?>
+						<em class="description"><?php _e('How to submit the request.', $P);?></em>
+					</div>
 		
 					<div class="field">
 						<label for="forms-<?php echo $eid?>">Attach to Forms</label>
