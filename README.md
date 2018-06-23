@@ -12,7 +12,7 @@ _(please note, the following was poorly copied from the Wordpress readme)_
 
 **Requires at least:** 3.0
 
-**Tested up to:** 4.7.2
+**Tested up to:** 4.9.6
 
 **Stable tag:** trunk
 
@@ -103,6 +103,8 @@ See section [Hooks](#hooks).  See plugin folder `/3rd-parties` for example code 
 If you instead need to combine/nest fields, check out [Forms: 3rdparty Xpost](http://wordpress.org/plugins/forms-3rd-party-xpost/).
 
 ### How do I make a GET request instead of POST? ###
+
+Since v1.7.6, it's an admin setting for GET and POST, but for anything other than those two that you'd write a hook.
 
 _from http://wordpress.org/support/topic/method-get?replies=2#post-5996489_
 
@@ -238,6 +240,12 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 
 ## Changelog ##
+
+### 1.7.6 ###
+* exposing http method (get/post); result redirection
+
+### 1.7.5 ###
+* late-bind GF confirmation for script tags
 
 ### 1.7.4 ###
 * another slight fix to make GF Resend do submission hooks too (so Reformat will work with it as well)

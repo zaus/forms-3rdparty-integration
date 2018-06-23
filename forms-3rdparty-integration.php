@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7.5
+Version: 1.7.6
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -34,6 +34,7 @@ Changelog:
 	1.7.3 - slight before_send refactor to make GF Resend easier
 	1.7.4 - another slight fix to make GF Resend do submission hooks too (so Reformat will work with it as well)
 	1.7.5 - late-bind GF confirmation for script tags
+	1.7.6 - exposing http method (get/post); result redirection
 */
 
 //declare to instantiate
