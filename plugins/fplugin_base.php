@@ -93,6 +93,14 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 	abstract protected function SET_OKAY_MESSAGE($form, $message);
 
 	/**
+	 * How to update the confirmation redirect for a successful result
+	 * @param $form the form "object"
+	 * @param $redirect the url to redirect to
+	 * @return $form, altered to contain the message
+	 */
+	abstract protected function SET_OKAY_REDIRECT($form, $redirect);
+
+	/**
 	 * How to update the confirmation message for a failure/error
 	 * @param $form the form "object"
 	 * @param $message the content to report
@@ -258,6 +266,11 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 			$form = $this->SET_OKAY_MESSAGE($form, $callback_results['message']);
 		}
 
+		//if requested, attach redirect to success notification
+		if( !empty($callback_results['redirect']) ) {
+			$form = $this->SET_OKAY_REDIRECT($form, $callback_results['redirect']);
+		}
+		
 		###_log(__FUNCTION__, $form);
 
 		return $form;

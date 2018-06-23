@@ -616,11 +616,13 @@ class Forms3rdPartyIntegration {
 		else {
 			//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
 
-			$response = wp_remote_post(
 			// allow hooks to modify the URL with submission, like send as url-encoded XML, etc
-				apply_filters($this->N('service_filter_url'), $service['url'], $post_args),
-				$post_args
-			);
+			$url = apply_filters($this->N('service_filter_url'), $service['url'], $post_args);
+
+			$response = isset($service['method']) && $service['method'] == 'get'
+				? wp_remote_get($url, $post_args)
+				: wp_remote_post($url, $post_args)
+				;
 		}
 
 		###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
@@ -676,7 +678,7 @@ class Forms3rdPartyIntegration {
 
 			//hack for pass-by-reference
 			//holder for callback return results
-			$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');
+			$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '', 'redirect' => '');
 			// TODO: use object?
 			$param_ref = array();	foreach($callback_results as $k => &$v){ $param_ref[$k] = &$v; }
 

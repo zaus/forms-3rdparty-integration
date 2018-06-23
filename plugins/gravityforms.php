@@ -201,6 +201,29 @@ class Forms3rdpartyIntegration_Gf extends Forms3rdpartyIntegration_FPLUGIN {
 	}
 
 	/**
+	 * How to update the confirmation redirect for a successful result
+	 * @param $form the form "object"
+	 * @param $redirect the url to redirect to
+	 * @return $form, altered to contain the message
+	 */
+	protected function SET_OKAY_REDIRECT($form, $redirect) {
+		// https://docs.gravityforms.com/gform_confirmation/#4-open-the-page-or-redirect-in-a-new-tab
+
+		add_filter( 'gform_confirmation', array(&$this, 'gform_confirmation'), 10, 4 );
+
+		return $form;
+	}
+
+	public function gform_confirmation($confirmation, $form, $entry, $ajax) {
+		if ( isset( $confirmation['redirect'] ) ) {
+			$url          = esc_url_raw( $redirect );
+			$confirmation .= "<script type=\"text/javascript\">window.open('$url', '_blank');</script>";
+		}
+		
+		return $confirmation;
+	}
+	
+	/**
 	 * Fetch the original error message for the form
 	 */
 	protected function GET_ORIGINAL_ERROR_MESSAGE($form) {
