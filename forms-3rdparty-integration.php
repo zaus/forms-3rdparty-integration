@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7.5
+Version: 1.7.6
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -34,6 +34,7 @@ Changelog:
 	1.7.3 - slight before_send refactor to make GF Resend easier
 	1.7.4 - another slight fix to make GF Resend do submission hooks too (so Reformat will work with it as well)
 	1.7.5 - late-bind GF confirmation for script tags
+	1.7.6 - exposing http method (get/post); result redirection
 */
 
 //declare to instantiate
@@ -616,11 +617,13 @@ class Forms3rdPartyIntegration {
 		else {
 			//@see http://planetozh.com/blog/2009/08/how-to-make-http-requests-with-wordpress/
 
-			$response = wp_remote_post(
 			// allow hooks to modify the URL with submission, like send as url-encoded XML, etc
-				apply_filters($this->N('service_filter_url'), $service['url'], $post_args),
-				$post_args
-			);
+			$url = apply_filters($this->N('service_filter_url'), $service['url'], $post_args);
+
+			$response = isset($service['method']) && $service['method'] == 'get'
+				? wp_remote_get($url, $post_args)
+				: wp_remote_post($url, $post_args)
+				;
 		}
 
 		###pbug(__LINE__.':'.__FILE__, '	response from '.$service['url'], $response);
@@ -676,7 +679,7 @@ class Forms3rdPartyIntegration {
 
 			//hack for pass-by-reference
 			//holder for callback return results
-			$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '');
+			$callback_results = array('success'=>false, 'errors'=>false, 'attach'=>'', 'message' => '', 'redirect' => '');
 			// TODO: use object?
 			$param_ref = array();	foreach($callback_results as $k => &$v){ $param_ref[$k] = &$v; }
 

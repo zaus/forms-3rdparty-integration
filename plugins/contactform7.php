@@ -141,6 +141,22 @@ class Forms3rdpartyIntegration_CF7 extends Forms3rdpartyIntegration_FPLUGIN {
 	}
 
 	/**
+	 * How to update the confirmation redirect for a successful result
+	 * @param $form the form "object"
+	 * @param $redirect the url to redirect to
+	 * @return $form, altered to contain the message
+	 */
+	protected function SET_OKAY_REDIRECT($form, $redirect) {
+		$messages = $form->prop('messages');
+		$url = esc_url_raw( $redirect );
+		$messages['mail_sent_ok'] .= "<script type=\"text/javascript\">window.open('$url', '_blank');</script>";
+		$form->set_properties(array('messages'=>$messages));
+
+		return $form;
+	}
+
+
+	/**
 	 * Fetch the original error message for the form
 	 */
 	protected function GET_ORIGINAL_ERROR_MESSAGE($form) {

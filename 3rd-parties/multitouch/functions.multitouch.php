@@ -4,24 +4,24 @@
 
 #region ------------------------------- CUSTOM FUNCTION CALLS ---------------------------------
 
-if(!class_exists('Cf73rdPartyCallbacks')):
+if(!class_exists('Forms3rdpartyIntegrationCallbacks')):
 /**
  * Encapsulate any and all 3rd-party service callback functions
  */
-class Cf73rdPartyCallbacks {
+class Forms3rdpartyIntegrationCallbacks {
 	public function __construct(){
 		//actions require 2 parameters: 3rd-party response, results placeholders
-		add_action('Cf73rdPartyIntegration_service_a0', array(&$this, 'multitouch1'), 10, 2);
+		add_action('Forms3rdpartyIntegrationIntegration_service_a0', array(&$this, 'multitouch1'), 10, 2);
 		//filters require 4 parameters: placeholder, value to filter, field, and service array
-		add_filter('Cf73rdPartyIntegration_service_filter_post_0', array(&$this, 'multitouch1_filter'), 10, 3);
+		add_filter('Forms3rdpartyIntegrationIntegration_service_filter_post_0', array(&$this, 'multitouch1_filter'), 10, 3);
 	}//--	function __construct
 	
 	/**
 	 * Callback hook for 3rd-party service Multitouch
 	 * @param $response the remote-request response (in this case, it's a serialized string)
-	 * @param &$results the callback return results (passed by reference since function can't return a value; also must be "constructed by reference"; see plugin)
+	 * @param &$results the callback return results (kind of passed by reference since function can't return a value; also must be "constructed by reference"; see plugin)
 	 */
-	public function multitouch1($response, &$results){
+	public function multitouch1($response, $results){
 		try{
 			//unserialize results to append to email
 			$data = unserialize($response);
@@ -106,9 +106,9 @@ class Cf73rdPartyCallbacks {
 	 * 
 	 * @param $values array of post values
 	 * @param $service reference to service detail array
-	 * @param $cf7 reference to Contact Form 7 object
+	 * @param $form reference to form object/array
 	 */
-	public function multitouch1_filter($values, &$service, &$cf7){
+	public function multitouch1_filter($values, $service, $form){
 		foreach($values as $field => &$value):
 		//filter depending on field
 		switch($field){
@@ -128,10 +128,10 @@ class Cf73rdPartyCallbacks {
 		return $values;
 	}//--	function multitouch1_filter
 
-}//---	class Cf73rdPartyCallbacks
+}//---	class Forms3rdpartyIntegrationCallbacks
 
 //start 'em up
-$cf73rdpartycallback_instance = new Cf73rdPartyCallbacks();
+$Forms3rdpartyIntegrationcallback_instance = new Forms3rdpartyIntegrationCallbacks();
 endif;	//class-exists
 
 #endregion ------------------------------- CUSTOM FUNCTION CALLS ---------------------------------

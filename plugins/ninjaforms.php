@@ -133,6 +133,23 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	}
 
 	/**
+	 * How to update the confirmation redirect for a successful result
+	 * @param $form the form "object"
+	 * @param $redirect the url to redirect to
+	 * @return $form, altered to contain the message
+	 */
+	protected function SET_OKAY_REDIRECT($form, $redirect) {
+		$setting = 'success_msg';
+		$message = $form->get_form_setting($setting);
+		$url = esc_url_raw( $redirect );
+		$message .= "<script type=\"text/javascript\">window.open('$url', '_blank');</script>";
+		$form->update_form_setting($setting, wpautop($message));
+
+		return $form; // just to match expectation
+	}
+
+
+	/**
 	 * How to update the confirmation message for a failure/error
 	 * @param $form the form "object"
 	 * @param $message the content to report
