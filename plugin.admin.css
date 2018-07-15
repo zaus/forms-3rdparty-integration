@@ -22,7 +22,7 @@ table.mappings { width:100%; margin:1em 0.5em; border-bottom:1px solid #ccc; bor
 table.mappings td, table.mappings th { border:1px solid #ccc; }
 	table.mappings th .descr { font-weight:normal; font-size:75%; }
 table.mappings caption { font-style:italic; color:#888; margin-bottom:0.2em; }
-table.mappings input { width:100%; }
+table.mappings input, table.mappings textarea, table.mappings select { width:100%; }
 table.mappings .thin { width:4em; }
 table.mappings .drag-handle { padding:0.5em;}
 /* sortable */

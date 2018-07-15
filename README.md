@@ -241,6 +241,9 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 ## Changelog ##
 
+### 1.7.7 ###
+* destination mapping is textarea to make other plugins easier (e.g. newlines in xpost formatting), hooks `..._service_mappings_headers` and `..._service_mappings_values` to add more columns
+
 ### 1.7.6 ###
 * exposing http method (get/post); result redirection
 

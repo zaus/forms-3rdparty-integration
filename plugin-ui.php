@@ -199,6 +199,9 @@
 							<strong><?php _e('3rd-Party Field', $P);?></strong>
 							<p class="descr"><?php _e('The input name/id from the external service', $P);?></p>
 						</th>
+						<?php
+						do_action($this->N('service_mappings_headers'), $eid, $pairNum, $P, $entity);
+						?>
 						<th id="th-<?php echo $eid?>-action" class="thin"><?php _e('Drag', $P);?></th>
 					</tr>
 				</thead>
@@ -235,8 +238,11 @@
 						</td>
 						<td headers="th-<?php echo $eid?>-3rd">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="invisible">3rd-party Field:</label>
-							<input id="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" type="text" class="text b" name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_3RD ?>]" value="<?php echo esc_attr($pair[self::PARAM_3RD])?>" />
+							<textarea id="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="text b" rows=1 name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_3RD ?>]"><?php echo esc_html($pair[self::PARAM_3RD])?></textarea>
 						</td>
+						<?php
+						do_action($this->N('service_mappings_values'), $eid, $pairNum, $P, $entity);
+						?>
 						<td headers="th-<?php echo $eid?>-action" class="thin drag-handle icon row-actns">
 							<a href="#" title="<?php _e('Delete'); ?>" class="minus actn" data-actn="remove" data-after="row" data-rel="tr.fields"><?php _e('Delete', $P);?></a>
 							<?php
