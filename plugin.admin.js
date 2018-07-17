@@ -74,7 +74,7 @@
 		,
 		updateClonedRow: function(newid, $clone, regex) {
 			//reset clone values and update indices
-			$clone.find('input,select').each(function(i, o){
+			$clone.find('input,select,textarea').each(function(i, o){
 				var $o = $(o)
 					, id = $o.attr('id').split('-')
 					, name = $o.attr('name')
