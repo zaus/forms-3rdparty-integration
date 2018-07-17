@@ -200,7 +200,7 @@
 							<p class="descr"><?php _e('The input name/id from the external service', $P);?></p>
 						</th>
 						<?php
-						do_action($this->N('service_mappings_headers'), $eid, $pairNum, $P, $entity);
+						do_action($this->N('service_mappings_headers'), $eid, $P, $entity);
 						?>
 						<th id="th-<?php echo $eid?>-action" class="thin"><?php _e('Drag', $P);?></th>
 					</tr>
@@ -238,7 +238,7 @@
 						</td>
 						<td headers="th-<?php echo $eid?>-3rd">
 							<label for="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="invisible">3rd-party Field:</label>
-							<textarea id="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="text b" rows=1 name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_3RD ?>]"><?php echo esc_html($pair[self::PARAM_3RD])?></textarea>
+							<textarea id="mapping-<?php echo $eid?>-<?php echo $pairNum?>b" class="text b" rows=<?php echo substr_count($pair[self::PARAM_3RD], "\n") + 1 ?> name="<?php echo $P?>[<?php echo $eid?>][mapping][<?php echo $pairNum?>][<?php echo self::PARAM_3RD ?>]"><?php echo esc_html($pair[self::PARAM_3RD])?></textarea>
 						</td>
 						<?php
 						do_action($this->N('service_mappings_values'), $eid, $pairNum, $P, $entity);
