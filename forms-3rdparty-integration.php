@@ -535,7 +535,8 @@ class Forms3rdPartyIntegration {
 	public function send($submission, $form, $service, $sid, $debug) {
 		$post = array();
 
-		$service['separator'] = $debug['separator']; // alias here for reporting
+		if(!isset($service['delim']) || empty($service['delim']))
+			$service['delim'] = $debug['separator']; // alias here for reporting and using default
 
 		//find mapping
 		foreach($service['mapping'] as $mid => $mapping){
@@ -571,7 +572,7 @@ class Forms3rdPartyIntegration {
 		$post = apply_filters($this->N('service_filter_post'), $post, $service, $form, $sid, $submission);
 
 		// fix for multiple values
-		switch($service['separator']) {
+		switch($service['delim']) {
 			case '[#]':
 				// don't do anything to include numerical index (default behavior of `http_build_query`)
 				break;
@@ -585,11 +586,15 @@ class Forms3rdPartyIntegration {
 				$post = preg_replace('/%5B[0-9]+%5D=/', '%5B%5D=', $post);
 				break;
 			default:
+				// special case: newlines were escaped
+				if($service['delim'] == '\\r\\n') $service['delim'] = "\r\n";
+				elseif($service['delim'] == '\\n') $service['delim'] = "\n";
+
 				// otherwise, find the arrays and implode
 				foreach($post as $f => &$v) {
 					###_log('checking array', $f, $v, is_array($v) ? 'array' : 'notarray');
 
-					if(is_array($v)) $v = implode($service['separator'], $v);
+					if(is_array($v)) $v = implode($service['delim'], $v);
 				}
 				break;
 		}

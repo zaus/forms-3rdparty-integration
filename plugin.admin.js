@@ -11,7 +11,8 @@
 			/// Do what the button says, usually involving a target and an after-effect
 
 			var $o = $(this)
-				, $target = $o.closest( $o.data('rel') )	//get the target off the link "rel", and find it from the parent-chain
+				, target = $o.data('target')
+				, $target = target ? $(target) : $o.closest( $o.data('rel') )	//get the target off the link "rel", and find it from the parent-chain
 				, after = $o.data('after')
 				, action = $o.data('actn')
 				;
@@ -62,7 +63,11 @@
 				//delete extra rows, fix title
 				$clone.find('tr.fields').slice(1).empty().remove(); // only save the first row
 				var $title = $clone.find('h3 span:last');
-				$title.html( $title.html().split(':')[0] );
+				$title.html( $title.html().split(':')[0] )
+				// and reapply data
+					.parent()
+					.data('actn', "toggle")
+					.data('rel', ".postbox");
 
 				// toggle hooks appropriately -- since the next call will 'reset' all fields, force collapsed
 				$clone.find('.hook-example').addClass('collapsed');

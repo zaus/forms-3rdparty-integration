@@ -169,8 +169,14 @@
 					</div>
 					<div class="field">
 						<label for="timeout-<?php echo $eid?>">Request timeout</label>
-						<input id="timout-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][timeout]" value="<?php echo esc_attr($entity['timeout'])?>" />
+						<input id="timeout-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][timeout]" value="<?php echo esc_attr($entity['timeout'])?>" />
 						<em class="description"><?php echo sprintf(__('How long (in seconds) to attempt the 3rd-party remote request before giving up.  Default %d', $P), self::DEFAULT_TIMEOUT);?>.</em>
+					</div>
+
+					<div class="field">
+						<label for="delim-<?php echo $eid?>">Separator</label>
+						<input id="delim-<?php echo $eid?>" type="text" class="text" name="<?php echo $P?>[<?php echo $eid?>][delim]" value="<?php echo esc_attr($entity['delim'])?>" />
+						<em class="description"><?php _e('Separator for multiple-mapped fields (i.e. if `fname` and `lname` are mapped to the `name` field, how to separate them).  Uses plugin setting if not defined per-service.', $P);?>.</em>
 					</div>
 				</div>
 			</fieldset><!-- Service -->
@@ -301,6 +307,8 @@
 
 			<div class="buttons">
 				<input type="submit" id="submit" name="submit" class="button button-primary" value="Save" />
+
+				<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-target="div.meta-box-sortables div.meta-box:last">Add Another Service</a></span>
 			</div>
 				
 		</form>
