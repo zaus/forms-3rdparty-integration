@@ -5,7 +5,7 @@ Plugin Name: Forms: 3rd-Party Integration
 Plugin URI: https://github.com/zaus/forms-3rdparty-integration
 Description: Send plugin Forms Submissions (Gravity, CF7, Ninja Forms, etc) to a 3rd-party URL
 Author: zaus, atlanticbt, spkane
-Version: 1.7.8
+Version: 1.7.9
 Author URI: http://drzaus.com
 Changelog:
 	1.4 - forked from cf7-3rdparty.  Removed 'hidden field plugin'.
@@ -37,6 +37,7 @@ Changelog:
 	1.7.6 - exposing http method (get/post); result redirection
 	1.7.7 - destination mapping is textarea to make other plugins easier, hooks to add more columns
 	1.7.8 - adding per-service delimiter, supports newlines; 'add new service' button after metaboxes
+	1.7.9 - debug message truncation with configure hooks
 */
 
 //declare to instantiate
@@ -744,10 +745,18 @@ class Forms3rdPartyIntegration {
 			? str_replace(';', ',', $debug['email'])
 			: get_bloginfo('admin_email');
 		
+		// allow hook to alter dump truncation
+		$debug_truncation = apply_filters($this->N('debug_truncation'), array(
+			'service' => 5000,
+			'submission' => 200,
+			'post' => 2000,
+			'response' => 1000
+		));
+
 		// did the debug message send?
 		if( !$passthrough || !wp_mail( $recipients
 			, self::pluginPageTitle . " Debug: {$service['name']}"
-			, "*** Service ***\n".print_r($service, true)."\n*** Post (Form) ***\n" . get_bloginfo('url') . $_SERVER['REQUEST_URI'] . "\n".print_r($submission, true)."\n*** Post (to Service) ***\n".print_r($post, true)."\n*** Response ***\n".print_r($response, true)
+			, "*** Service ***\n".self::dump($service, $debug_truncation['service'])."\n*** Post (Form) ***\n" . get_bloginfo('url') . $_SERVER['REQUEST_URI'] . "\n".self::dump($submission, $debug_truncation['submission'])."\n*** Post (to Service) ***\n".self::dump($post, $debug_truncation['post'])."\n*** Response ***\n".self::dump($response, $debug_truncation['response'])
 			, array($sendAs)
 		) ) {
 			///TODO: log? another email? what?
@@ -772,6 +781,49 @@ class Forms3rdPartyIntegration {
 			}
 		}
 	}
+
+	/**
+	 * Pretty-print something without dumping too much
+	 */
+	public static function dump($array, $length_limit = 200, $ignores = array(), $depth = '', $isBuffer = true) {
+		// maybe catch (if not recursive)
+		if($isBuffer) ob_start();
+		
+		// trick loop
+		$array = (array) $array;
+
+		foreach($array as $k => $v) {
+			// maybe ignore?
+			if(in_array($k, $ignores)) continue;
+
+			// dump key
+			echo "{$depth}[{$k}] => ";
+
+			// dump value or recurse
+			if(is_array($v) || is_object($v)) {
+				echo is_array($v) ? 'Array (' : 'Object (';
+				echo "\n";
+
+				self::dump($v, $length_limit, $ignores, $depth . "\t", false);
+
+				echo "$depth)";
+			}
+			else if(is_string($v) && strlen($v) > $length_limit)
+				echo substr($v, 0, $length_limit), '...';
+			else
+				echo $v;
+
+			echo "\n";
+		}
+
+		// maybe uncatch (if not recursive)
+		if($isBuffer) {
+			$output = ob_get_contents();
+			ob_end_clean();
+			return $output;
+		}
+	}
+
 
 	/**
 	 * Add a javascript warning for failures; also send an email to debugging recipient with details

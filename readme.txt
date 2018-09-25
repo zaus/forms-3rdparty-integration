@@ -234,6 +234,10 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.7.9 =
+* debug message truncation with configure hooks
+* use hook `...debug_truncation` to set field length limits for each section
+
 = 1.7.8 =
 * adding per-service delimiter, supports newlines
 * 'add new service' button after metaboxes
