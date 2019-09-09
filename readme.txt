@@ -3,7 +3,7 @@ Contributors: zaus, atlanticbt, spkane
 Donate link: http://drzaus.com/donate
 Tags: contact form, form, contact form 7, CF7, gravity forms, GF, CRM, mapping, 3rd-party service, services, remote request
 Requires at least: 3.0
-Tested up to: 4.9.6
+Tested up to: 5.2.3
 Stable tag: trunk
 License: GPLv2 or later
 
