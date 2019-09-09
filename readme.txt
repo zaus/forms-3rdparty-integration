@@ -427,6 +427,9 @@ base version, just directly submits values
 
 == Upgrade Notice ==
 
+= 1.8 =
+Now that Ninja Forms works again with this plugin there may be conflicts with the related sub-plugin "Forms 3rdparty File Attachments".  Please deactivate the "File Attachments" plugin if you are unable to submit your contact form.
+
 = 1.6.1 =
 Due to the new common form extension base, the way forms are identified in the settings has been changed.
 Deactivating and reactivating the plugin (which happens automatically on upgrade, but not FTP or other direct file changes) should correct your existing settings.
