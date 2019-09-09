@@ -234,6 +234,10 @@ __Please note these screenshots are from the previous plugin incarnation, but ar
 
 == Changelog ==
 
+= 1.8 =
+* copy service button
+* Ninja Forms are back!  Can use Ninja Forms plugin v3.0+ again.
+
 = 1.7.9 =
 * debug message truncation with configure hooks
 * use hook `...debug_truncation` to set field length limits for each section
