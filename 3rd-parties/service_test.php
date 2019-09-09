@@ -8,7 +8,7 @@ if( isset($_REQUEST['fail']) ) {
 	if( 'true' != $_REQUEST['fail'] ) $as_success = true;
 }
 // randomly determine it
-if( rand() < 0.5 ) $as_success = true;
+else if( rand() < 0.5 ) $as_success = true;
 
 if($as_success) echo "success\n";
 

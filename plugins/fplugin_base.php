@@ -129,15 +129,14 @@ abstract class Forms3rdpartyIntegration_FPLUGIN {
 		add_filter(Forms3rdPartyIntegration::$instance->N('get_submission'), array(&$this, 'get_submission'), 10, 2);
 	}
 
+	/**
+	 * Register all plugin hooks; override in form-specific plugins if necessary
+	 */
 	public function init() {
 		if( !is_admin() ) {
-			// http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_process/
-			// http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_post_process/
-
-			// this is a little tricky, because the $form object isn't available from their hook
-			// like it is with GF or CF7, so we interpose an 'intermediary' hook
-			// which will provide the form object instead
 			$filter = apply_filters(Forms3rdPartyIntegration::$instance->N('plugin_hooks'), (array) $this->BEFORE_SEND_FILTER());
+			### _log(__CLASS__, $filter);
+			
 			foreach($filter as $f) add_filter( $f, array(&Forms3rdPartyIntegration::$instance, 'before_send') );
 		}
 
