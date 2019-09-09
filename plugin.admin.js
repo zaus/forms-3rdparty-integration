@@ -18,9 +18,10 @@
 				;
 
 			// toggling not handled by link, so allow...not the cleanest, maybe add another data- ?
-			if(action.indexOf('toggle') < 0) e.preventDefault();
+			if(action && action.indexOf('toggle') < 0) e.preventDefault();
 
 			switch(action) {
+				case 'add': lib.clone($target, after, true); break;
 				case 'clone': lib.clone($target, after); break;
 				case 'remove': lib.remove($target, after); break;
 				case 'toggle':
@@ -29,11 +30,11 @@
 
 		}//--	fn	action
 		,
-		clone: function($target, after) {
+		clone: function($target, after, clear) {
 			var	$clone = $target.clone();	//clone the target so we can add it later
 			
 			// perform requested post-operation
-			lib.afterClone[after]($target, $clone, lib.id());
+			lib.afterClone[after]($target, $clone, lib.id(), clear);
 
 			//some more row properties
 			$clone.toggleClass('alt');
@@ -56,16 +57,22 @@
 		,
 		afterClone: {
 			row: function($target, $clone, newid) {
-				lib.updateClonedRow(newid, $clone, /(mapping\]\[)([\d]+)/);
+				lib.updateClonedRow(newid, $clone, /(mapping\]\[)([\d]+)/, true);
 			}//--	fn	afterClone.row
 			,
-			metabox: function($target, $clone, newid) {
+			metabox: function($target, $clone, newid, clear) {
 				//delete extra rows, fix title
-				$clone.find('tr.fields').slice(1).empty().remove(); // only save the first row
+				if(clear) $clone.find('tr.fields').slice(1).empty().remove(); // only save the first row
+				var $serviceName = $clone.find('input:first');
+				$serviceName.val($serviceName.val() + ' Copy');
 				var $title = $clone.find('h3 span:last');
-				$title.html( $title.html().split(':')[0] )
+				$title.html( clear ? $title.html().split(':')[0] : $title.html() + ' Copy' )
 				// and reapply data
 					.parent()
+					.data('actn', "toggle")
+					.data('rel', ".postbox");
+				// also reapply toggle behavior to each subsection
+				$clone.find('legend.hndle')
 					.data('actn', "toggle")
 					.data('rel', ".postbox");
 
@@ -73,11 +80,11 @@
 				$clone.find('.hook-example').addClass('collapsed');
 				
 				//reset clone values and update indices
-				lib.updateClonedRow(newid, $clone, /(\[)([\d])/);
+				lib.updateClonedRow(newid, $clone, /(\[)([\d])/, clear);
 			}//--	fn	afterClone.metabox
 		}//--	afterClone
 		,
-		updateClonedRow: function(newid, $clone, regex) {
+		updateClonedRow: function(newid, $clone, regex, clear) {
 			//reset clone values and update indices
 			$clone.find('input,select,textarea').each(function(i, o){
 				var $o = $(o)
@@ -89,11 +96,13 @@
 				$o.attr('name', name.replace(regex, '$1' + newid));
 				
 				//reset values
-				if( $o.attr('type') != 'checkbox' ){
-					$o.val('');
-				}
-				else {
-					$o.removeAttr('checked');
+				if(clear) {
+					if( $o.attr('type') != 'checkbox' ){
+						$o.val('');
+					}
+					else {
+						$o.removeAttr('checked');
+					}
 				}
 			});
 			$clone.find('label').each(function(i, o){

@@ -255,7 +255,7 @@
 							$pairNum++;
 							#if( $pairNum == $numPairs):
 								?>
-								<a href="#" title="<?php _e('Add Another'); ?>" class="plus actn" data-actn="clone" data-after="row" data-rel="tr.fields"><?php _e('Add Another', $P);?></a>
+								<a href="#" title="<?php _e('Add Another'); ?>" class="plus actn" data-actn="add" data-after="row" data-rel="tr.fields"><?php _e('Add Another', $P);?></a>
 								<?php
 							#endif;	//numPairs countdown
 							?>
@@ -290,7 +290,8 @@
 			</section>
 
 			<span class="button"><a href="#" class="actn" data-actn="remove" data-after="metabox" data-rel="div.meta-box">Delete Service</a></span>
-			<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-rel="div.meta-box">Add Another Service</a></span>
+			<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-rel="div.meta-box">Copy Service</a></span>
+			<span class="button"><a href="#" class="actn" data-actn="add" data-after="metabox" data-rel="div.meta-box">Add Another Service</a></span>
 
 			
 			</div><?php /*-- end div.description-body inside  --*/ ?>
@@ -308,7 +309,7 @@
 			<div class="buttons">
 				<input type="submit" id="submit" name="submit" class="button button-primary" value="Save" />
 
-				<span class="button"><a href="#" class="actn" data-actn="clone" data-after="metabox" data-target="div.meta-box-sortables div.meta-box:last">Add Another Service</a></span>
+				<span class="button"><a href="#" class="actn" data-actn="add" data-after="metabox" data-target="div.meta-box-sortables div.meta-box:last">Add Another Service</a></span>
 			</div>
 				
 		</form>
