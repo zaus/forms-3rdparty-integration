@@ -15,7 +15,7 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	/**
 	 * What to hook as "before_send", so this extension will process submissions
 	 */
-	protected function BEFORE_SEND_FILTER() { return 'ninja_forms_process'; }
+	protected function BEFORE_SEND_FILTER() { return 'ninja_forms_after_submission'; } // `ninja_forms_after_submission` might be too late? but `ninja_forms_submit_data` is before ninja handles it
 
 	/**
 	 * Used to identify form in select box, differentiating them from other plugins' forms
@@ -49,8 +49,9 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	/**
 	 * Determine if the form "object" is from the expected plugin (i.e. check its type)
 	 */
-	protected function IS_PLUGIN_FORM($form) { 
-		return is_object($form) && 'Ninja_Forms_Processing' == get_class($form);
+	protected function IS_PLUGIN_FORM($form) {
+		###_log(__CLASS__, __FUNCTION__, substr(print_r($form, true), 0, 100) . '...');
+		return is_array($form) && isset($form['form_id']) && isset($form['settings']) && isset($form['fields']);
 	}
 
 	/**
@@ -210,38 +211,20 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 		### TODO: not sure what the original failure message would be...
 		return $form->get_form_setting('success_msg');
 	}
-	
+
 
 	/**
-	 * Overridding regular initialization, because ninjaforms needs an intermediary step
+	 * Register all plugin hooks; override in form-specific plugins if necessary
 	 */
 	public function init() {
-		if( !is_admin() ) {
-			// http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_process/
-			// http://ninjaforms.com/documentation/developer-api/actions/ninja_forms_post_process/
+		// because ninja forms submits via ajax, can't check for `is_admin` anymore (> 3.0)
+		// if( !is_admin() ) {
+			$filter = apply_filters(Forms3rdPartyIntegration::$instance->N('plugin_hooks'), (array) $this->BEFORE_SEND_FILTER());
+			###_log(__CLASS__, $filter);
+			foreach($filter as $f) add_filter( $f, array(&Forms3rdPartyIntegration::$instance, 'before_send') );
+		// }
 
-			// this is a little tricky, because the $form object isn't available from their hook
-			// like it is with GF or CF7, so we interpose an 'intermediary' hook
-			// which will provide the form object instead
-
-			add_filter( $this->BEFORE_SEND_FILTER(), array(&$this, 'before_send_intercept') );
-			add_filter( __CLASS__, array(&Forms3rdPartyIntegration::$instance, 'before_send') );
-		}
-
-	}
-
-	/**
-	 * Intermediary hook attached to FPLUGIN submission processing
-	 * that will retrieve the $form object to provide to the Forms-3rdparty
-	 * `before_send` hook, like "usual" (i.e. CF7 and GF)
-	 */
-	public function before_send_intercept() {
-		// get the ninja form object
-		// via global accessor http://ninjaforms.com/documentation/developer-api/ninja_forms_processing/
-		global $ninja_forms_processing;
-
-		// provide it to the regular `before_send` hook, since it's basically the form object
-		return apply_filters(__CLASS__, $ninja_forms_processing);
+		//add_action( 'init', array( &$this, 'other_includes' ), 20 );
 	}
 	
 }///---	class	Forms3rdpartyIntegration_Ninja
