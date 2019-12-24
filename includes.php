@@ -39,6 +39,9 @@ if(is_plugin_active('gravityforms/gravityforms.php') || class_exists('RGFormsMod
 if(is_plugin_active('ninja-forms/ninja-forms.php') || class_exists('Ninja_Forms') )
 	include('plugins/ninjaforms.php');
 
+if(is_plugin_active('formidable/formidable.php') || class_exists('FrmForm') )
+	include('plugins/formidable.php');
+
 /* to add others, use something like:
 
 add_action( 'plugins_loaded', array('Forms3rdpartyIntegration_YOUR_FORM_PLUGIN', 'init') );
