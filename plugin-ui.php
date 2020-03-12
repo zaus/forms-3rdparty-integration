@@ -112,7 +112,7 @@
 			$eid++;
 		?>
 		<div id="metabox-<?php echo $eid; ?>" class="meta-box">
-		<div class="shortcode-description postbox">
+		<div class="shortcode-description postbox closed">
 			<h3 class="hndle"><span>3rd-Party Service: <?php echo esc_attr($entity['name'])?></span></h3>
 			
 			<div class="description-body inside">
