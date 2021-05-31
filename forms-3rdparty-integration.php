@@ -563,6 +563,8 @@ class Forms3rdPartyIntegration {
 				if(!is_array($post[$third])) {
 					$post[$third] = array($post[$third]);
 				}
+				// Radio and checkboxes are being sent as Arrays, converting them to a string:
+				if(is_array($input)) $input = implode($service['delim'], $input);
 				$post[$third] []= $input;
 			}
 			else {
