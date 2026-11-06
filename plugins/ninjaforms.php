@@ -26,10 +26,24 @@ class Forms3rdpartyIntegration_Ninja extends Forms3rdpartyIntegration_FPLUGIN {
 	 * Returns an array of the plugin's forms, loosely as ID => NAME;
 	 * will be reformatted into ID => NAME by @see GET_FORM_LIST_ID and @see GET_FORM_LIST_TITLE
 	 */
-	protected function GET_PLUGIN_FORMS() { return ninja_forms_get_all_forms(); }
+	protected function GET_PLUGIN_FORMS() { 
+      if ( function_exists( 'Ninja_Forms' ) ) {
+			$forms = Ninja_Forms()->form()->get();
+			$results = array();
+			if (is_array($forms)) {
+				foreach ( $forms as $form ) {
+					$results[] = array(
+						'id'   => $form->get_id(),
+						'data' => array( 'form_title' => $form->get_setting( 'title' ) )
+					);
+				}
+			}
+			return $results;
+		}
+		return array();
+	}
 
-	/**
-	 * Get the ID from the plugin's form listing
+	/*	 * Get the ID from the plugin's form listing
 	 */
 	protected function GET_FORM_LIST_ID($list_entry) { return $list_entry['id']; }
 	protected function GET_FORM_LIST_TITLE($list_entry) { return $list_entry['data']['form_title']; }
